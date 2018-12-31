@@ -28,5 +28,11 @@
     "semantic-ui-react": "^0.84.0",
     "serve": "10.1.1",
     "web3": "^1.0.0-beta.37"
-  }
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }
