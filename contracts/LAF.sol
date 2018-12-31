@@ -3,24 +3,47 @@ pragma solidity ^0.5.0;
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 // import "./Ownable.sol"; // remix import
 
+// TODO
+// - IPFS hashes
+// - improved tests
+// - system fees ???
+// - separate storage layer ???
+// - separate rewards to dedicated wallet ???
+// - fallback function
+// - method decorations
+
 contract LAF is Ownable
 {
+    // counter for items, also id of items;
     uint256 public itemCount = 0;
+
+    // main storage for items
     mapping (uint256 => LAFItem) public items;
 
-    address private _owner;
+    // main service circuitbreaker
+    bool private _serviceEnabled = false;
 
+    // storage for easy retrieval of items a user interacts with
+    mapping (address => uint[]) private _userItems;
+
+    // =======================================================
+    // EVENTS
+    // =======================================================
+    event ServiceDisabled();
+    event ServiceEnabled();
     event ItemStored(bytes8 indexed isoCountryCode,
         bytes8 indexed stateProvince,
         bytes32 indexed city,
         bytes32 title,
         uint256 itemId,
         uint256 reward);
-    
     event ItemFound(uint256 itemId, bytes8 indexed isoCountryCode, bytes8 indexed stateProvince);
     event ItemRecovered(uint256 itemId, bytes8 indexed isoCountryCode, bytes8 indexed stateProvince);
     event ItemCancelled(uint256 itemId);
 
+    // =======================================================
+    // STRUCTS & ENUMS
+    // =======================================================
     struct LAFItem
     {
         uint256 id;
@@ -41,6 +64,15 @@ contract LAF is Ownable
         Found,
         Recovered,
         Cancelled
+    }
+
+    // =======================================================
+    // MODIFIERS
+    // =======================================================
+    modifier serviceIsActive()
+    {
+        require(_serviceEnabled);
+        _;
     }
     
     modifier onlyContractOrItemOwners(uint256 itemId)
@@ -78,17 +110,42 @@ contract LAF is Ownable
         _;
     }
 
-    // TODO
-    // IPFS hash
-    // improved tests
-    // system fees ???
-    // separate storage layer ???
-    // separate rewards to dedicated wallet ???
+    // =======================================================
+    // ADMIN
+    // =======================================================
+    function disableService()
+        public
+        onlyOwner
+    {
+        _serviceEnabled = false;
+        emit ServiceDisabled();
+    }
+
+    function enableService()
+        public
+        onlyOwner
+    {
+        _serviceEnabled = true;
+        emit ServiceEnabled();
+    }
+
+    // =======================================================
+    // PUBLIC API
+    // =======================================================
+    function getMyItemIndicies()
+        public
+        view
+        returns (uint[] memory)
+    {
+        return _userItems[msg.sender];
+    }
 
     function newLostItem(bytes8 isoCountryCode, bytes8 stateProvince, bytes32 city, bytes32 title)
         public
         payable
-    {        
+        serviceIsActive
+    {
+        // construct new item
         LAFItem memory newItem;
         newItem.id = itemCount;
         newItem.itemStatus = ItemStatus.Lost;
@@ -99,7 +156,11 @@ contract LAF is Ownable
         newItem.reward = msg.value;
         newItem.itemOwner = msg.sender;
         
+        // store new item
         items[itemCount] = newItem;
+
+        // itemId to user listing storage
+        _userItems[msg.sender].push(itemCount);
 
         emit ItemStored(isoCountryCode, stateProvince, city, title, itemCount, msg.value);
 
@@ -108,6 +169,7 @@ contract LAF is Ownable
 
     function setItemFound(uint256 itemId)
         public
+        serviceIsActive
         onlyItemStatusLost(itemId)
     {
         // retrieve item as storage ref
@@ -124,6 +186,7 @@ contract LAF is Ownable
 
     function setItemRecovered(uint256 itemId)
         public
+        serviceIsActive
         onlyItemStatusFound(itemId)
         onlyItemOwner(itemId)
     {
@@ -139,6 +202,7 @@ contract LAF is Ownable
         emit ItemRecovered(itemId, item.isoCountryCode, item.stateProvince);
     }
 
+    // can be called even if circuitbreaker has been flipped
     function cancelItem(uint256 itemId)
         public
         onlyItemStatusLostOrFound(itemId)
