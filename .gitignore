@@ -68,3 +68,6 @@ typings/
 
 # misc
 .DS_Store
+
+# project specific
+client/src/contracts
