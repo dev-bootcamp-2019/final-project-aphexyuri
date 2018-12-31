@@ -43,7 +43,7 @@ contract LAF is Ownable
         Cancelled
     }
     
-    modifier onlySystemOrItemOwners(uint256 itemId)
+    modifier onlyContractOrItemOwners(uint256 itemId)
     {
         LAFItem memory item = items[itemId];
         require(msg.sender == owner() || msg.sender == item.itemOwner);
@@ -142,7 +142,7 @@ contract LAF is Ownable
     function cancelItem(uint256 itemId)
         public
         onlyItemStatusLostOrFound(itemId)
-        onlySystemOrItemOwners(itemId)
+        onlyContractOrItemOwners(itemId)
     {
         // retrieve item as storage ref
         LAFItem storage item = items[itemId];
