@@ -181,6 +181,9 @@ contract LAF is Ownable
         // set the address of person that found the item
         item.itemDiscoverer = msg.sender;
 
+        // itemId to user listing storage
+        _userItems[msg.sender].push(itemCount);
+
         emit ItemFound(itemId, item.isoCountryCode, item.stateProvince);
     }
 
