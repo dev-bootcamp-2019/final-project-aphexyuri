@@ -62,7 +62,7 @@ class AddItem extends Component {
         var titleHex = web3.utils.asciiToHex(this.state.title)
         // console.log('titleHex', titleHex)
 
-        await this.props.listingsContract.methods.postItem(
+        await this.props.listingsContract.methods.newLostItem(
             countryHex,
             stateProvinceHex,
             cityHex,
