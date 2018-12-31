@@ -11,7 +11,7 @@ contract LAF is Ownable
     mapping (uint256 => LAFItem) public items;
 
     event ItemStored(bytes8 indexed isoCountryCode,
-        bytes16 indexed stateProvince,
+        bytes8 indexed stateProvince,
         bytes32 indexed city,
         bytes32 title,
         uint256 itemId,
@@ -37,8 +37,12 @@ contract LAF is Ownable
     //     _lafItemStorageContract = LAFItemStorage(newStorageContractAddress);
     // }
 
-    function postItem(bytes8 isoCountryCode, bytes16 stateProvince, bytes32 city, bytes32 title, uint256 rewardAmount)
+    // TODO
+    // IPFS hash
+    // item type (lost vs found) ?
+    function postItem(bytes8 isoCountryCode, bytes8 stateProvince, bytes32 city, bytes32 title)
         public
+        payable
     {        
         LAFItem memory newItem;
         newItem.id = itemCount;
@@ -46,14 +50,14 @@ contract LAF is Ownable
         newItem.stateProvince = stateProvince;
         newItem.city = city;
         newItem.title = title;
-        newItem.rewardAmount = rewardAmount;
+        newItem.rewardAmount = msg.value;
         newItem.poster = msg.sender;
 
         // _lafItemStorageContract.storeLAFItem(newItem);
         
         items[itemCount] = newItem;
 
-        emit ItemStored(isoCountryCode, stateProvince, city, title, itemCount, rewardAmount);
+        emit ItemStored(isoCountryCode, stateProvince, city, title, itemCount, msg.value);
 
         itemCount++;
     }
