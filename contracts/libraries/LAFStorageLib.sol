@@ -35,51 +35,50 @@ library LAFStorageLib
         private
     {
         LAFAssetStorage(assetStorageAddress).storeUint256(keccak256(abi.encodePacked(assetId, key)), value);
-        // uintStorage[keccak256(abi.encodePacked(assetId, key))] = value;
     }
     
     function storeString(address assetStorageAddress, uint256 assetId, string memory key, string memory value)
         private
     {
         LAFAssetStorage(assetStorageAddress).storeString(keccak256(abi.encodePacked(assetId, key)), value);
-        // stringStorage[keccak256(abi.encodePacked(assetId, key))] = value;
     }
     
     function storeAddress(address assetStorageAddress, uint256 assetId, string memory key, address payable value)
         private
     {
         LAFAssetStorage(assetStorageAddress).storeAddress(keccak256(abi.encodePacked(assetId, key)), value);
-        // addressStorage[keccak256(abi.encodePacked(assetId, key))] = value;
     }
     
     function storeBytes(address assetStorageAddress, uint256 assetId, string memory key, bytes memory value)
         private
     {
         LAFAssetStorage(assetStorageAddress).storeBytes(keccak256(abi.encodePacked(assetId, key)), value);
-        // bytesStorage[keccak256(abi.encodePacked(assetId, key))] = value;
     }
 
     function storeBool(address assetStorageAddress, uint256 assetId, string memory key, bool value)
         private
     {
         LAFAssetStorage(assetStorageAddress).storeBool(keccak256(abi.encodePacked(assetId, key)), value);
-        // boolStorage[keccak256(abi.encodePacked(assetId, key))] = value;
     }
 
     function storeInt256(address assetStorageAddress, uint256 assetId, string memory key, int value)
         private
     {
         LAFAssetStorage(assetStorageAddress).storeInt256(keccak256(abi.encodePacked(assetId, key)), value);
-        // intStorage[keccak256(abi.encodePacked(assetId, key))] = value;
     }
     
     // ----- specific -----
+    function setInitialAssetCount(address assetStorageAddress)
+        public
+    {
+        LAFAssetStorage(assetStorageAddress).storeUint256(keccak256(KEY_ASSET_COUNT), 0);
+    }
+
     function incrementAssetCount(address assetStorageAddress)
         public
     {
         uint256 assetCount = getAssetCount(assetStorageAddress);
         assetCount++;
-        // uintStorage[keccak256(KEY_ASSET_COUNT)] = itemCount;
         LAFAssetStorage(assetStorageAddress).storeUint256(keccak256(KEY_ASSET_COUNT), assetCount);
     }
     
@@ -207,7 +206,6 @@ library LAFStorageLib
         view
         returns (uint256)
     {
-        // return uintStorage[keccak256(KEY_ASSET_COUNT)];
         return LAFAssetStorage(assetStorageAddress).uintStorage(keccak256(KEY_ASSET_COUNT));
     }
     
