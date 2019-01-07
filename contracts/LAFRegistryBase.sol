@@ -3,10 +3,16 @@ pragma solidity ^0.5.0;
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 // import "./Ownable.sol"; // remix import
 
+import "./libraries/LAFStorageLib.sol";
+
 contract LAFRegistryBase is Ownable
 {
+    using LAFStorageLib for LAFStorageLib.LibStorage;
+
+    LAFStorageLib.LibStorage storageLibData;
+
     bool public _registryEnabled;
-    address public storageAddress;
+    // address public storageAddress;
     
     event RegistryEnabled(address);
     event RegistryDisabled(address);
@@ -19,7 +25,7 @@ contract LAFRegistryBase is Ownable
     
     modifier storageSet()
     {
-        require(storageAddress != address(0));
+        require(storageLibData.assetStorageAddress != address(0));
         _;
     }
     
@@ -44,6 +50,8 @@ contract LAFRegistryBase is Ownable
         onlyOwner
     {
         // set the address of asset storage contract
-        storageAddress = newStorageAddress;
+        // storageAddress = newStorageAddress;
+        // TODO cleanup
+        storageLibData.assetStorageAddress = newStorageAddress;
     }
 }
