@@ -12,7 +12,6 @@ contract LAFRegistryBase is Ownable
     LAFStorageLib.LibStorage storageLibData;
 
     bool public _registryEnabled;
-    // address public storageAddress;
     
     event RegistryEnabled(address);
     event RegistryDisabled(address);
@@ -50,8 +49,16 @@ contract LAFRegistryBase is Ownable
         onlyOwner
     {
         // set the address of asset storage contract
-        // storageAddress = newStorageAddress;
+
         // TODO cleanup
         storageLibData.assetStorageAddress = newStorageAddress;
+    }
+
+    function getAssetStorageAddress()
+        public
+        view
+        returns(address)
+    {
+        return storageLibData.assetStorageAddress;
     }
 }
