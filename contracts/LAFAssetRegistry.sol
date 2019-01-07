@@ -1,8 +1,8 @@
-pragma solidity ^0.5.2;
+pragma solidity ^0.5.0;
 // pragma experimental ABIEncoderV2; //possible use: returning structs (indexed event params problem)
 
 import "./LAFRegistryBase.sol";
-import "./LAFAsset.sol";
+// import "./LAFAsset.sol";
 import "./LAFAssetStorage.sol";
 
 /**
@@ -11,6 +11,7 @@ import "./LAFAssetStorage.sol";
  * deploy LAFAssetRegistry
  * call setAssetStorage on LAFAssetRegistry with address or storage contract
  * call setRegistryAddress on LAFAssetStorage with address of registry contract
+ * call enableRegistry on LAFAssetRegistry
  */
 
 contract LAFAssetRegistry is LAFRegistryBase
@@ -166,10 +167,10 @@ contract LAFAssetRegistry is LAFRegistryBase
     
     function newLostAsset(
         string memory assetTitle,
+        string memory description,
         bytes memory isoCountryCode,
         bytes memory stateProvince,
-        bytes memory city,
-        string memory description
+        bytes memory city   
     )
         public
         payable
@@ -190,10 +191,10 @@ contract LAFAssetRegistry is LAFRegistryBase
     
     function newFoundAsset(
         string memory assetTitle,
+        string memory description,
         bytes memory isoCountryCode,
         bytes memory stateProvince,
-        bytes memory city,
-        string memory description
+        bytes memory city
     )
         public
         payable

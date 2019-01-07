@@ -1,7 +1,7 @@
-pragma solidity ^0.5.2;
+pragma solidity ^0.5.0;
 
-// import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
-import "./Ownable.sol"; // remix import
+import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+// import "./Ownable.sol"; // remix import
 
 contract LAFAssetStorage is Ownable
 {
@@ -27,7 +27,7 @@ contract LAFAssetStorage is Ownable
         uintStorage[keccak256(KEY_ASSET_COUNT)] = 0;
     }
     
-    function setRegistryAddress(address newRegistryAddress)
+    function setAssetRegistryAddress(address newRegistryAddress)
         public
         onlyOwner
     {
@@ -54,60 +54,32 @@ contract LAFAssetStorage is Ownable
     // STORAGE MODIFIERS
     // =======================================================
     // ----- generic -----
-    function storeUint256(bytes32 key, uint256 value)
-        private
-        callerIsRegistryAddress
-    {
-        uintStorage[key] = value;
-    }
-    
     function storeUint256(uint256 assetId, string memory key, uint256 value)
         private
         callerIsRegistryAddress
     {
-        storeUint256(keccak256(abi.encodePacked(assetId, key)), value);
-    }
-    
-    function storeString(bytes32 key, string memory value)
-        private
-        callerIsRegistryAddress
-    {
-        stringStorage[key] = value;
+        uintStorage[keccak256(abi.encodePacked(assetId, key))] = value;
     }
     
     function storeString(uint256 assetId, string memory key, string memory value)
         private
         callerIsRegistryAddress
     {
-        storeString(keccak256(abi.encodePacked(assetId, key)), value);
-    }
-    
-    function storeAddress(bytes32 key, address payable value)
-        private
-        callerIsRegistryAddress
-    {
-        addressStorage[key] = value;
+        stringStorage[keccak256(abi.encodePacked(assetId, key))] = value;
     }
     
     function storeAddress(uint256 assetId, string memory key, address payable value)
         private
         callerIsRegistryAddress
     {
-        storeAddress(keccak256(abi.encodePacked(assetId, key)), value);
-    }
-    
-    function storeBytes(bytes32 key, bytes memory value)
-        private
-        callerIsRegistryAddress
-    {
-        bytesStorage[key] = value;
+        addressStorage[keccak256(abi.encodePacked(assetId, key))] = value;
     }
     
     function storeBytes(uint256 assetId, string memory key, bytes memory value)
         private
         callerIsRegistryAddress
     {
-        storeBytes(keccak256(abi.encodePacked(assetId, key)), value);
+        bytesStorage[keccak256(abi.encodePacked(assetId, key))] = value;
     }
     
     // ----- specific -----
@@ -124,77 +96,77 @@ contract LAFAssetStorage is Ownable
         public
         callerIsRegistryAddress
     {
-        storeString(keccak256(abi.encodePacked(assetId, KEY_TITLE)), value);
+        storeString(assetId, KEY_TITLE, value);
     }
     
     function storeAssetDescription(uint256 assetId, string memory value)
         public
         callerIsRegistryAddress
     {
-        storeString(keccak256(abi.encodePacked(assetId, KEY_DESCRIPTION)), value);
+        storeString(assetId, KEY_DESCRIPTION, value);
     }
     
     function storeAssetIsoCountryCode(uint256 assetId, bytes memory value)
         public
         callerIsRegistryAddress
     {
-        storeBytes(keccak256(abi.encodePacked(assetId, KEY_ISO_COUNTRY_CODE)), value);
+        storeBytes(assetId, KEY_ISO_COUNTRY_CODE, value);
     }
     
     function storeAssetStateProvince(uint256 assetId, bytes memory value)
         public
         callerIsRegistryAddress
     {
-        storeBytes(keccak256(abi.encodePacked(assetId, KEY_STATE_PROVINCE)), value);
+        storeBytes(assetId, KEY_STATE_PROVINCE, value);
     }
     
     function storeAssetCity(uint256 assetId, bytes memory value)
         public
         callerIsRegistryAddress
     {
-        storeBytes(keccak256(abi.encodePacked(assetId, KEY_CITY)), value);
+        storeBytes(assetId, KEY_CITY, value);
     }
     
     function storeAssetReward(uint256 assetId, uint256 value)
         public
         callerIsRegistryAddress
     {
-        storeUint256(keccak256(abi.encodePacked(assetId, KEY_REWARD)), value);
+        storeUint256(assetId, KEY_REWARD, value);
     }
     
     function storeAssetCreator(uint256 assetId, address payable value)
         public
         callerIsRegistryAddress
     {
-        storeAddress(keccak256(abi.encodePacked(assetId, KEY_CREATOR)), value);
+        storeAddress(assetId, KEY_CREATOR, value);
     }
     
     function storeAssetInitialType(uint256 assetId, uint value)
         public
         callerIsRegistryAddress
     {
-        storeUint256(keccak256(abi.encodePacked(assetId, KEY_INITIAL_TYPE)), value);
+        storeUint256(assetId, KEY_INITIAL_TYPE, value);
     }
     
     function storeAssetStatus(uint256 assetId, uint value)
         public
         callerIsRegistryAddress
     {
-        storeUint256(keccak256(abi.encodePacked(assetId, KEY_STATUS)), value);
+        storeUint256(assetId, KEY_STATUS, value);
     }
     
     function storeAssetMatcher(uint256 assetId, address payable value)
         public
         callerIsRegistryAddress
     {
-        storeAddress(keccak256(abi.encodePacked(assetId, KEY_MATCHER)), value);
+        storeAddress(assetId, KEY_MATCHER, value);
     }
     
     function storeAssetExchangeDetails(uint256 assetId, string memory value)
         public
         callerIsRegistryAddress
     {
-        storeString(keccak256(abi.encodePacked(assetId, KEY_EXCHANGE_DEAILS)), value);
+        storeString(assetId, KEY_EXCHANGE_DEAILS, value);
     }
     
     // =======================================================
