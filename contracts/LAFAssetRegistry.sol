@@ -11,9 +11,6 @@ import "./LAFAssetStorage.sol";
  * call setAssetStorage on LAFAssetRegistry with address or storage contract
  * call setRegistryAddress on LAFAssetStorage with address of registry contract
  * call enableRegistry on LAFAssetRegistry
- * 
- * TODO
- * set initial assetCount
  */
 
 contract LAFAssetRegistry is LAFRegistryBase
@@ -94,6 +91,15 @@ contract LAFAssetRegistry is LAFRegistryBase
     // =======================================================
     // ADMIN
     // =======================================================
+    function enableRegistry()
+        public
+        onlyOwner
+    {
+        super.enableRegistry();
+
+        LAFStorageLib.setInitialAssetCount(storageLibData.assetStorageAddress);
+    }
+
     function transferFunds(address payable newRegistryAddress)
         public
         onlyOwner

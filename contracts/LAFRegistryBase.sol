@@ -15,7 +15,10 @@ contract LAFRegistryBase is Ownable
     
     event RegistryEnabled(address);
     event RegistryDisabled(address);
-    
+
+    // =======================================================
+    // MODIFIERS
+    // =======================================================
     modifier registryEnabled()
     {
         require(_registryEnabled);
@@ -27,7 +30,21 @@ contract LAFRegistryBase is Ownable
         require(storageLibData.assetStorageAddress != address(0));
         _;
     }
+
+    // =======================================================
+    // PUBLIC API
+    // =======================================================
+    function getAssetStorageAddress()
+        public
+        view
+        returns(address)
+    {
+        return storageLibData.assetStorageAddress;
+    }
     
+    // =======================================================
+    // ADMIN
+    // =======================================================
     function enableRegistry()
         public
         onlyOwner
@@ -52,13 +69,5 @@ contract LAFRegistryBase is Ownable
 
         // TODO cleanup
         storageLibData.assetStorageAddress = newStorageAddress;
-    }
-
-    function getAssetStorageAddress()
-        public
-        view
-        returns(address)
-    {
-        return storageLibData.assetStorageAddress;
     }
 }
