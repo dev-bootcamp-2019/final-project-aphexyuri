@@ -66,8 +66,6 @@ contract LAFRegistryBase is Ownable
         onlyOwner
     {
         // set the address of asset storage contract
-
-        // TODO cleanup
         storageLibData.assetStorageAddress = newStorageAddress;
     }
 }
