@@ -7,9 +7,9 @@ import "./libraries/LAFStorageLib.sol";
 
 contract LAFRegistryBase is Ownable
 {
-    using LAFStorageLib for LAFStorageLib.LibStorage;
+    using LAFStorageLib for LAFStorageLib.Data;
 
-    LAFStorageLib.LibStorage storageLibData;
+    LAFStorageLib.Data storageData;
 
     bool public _registryEnabled;
     
@@ -27,7 +27,7 @@ contract LAFRegistryBase is Ownable
     
     modifier storageSet()
     {
-        require(storageLibData.assetStorageAddress != address(0));
+        require(storageData.assetStorageAddress != address(0));
         _;
     }
 
@@ -39,7 +39,7 @@ contract LAFRegistryBase is Ownable
         view
         returns(address)
     {
-        return storageLibData.assetStorageAddress;
+        return storageData.assetStorageAddress;
     }
     
     // =======================================================
@@ -66,6 +66,6 @@ contract LAFRegistryBase is Ownable
         onlyOwner
     {
         // set the address of asset storage contract
-        storageLibData.assetStorageAddress = newStorageAddress;
+        storageData.assetStorageAddress = newStorageAddress;
     }
 }

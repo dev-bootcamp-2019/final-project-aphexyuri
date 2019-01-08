@@ -26,9 +26,9 @@ contract LAFAssetRegistry is LAFRegistryBase
     event AssetCancelled(uint256 assetId);
     event PotentialMatch(uint256 assetId, bytes indexed isoCountryCode, bytes indexed stateProvince);
     event MatchConfirmed(uint256 assetId);
-    event MatchInvalid(uint256);
-    event AssetRecovered(uint256, uint256);
-    event RecoveryFailed(uint256);
+    event MatchInvalid(uint256 assetID);
+    event AssetRecovered(uint256 assetId, uint256 reward);
+    event RecoveryFailed(uint256 assetId);
     
     struct LAFAsset
     {
@@ -54,37 +54,37 @@ contract LAFAssetRegistry is LAFRegistryBase
     
     modifier onlyContractOwnerOrAssetCreator(uint256 assetId)
     {
-        require(msg.sender == owner() || msg.sender == LAFStorageLib.getAssetCreator(storageLibData.assetStorageAddress, assetId));
+        require(msg.sender == owner() || msg.sender == LAFStorageLib.getAssetCreator(storageData.assetStorageAddress, assetId));
         _;
     }
     
     modifier onlyAssetCreator(uint256 assetId)
     {
-        require(msg.sender == LAFStorageLib.getAssetCreator(storageLibData.assetStorageAddress, assetId));
+        require(msg.sender == LAFStorageLib.getAssetCreator(storageData.assetStorageAddress, assetId));
         _;
     }
     
     modifier onlyAssetStatusPosted(uint256 assetId)
     {
-        require(AssetStatus(LAFStorageLib.getAssetStatus(storageLibData.assetStorageAddress, assetId)) == AssetStatus.Posted);
+        require(AssetStatus(LAFStorageLib.getAssetStatus(storageData.assetStorageAddress, assetId)) == AssetStatus.Posted);
         _;
     }
     
     modifier onlyAssetStatusPotentialMatch(uint256 assetId)
     {
-        require(AssetStatus(LAFStorageLib.getAssetStatus(storageLibData.assetStorageAddress, assetId)) == AssetStatus.PotentialMatch);
+        require(AssetStatus(LAFStorageLib.getAssetStatus(storageData.assetStorageAddress, assetId)) == AssetStatus.PotentialMatch);
         _;
     }
     
     modifier onlyAssetStatusMatchConfirmed(uint256 assetId)
     {
-        require(AssetStatus(LAFStorageLib.getAssetStatus(storageLibData.assetStorageAddress, assetId)) == AssetStatus.MatchConfirmed);
+        require(AssetStatus(LAFStorageLib.getAssetStatus(storageData.assetStorageAddress, assetId)) == AssetStatus.MatchConfirmed);
         _;
     }
     
     modifier onlyAssetStatusNotCancelledOrRecovered(uint256 assetId)
     {
-        AssetStatus status = AssetStatus(LAFStorageLib.getAssetStatus(storageLibData.assetStorageAddress, assetId));
+        AssetStatus status = AssetStatus(LAFStorageLib.getAssetStatus(storageData.assetStorageAddress, assetId));
         require(status != AssetStatus.Cancelled);
         require(status != AssetStatus.Recovered);
         _;
@@ -119,22 +119,22 @@ contract LAFAssetRegistry is LAFRegistryBase
         registryEnabled
         storageSet
     {
-        uint256 assetId = LAFStorageLib.getAssetCount(storageLibData.assetStorageAddress);
+        uint256 assetId = LAFStorageLib.getAssetCount(storageData.assetStorageAddress);
         
-        LAFStorageLib.storeAssetTitle(storageLibData.assetStorageAddress, assetId, assetTitle);
-        LAFStorageLib.storeAssetDescription(storageLibData.assetStorageAddress, assetId, description);
+        LAFStorageLib.storeAssetTitle(storageData.assetStorageAddress, assetId, assetTitle);
+        LAFStorageLib.storeAssetDescription(storageData.assetStorageAddress, assetId, description);
         
-        LAFStorageLib.storeAssetIsoCountryCode(storageLibData.assetStorageAddress, assetId, isoCountryCode);
-        LAFStorageLib.storeAssetStateProvince(storageLibData.assetStorageAddress, assetId, stateProvince);
-        LAFStorageLib.storeAssetCity(storageLibData.assetStorageAddress, assetId, city);
+        LAFStorageLib.storeAssetIsoCountryCode(storageData.assetStorageAddress, assetId, isoCountryCode);
+        LAFStorageLib.storeAssetStateProvince(storageData.assetStorageAddress, assetId, stateProvince);
+        LAFStorageLib.storeAssetCity(storageData.assetStorageAddress, assetId, city);
         
-        LAFStorageLib.storeAssetReward(storageLibData.assetStorageAddress, assetId, reward);
-        LAFStorageLib.storeAssetCreator(storageLibData.assetStorageAddress, assetId, creator);
+        LAFStorageLib.storeAssetReward(storageData.assetStorageAddress, assetId, reward);
+        LAFStorageLib.storeAssetCreator(storageData.assetStorageAddress, assetId, creator);
         
-        LAFStorageLib.storeAssetInitialType(storageLibData.assetStorageAddress, assetId, uint(initialAssetType));
-        LAFStorageLib.storeAssetStatus(storageLibData.assetStorageAddress, assetId, uint(AssetStatus.Posted));
+        LAFStorageLib.storeAssetInitialType(storageData.assetStorageAddress, assetId, uint(initialAssetType));
+        LAFStorageLib.storeAssetStatus(storageData.assetStorageAddress, assetId, uint(AssetStatus.Posted));
         
-        LAFStorageLib.incrementAssetCount(storageLibData.assetStorageAddress);
+        LAFStorageLib.incrementAssetCount(storageData.assetStorageAddress);
         
         emit AssetStored(assetId, isoCountryCode, stateProvince, assetTitle, initialAssetType);
     }
@@ -156,14 +156,14 @@ contract LAFAssetRegistry is LAFRegistryBase
             AssetStatus assetStatus
         )
     {
-        title = LAFStorageLib.getAssetTitle(storageLibData.assetStorageAddress, assetId);
-        isoCountryCode = LAFStorageLib.getAssetIsoCountryCode(storageLibData.assetStorageAddress, assetId);
-        stateProvince = LAFStorageLib.getAssetStateProvince(storageLibData.assetStorageAddress, assetId);
-        city = LAFStorageLib.getAssetCity(storageLibData.assetStorageAddress, assetId);
-        description = LAFStorageLib.getAssetDescription(storageLibData.assetStorageAddress, assetId);
-        reward = LAFStorageLib.getAssetReward(storageLibData.assetStorageAddress, assetId);
-        initialAssetType = InitialAssetType(LAFStorageLib.getAssetInitialType(storageLibData.assetStorageAddress, assetId));
-        assetStatus = AssetStatus(LAFStorageLib.getAssetStatus(storageLibData.assetStorageAddress, assetId));
+        title = LAFStorageLib.getAssetTitle(storageData.assetStorageAddress, assetId);
+        isoCountryCode = LAFStorageLib.getAssetIsoCountryCode(storageData.assetStorageAddress, assetId);
+        stateProvince = LAFStorageLib.getAssetStateProvince(storageData.assetStorageAddress, assetId);
+        city = LAFStorageLib.getAssetCity(storageData.assetStorageAddress, assetId);
+        description = LAFStorageLib.getAssetDescription(storageData.assetStorageAddress, assetId);
+        reward = LAFStorageLib.getAssetReward(storageData.assetStorageAddress, assetId);
+        initialAssetType = InitialAssetType(LAFStorageLib.getAssetInitialType(storageData.assetStorageAddress, assetId));
+        assetStatus = AssetStatus(LAFStorageLib.getAssetStatus(storageData.assetStorageAddress, assetId));
     }
     
     function newLostAsset(
@@ -202,11 +202,11 @@ contract LAFAssetRegistry is LAFRegistryBase
         storageSet
         onlyAssetStatusPosted(assetId)
     {
-        LAFStorageLib.storeAssetStatus(storageLibData.assetStorageAddress, assetId, uint(AssetStatus.PotentialMatch));
-        LAFStorageLib.storeAssetMatcher(storageLibData.assetStorageAddress, assetId, msg.sender);
+        LAFStorageLib.storeAssetStatus(storageData.assetStorageAddress, assetId, uint(AssetStatus.PotentialMatch));
+        LAFStorageLib.storeAssetMatcher(storageData.assetStorageAddress, assetId, msg.sender);
         
-        bytes memory isoCountryCode = LAFStorageLib.getAssetIsoCountryCode(storageLibData.assetStorageAddress, assetId);
-        bytes memory stateProvince = LAFStorageLib.getAssetStateProvince(storageLibData.assetStorageAddress, assetId);
+        bytes memory isoCountryCode = LAFStorageLib.getAssetIsoCountryCode(storageData.assetStorageAddress, assetId);
+        bytes memory stateProvince = LAFStorageLib.getAssetStateProvince(storageData.assetStorageAddress, assetId);
         
         emit PotentialMatch(assetId, isoCountryCode, stateProvince);
     }
@@ -219,8 +219,8 @@ contract LAFAssetRegistry is LAFRegistryBase
         onlyAssetCreator(assetId)
         onlyAssetStatusPotentialMatch(assetId)
     {
-        LAFStorageLib.storeAssetStatus(storageLibData.assetStorageAddress, assetId, uint(AssetStatus.MatchConfirmed));
-        LAFStorageLib.storeAssetExchangeDetails(storageLibData.assetStorageAddress, assetId, exchangeDetails);
+        LAFStorageLib.storeAssetStatus(storageData.assetStorageAddress, assetId, uint(AssetStatus.MatchConfirmed));
+        LAFStorageLib.storeAssetExchangeDetails(storageData.assetStorageAddress, assetId, exchangeDetails);
         
         emit MatchConfirmed(assetId);
     }
@@ -232,8 +232,8 @@ contract LAFAssetRegistry is LAFRegistryBase
         onlyAssetCreator(assetId)
         onlyAssetStatusPotentialMatch(assetId)
     {
-        LAFStorageLib.storeAssetStatus(storageLibData.assetStorageAddress, assetId, uint(AssetStatus.Posted));
-        LAFStorageLib.storeAssetMatcher(storageLibData.assetStorageAddress, assetId, address(0));
+        LAFStorageLib.storeAssetStatus(storageData.assetStorageAddress, assetId, uint(AssetStatus.Posted));
+        LAFStorageLib.storeAssetMatcher(storageData.assetStorageAddress, assetId, address(0));
         
         emit MatchInvalid(assetId);
     }
@@ -245,10 +245,10 @@ contract LAFAssetRegistry is LAFRegistryBase
         onlyAssetCreator(assetId)
         onlyAssetStatusMatchConfirmed(assetId)
     {
-        LAFStorageLib.storeAssetStatus(storageLibData.assetStorageAddress, assetId, uint(AssetStatus.Recovered));
+        LAFStorageLib.storeAssetStatus(storageData.assetStorageAddress, assetId, uint(AssetStatus.Recovered));
         
-        address payable matcher = LAFStorageLib.getAssetMatcher(storageLibData.assetStorageAddress, assetId);
-        uint256 reward = LAFStorageLib.getAssetReward(storageLibData.assetStorageAddress, assetId);
+        address payable matcher = LAFStorageLib.getAssetMatcher(storageData.assetStorageAddress, assetId);
+        uint256 reward = LAFStorageLib.getAssetReward(storageData.assetStorageAddress, assetId);
         matcher.transfer(reward);
         
         emit AssetRecovered(assetId, reward);
@@ -261,9 +261,9 @@ contract LAFAssetRegistry is LAFRegistryBase
         onlyAssetCreator(assetId)
         onlyAssetStatusMatchConfirmed(assetId)
     {
-        LAFStorageLib.storeAssetStatus(storageLibData.assetStorageAddress, assetId, uint(AssetStatus.Posted));
-        LAFStorageLib.storeAssetMatcher(storageLibData.assetStorageAddress, assetId, address(0));
-        LAFStorageLib.storeAssetExchangeDetails(storageLibData.assetStorageAddress, assetId, "");
+        LAFStorageLib.storeAssetStatus(storageData.assetStorageAddress, assetId, uint(AssetStatus.Posted));
+        LAFStorageLib.storeAssetMatcher(storageData.assetStorageAddress, assetId, address(0));
+        LAFStorageLib.storeAssetExchangeDetails(storageData.assetStorageAddress, assetId, "");
         
         emit RecoveryFailed(assetId);
     }
@@ -275,12 +275,12 @@ contract LAFAssetRegistry is LAFRegistryBase
         onlyContractOwnerOrAssetCreator(assetId)
         onlyAssetStatusNotCancelledOrRecovered(assetId)
     {
-        LAFStorageLib.storeAssetStatus(storageLibData.assetStorageAddress, assetId, uint(AssetStatus.Cancelled));
+        LAFStorageLib.storeAssetStatus(storageData.assetStorageAddress, assetId, uint(AssetStatus.Cancelled));
         
         // send reward back to creator
         // TODO add checks
-        address payable creator = LAFStorageLib.getAssetCreator(storageLibData.assetStorageAddress, assetId);
-        creator.transfer(LAFStorageLib.getAssetReward(storageLibData.assetStorageAddress, assetId));
+        address payable creator = LAFStorageLib.getAssetCreator(storageData.assetStorageAddress, assetId);
+        creator.transfer(LAFStorageLib.getAssetReward(storageData.assetStorageAddress, assetId));
         
         emit AssetCancelled(assetId);
     }

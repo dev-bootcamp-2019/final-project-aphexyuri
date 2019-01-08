@@ -6,7 +6,7 @@ library LAFStorageLib
 {
     struct Counter { uint i; }
 
-    struct LibStorage
+    struct Data
     {
         address assetStorageAddress;
     }
