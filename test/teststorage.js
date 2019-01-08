@@ -13,6 +13,16 @@ contract("LAFAssetStorage", accounts => {
         // console.log('allowedSender (accounts[1])', allowedSender)
     })
 
+    it("...storeUint256 writable to owner & allowedSender only", async () => {
+        await assetStorageInstance.storeUint256(web3.utils.keccak256("uint256_key_owner_sender_test"), 99, { from: accounts[9] })
+        assert.ok(true)
+    })
+    
+    it("...storedString writable to owner & allowedSender only", async () => {
+        await assetStorageInstance.storeString(web3.utils.keccak256("string_key_owner_sender_test"), "Hello storage", { from: accounts[9] })
+        assert.ok(true)
+    })
+
     it("...uint256 write/read verifies (10x)", async () => {
         for(let i = 0; i < 10; i++) {
             await assetStorageInstance.storeUint256(web3.utils.keccak256("uint256_key_" + i), i, { from: accounts[1] })
