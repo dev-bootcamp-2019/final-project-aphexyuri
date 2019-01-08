@@ -14,13 +14,16 @@ contract LAFAssetStorage is Ownable
     mapping(bytes32 => bool) public boolStorage;
     mapping(bytes32 => int256) public intStorage;
     
-    modifier onlyAllowedSender()
+    modifier onlyAllowedSenderOrOwner()
     {
         require(allowedSender != address(0));
-        require(msg.sender == allowedSender);
+        require(msg.sender == allowedSender || msg.sender == owner());
         _;
     }
-    
+
+    // =======================================================
+    // ADMIN
+    // =======================================================
     function setAllowedSender(address newAllowedSender)
         public
         onlyOwner
@@ -33,42 +36,42 @@ contract LAFAssetStorage is Ownable
     // =======================================================
     function storeUint256(bytes32 key, uint256 value)
         public
-        onlyAllowedSender
+        onlyAllowedSenderOrOwner
     {
         uintStorage[key] = value;
     }
 
     function storeString(bytes32 key, string memory value)
         public
-        onlyAllowedSender
+        onlyAllowedSenderOrOwner
     {
         stringStorage[key] = value;
     }
 
     function storeAddress(bytes32 key, address payable value)
         public
-        onlyAllowedSender
+        onlyAllowedSenderOrOwner
     {
         addressStorage[key] = value;
     }
 
     function storeBytes(bytes32 key, bytes memory value)
         public
-        onlyAllowedSender
+        onlyAllowedSenderOrOwner
     {
         bytesStorage[key] = value;
     }
 
     function storeBool(bytes32 key, bool value)
         public
-        onlyAllowedSender
+        onlyAllowedSenderOrOwner
     {
         boolStorage[key] = value;
     }
 
     function storeInt256(bytes32 key, int value)
         public
-        onlyAllowedSender
+        onlyAllowedSenderOrOwner
     {
         intStorage[key] = value;
     }
