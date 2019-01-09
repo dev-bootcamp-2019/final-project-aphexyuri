@@ -1,4 +1,5 @@
 const truffleAssert = require('truffle-assertions')
+
 const LAFAssetStorage = artifacts.require('./LAFAssetStorage.sol')
 
 contract('LAFAssetStorage', accounts => {

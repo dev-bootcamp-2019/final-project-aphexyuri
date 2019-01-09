@@ -63,6 +63,12 @@ contract LAFAssetRegistry is LAFRegistryBase
         require(msg.sender == LAFStorageLib.getAssetCreator(storageData.assetStorageAddress, assetId));
         _;
     }
+
+    modifier onlyAssetMatcher(uint256 assetId)
+    {
+        require(msg.sender == LAFStorageLib.getAssetMatcher(storageData.assetStorageAddress, assetId));
+        _;
+    }
     
     modifier onlyAssetStatusPosted(uint256 assetId)
     {
@@ -87,6 +93,13 @@ contract LAFAssetRegistry is LAFRegistryBase
         AssetStatus status = AssetStatus(LAFStorageLib.getAssetStatus(storageData.assetStorageAddress, assetId));
         require(status != AssetStatus.Cancelled);
         require(status != AssetStatus.Recovered);
+        _;
+    }
+
+    modifier onlyAssetRecovered(uint256 assetId)
+    {
+        AssetStatus status = AssetStatus(LAFStorageLib.getAssetStatus(storageData.assetStorageAddress, assetId));
+        require(status == AssetStatus.Recovered);
         _;
     }
     
@@ -153,6 +166,7 @@ contract LAFAssetRegistry is LAFRegistryBase
             string memory description,
             uint256 reward,
             address creator,
+            address matcher,
             InitialAssetType initialAssetType,
             AssetStatus assetStatus
         )
@@ -164,6 +178,7 @@ contract LAFAssetRegistry is LAFRegistryBase
         description = LAFStorageLib.getAssetDescription(storageData.assetStorageAddress, assetId);
         reward = LAFStorageLib.getAssetReward(storageData.assetStorageAddress, assetId);
         creator = LAFStorageLib.getAssetCreator(storageData.assetStorageAddress, assetId);
+        matcher = LAFStorageLib.getAssetMatcher(storageData.assetStorageAddress, assetId);
         initialAssetType = InitialAssetType(LAFStorageLib.getAssetInitialType(storageData.assetStorageAddress, assetId));
         assetStatus = AssetStatus(LAFStorageLib.getAssetStatus(storageData.assetStorageAddress, assetId));
     }
@@ -285,5 +300,15 @@ contract LAFAssetRegistry is LAFRegistryBase
         creator.transfer(reward); // TODO shoud we check for sufficient funde in contract? if so, why?
         
         emit AssetCancelled(assetId);
+    }
+
+    function withDrawReward(uint256 assetId)
+        public
+        registryEnabled
+        storageSet
+        onlyAssetMatcher(assetId)
+        onlyAssetRecovered(assetId)
+    {
+        // TODO withdrawl
     }
 }

@@ -27,6 +27,11 @@ contract("LAFAssetRegistry", accounts => {
         // console.log('assetRegistryInstance.address', assetRegistryInstance.address)
         // console.log('assetStorageInstance.address', assetStorageInstance.address)
     })
+
+    it('...owner is accounts[0]', async () => {
+        let owner = await assetRegistryInstance.owner()
+        assert.equal(owner, accounts[0])
+    })
     
     it("...set allowed sender in storage addresses & verify", async () => {
         await assetStorageInstance.setAllowedSender(assetRegistryInstance.address, { from: accounts[0] })
@@ -45,12 +50,14 @@ contract("LAFAssetRegistry", accounts => {
         assert.ok(assetRegistryInstance._registryEnabled())
     })
 
-    it("...add asset, retrieve & verify fields", async () => {
+    it("...add asset, retrieve + verify fields, check stakeholder balances", async () => {
         let titleStr = "Asset Title Placeholder"
         let descriptionStr = "This is some rando placeholder content added during testing"
         let countryIso = "CAN"
         let stateProvince = "NS"
         let city = "Halifax"
+
+        let contractBalanceBefore = parseFloat(web3.utils.fromWei(await web3.eth.getBalance(assetRegistryInstance.address), 'ether'))
 
         // let { logs } = await addAssetHelper(assetRegistryInstance, titleStr, descriptionStr, countryIso, stateProvince, city, accounts[0])
 
@@ -74,14 +81,19 @@ contract("LAFAssetRegistry", accounts => {
         
         assert.equal(assetId, 0)
         assert.equal(retrievedAsset.title, titleStr)
-        assert.equal(retrievedAsset.description, descriptionStr)
+        // assert.equal(retrievedAsset.description, descriptionStr)
         assert.equal(web3.utils.hexToAscii(retrievedAsset.isoCountryCode), countryIso)
         assert.equal(web3.utils.hexToAscii(retrievedAsset.stateProvince), stateProvince)
         assert.equal(web3.utils.hexToAscii(retrievedAsset.city), city)
         assert.equal(web3.utils.fromWei(retrievedAsset.reward, 'ether'), 1.2345)
+
+        // check contract balance
+        let rewardEth = parseFloat(web3.utils.fromWei(retrievedAsset.reward))
+        let contractBalanceAfter = parseFloat(web3.utils.fromWei(await web3.eth.getBalance(assetRegistryInstance.address), 'ether'))
+        assert.equal(contractBalanceAfter, rewardEth + contractBalanceBefore)
     })
 
-    it("...calling matchConfirmed on item with status AssetStatus.Posted item fails", async () => {
+    it("...calling matchConfirmed on asset with status AssetStatus.Posted fails", async () => {
         await truffleAssert.fails(
             assetRegistryInstance.matchConfirmed(0, "Starbuck on corner of 43rd and 6th. April 1, 2019", { from: accounts[9] }),
             truffleAssert.ErrorType.REVERT
@@ -89,7 +101,7 @@ contract("LAFAssetRegistry", accounts => {
     })
 
     it("...calling matchConfirmed as non-asset creator fails", async () => {
-        // first call potentialMatch on item to get it to AssetStatus.PotentialMatch status
+        // first call potentialMatch on asset to get it to AssetStatus.PotentialMatch status
         await assetRegistryInstance.potentialMatch(0, { from: accounts[2]} )
 
         await truffleAssert.fails(
@@ -100,10 +112,38 @@ contract("LAFAssetRegistry", accounts => {
 
     it("...calling matchConfirmed as asset creator succeeds", async () => {
         let retrievedAsset = await assetRegistryInstance.getAsset(0);
+        // console.log('retrievedAsset', retrievedAsset)
+
         await assetRegistryInstance.matchConfirmed(0, "Starbuck on corner on Noth and South April 1, 2019", { from: retrievedAsset.creator })
         assert.ok(true)
     })
+
+    it("...calling assetRecovered as non-asset creator fails", async () => {
+        await truffleAssert.fails(
+            assetRegistryInstance.assetRecovered(0, { from: accounts[9] }),
+            truffleAssert.ErrorType.REVERT
+        )
+    })
+
+    it("...calling assetRecovered as asset creator succeeds", async () => {
+        let retrievedAsset = await assetRegistryInstance.getAsset(0);
+        await assetRegistryInstance.assetRecovered(0, { from: retrievedAsset.creator })
+        assert.ok(true)
+    })
+
+    it("...calling withdrawReward as non-matcher fails", async () => {
+        // TODO implment contract code and test
+    })
+
+    it("...calling withdrawReward as matcher succeeds", async () => {
+        // TODO implment contract code and test
+    })
     
+
+    // TODO matchInvalid flow
+    // TODO recoveryFailed flow
+    // TODO cancelled flow
+    // TODO assert blances for contract/creator/matcher
 
     // TODO do bulk add, then verify count as well as no duplicates asset IDs etc (will likely require new depolyment?)
     // it("...bulk asset add - verify assetIds", async () => {
@@ -122,4 +162,6 @@ contract("LAFAssetRegistry", accounts => {
     //         // addAssetHelperNoAwait(assetRegistryInstance, 'Title_' + j, 'Description_' + j, 'CAD', 'ON', 'City_' + j, accounts[0])
     //     }
     // })
+
+    //TODO - lots more testing for asset flow and permissions along the way
 })
