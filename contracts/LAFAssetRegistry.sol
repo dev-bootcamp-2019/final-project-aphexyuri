@@ -103,7 +103,7 @@ contract LAFAssetRegistry is LAFRegistryBase
     }
     
     // =======================================================
-    // INTERNAL
+    // INTERNAL / PRIVATE
     // =======================================================
     function newAsset(
         InitialAssetType initialAssetType,
@@ -152,6 +152,7 @@ contract LAFAssetRegistry is LAFRegistryBase
             bytes memory city,
             string memory description,
             uint256 reward,
+            address creator,
             InitialAssetType initialAssetType,
             AssetStatus assetStatus
         )
@@ -162,6 +163,7 @@ contract LAFAssetRegistry is LAFRegistryBase
         city = LAFStorageLib.getAssetCity(storageData.assetStorageAddress, assetId);
         description = LAFStorageLib.getAssetDescription(storageData.assetStorageAddress, assetId);
         reward = LAFStorageLib.getAssetReward(storageData.assetStorageAddress, assetId);
+        creator = LAFStorageLib.getAssetCreator(storageData.assetStorageAddress, assetId);
         initialAssetType = InitialAssetType(LAFStorageLib.getAssetInitialType(storageData.assetStorageAddress, assetId));
         assetStatus = AssetStatus(LAFStorageLib.getAssetStatus(storageData.assetStorageAddress, assetId));
     }
@@ -278,9 +280,9 @@ contract LAFAssetRegistry is LAFRegistryBase
         LAFStorageLib.storeAssetStatus(storageData.assetStorageAddress, assetId, uint(AssetStatus.Cancelled));
         
         // send reward back to creator
-        // TODO add checks
         address payable creator = LAFStorageLib.getAssetCreator(storageData.assetStorageAddress, assetId);
-        creator.transfer(LAFStorageLib.getAssetReward(storageData.assetStorageAddress, assetId));
+        uint256 reward = LAFStorageLib.getAssetReward(storageData.assetStorageAddress, assetId);
+        creator.transfer(reward); // TODO shoud we check for sufficient funde in contract? if so, why?
         
         emit AssetCancelled(assetId);
     }
