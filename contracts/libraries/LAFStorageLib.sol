@@ -9,6 +9,7 @@ library LAFStorageLib
     struct Data
     {
         address assetStorageAddress;
+        address payable rewardsBankAddress;
     }
 
     // =======================================================
@@ -28,7 +29,7 @@ library LAFStorageLib
     string constant KEY_EXCHANGE_DEAILS = "exchangeDetails";
 
     // =======================================================
-    // STORAGE MODIFIERS
+    // STORAGE MUTATORS
     // =======================================================
     // ----- generic -----
     function storeUint256(address assetStorageAddress, uint256 assetId, string memory key, uint256 value)
@@ -65,6 +66,18 @@ library LAFStorageLib
         private
     {
         LAFAssetStorage(assetStorageAddress).storeInt256(keccak256(abi.encodePacked(assetId, key)), value);
+    }
+
+    function storeAddressUint256Mapping(address assetStorageAddress, string memory key, address addressValue, uint256 uint256Value)
+        private
+    {
+        LAFAssetStorage(assetStorageAddress).storeAddressUint256Mapping(keccak256(abi.encode(key)), addressValue, uint256Value);
+    }
+
+    function storeAddressUint256ArrayMapping(address assetStorageAddress, string memory key, address addressValue, uint256[] memory uint256ArrayValue)
+        private
+    {
+        LAFAssetStorage(assetStorageAddress).storeAddressUint256ArrayMapping(keccak256(abi.encode(key)), addressValue, uint256ArrayValue);
     }
     
     // ----- specific -----

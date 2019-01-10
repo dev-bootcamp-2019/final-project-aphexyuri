@@ -6,13 +6,18 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 contract LAFAssetStorage is Ownable
 {
     address public allowedSender;
-    
+
+    // basic types    
     mapping(bytes32 => uint256) public uintStorage;
     mapping(bytes32 => string) public stringStorage;
     mapping(bytes32 => address payable) public addressStorage;
     mapping(bytes32 => bytes) public bytesStorage;
     mapping(bytes32 => bool) public boolStorage;
     mapping(bytes32 => int256) public intStorage;
+
+    // complex types
+    mapping(bytes32 => mapping(address => uint256)) public addressUint256MappingStore;
+    mapping(bytes32 => mapping(address => uint256[])) public addressUint256ArrayStore;
     
     modifier onlyAllowedSenderOrOwner()
     {
@@ -29,6 +34,14 @@ contract LAFAssetStorage is Ownable
         onlyOwner
     {
         allowedSender = newAllowedSender;
+    }
+
+    function addressToBytes32(address addressToConvert)
+        public
+        pure
+        returns(bytes32)
+    {
+        return bytes32(uint256(addressToConvert) << 96);
     }
     
     // =======================================================
@@ -74,5 +87,19 @@ contract LAFAssetStorage is Ownable
         onlyAllowedSenderOrOwner
     {
         intStorage[key] = value;
+    }
+
+    function storeAddressUint256Mapping(bytes32 key, address addressValue, uint256 uint256Value)
+        public
+        onlyAllowedSenderOrOwner
+    {
+        addressUint256MappingStore[key][addressValue] = uint256Value;
+    }
+
+    function storeAddressUint256ArrayMapping(bytes32 key, address addressValue, uint256[] memory uint256ArrayValue)
+        public
+        onlyAllowedSenderOrOwner
+    {
+        addressUint256ArrayStore[key][addressValue] = uint256ArrayValue;
     }
 }
