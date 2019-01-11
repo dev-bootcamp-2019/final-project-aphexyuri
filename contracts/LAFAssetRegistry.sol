@@ -114,14 +114,14 @@ contract LAFAssetRegistry is LAFRegistryBase
     /// @param isoCountryCode Title of asset
     /// @param stateProvince State/Province of asset
     /// @param city City of asset
-    /// @param description Description of asset
+    // @param description Description of asset
     function newAsset(
         InitialAssetType initialAssetType,
         string memory assetTitle,
         bytes memory isoCountryCode,
         bytes memory stateProvince,
-        bytes memory city,
-        string memory description
+        bytes memory city
+        // string memory description
     )
         private
         whenNotPaused
@@ -132,7 +132,7 @@ contract LAFAssetRegistry is LAFRegistryBase
         LAFStorageLib.incrementAssetCount(getAssetStorageAddress());
         
         LAFStorageLib.storeAssetTitle(getAssetStorageAddress(), assetId, assetTitle);
-        LAFStorageLib.storeAssetDescription(getAssetStorageAddress(), assetId, description);
+        // LAFStorageLib.storeAssetDescription(getAssetStorageAddress(), assetId, description);
         
         LAFStorageLib.storeAssetIsoCountryCode(getAssetStorageAddress(), assetId, isoCountryCode);
         LAFStorageLib.storeAssetStateProvince(getAssetStorageAddress(), assetId, stateProvince);
@@ -188,7 +188,7 @@ contract LAFAssetRegistry is LAFRegistryBase
     
     function newLostAsset(
         string memory assetTitle,
-        string memory description,
+        // string memory description,
         bytes memory isoCountryCode,
         bytes memory stateProvince,
         bytes memory city   
@@ -198,12 +198,13 @@ contract LAFAssetRegistry is LAFRegistryBase
         whenNotPaused
         storageSet
     {
-        newAsset(InitialAssetType.Lost, assetTitle, isoCountryCode, stateProvince, city, description);
+        // newAsset(InitialAssetType.Lost, assetTitle, isoCountryCode, stateProvince, city, description);
+        newAsset(InitialAssetType.Lost, assetTitle, isoCountryCode, stateProvince, city);
     }
     
     function newFoundAsset(
         string memory assetTitle,
-        string memory description,
+        // string memory description,
         bytes memory isoCountryCode,
         bytes memory stateProvince,
         bytes memory city
@@ -213,7 +214,8 @@ contract LAFAssetRegistry is LAFRegistryBase
         whenNotPaused
         storageSet
     {
-        newAsset(InitialAssetType.Found, assetTitle, isoCountryCode, stateProvince, city, description);
+        // newAsset(InitialAssetType.Found, assetTitle, isoCountryCode, stateProvince, city, description);
+        newAsset(InitialAssetType.Found, assetTitle, isoCountryCode, stateProvince, city);
     }
     
     function potentialMatch(uint256 assetId)
@@ -240,8 +242,12 @@ contract LAFAssetRegistry is LAFRegistryBase
         onlyAssetStatusPotentialMatch(assetId)
     {
         LAFStorageLib.storeAssetStatus(getAssetStorageAddress(), assetId, uint(AssetStatus.MatchConfirmed));
-        LAFStorageLib.storeAssetExchangeDetails(getAssetStorageAddress(), assetId, exchangeDetails);
-        
+
+        if(bytes(exchangeDetails).length > 0)
+        {
+            LAFStorageLib.storeAssetExchangeDetails(getAssetStorageAddress(), assetId, exchangeDetails);
+        }
+
         emit MatchConfirmed(assetId);
     }
     
@@ -305,7 +311,7 @@ contract LAFAssetRegistry is LAFRegistryBase
         uint256 rewardAmount = LAFStorageLib.getAssetReward(getAssetStorageAddress(), assetId);
         uint256 rewardsBalance = LAFStorageLib.getClaimableReward(getAssetStorageAddress(), creator);
         rewardsBalance = rewardsBalance.sub(rewardAmount);
-        
+
         LAFStorageLib.storeClaimableReward(getAssetStorageAddress(), creator, rewardsBalance);
         
         emit AssetCancelled(assetId);

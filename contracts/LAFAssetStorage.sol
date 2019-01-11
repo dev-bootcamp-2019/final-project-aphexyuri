@@ -5,7 +5,7 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 contract LAFAssetStorage is Ownable
 {
-    address public allowedSender;
+    mapping (address => bool) allowedSenders;
 
     // basic types    
     mapping(bytes32 => uint256) public uintStorage;
@@ -21,19 +21,27 @@ contract LAFAssetStorage is Ownable
     
     modifier onlyAllowedSenderOrOwner()
     {
-        require(allowedSender != address(0));
-        require(msg.sender == allowedSender || msg.sender == owner());
+        require(allowedSenders[msg.sender] || msg.sender == owner());
         _;
     }
 
     // =======================================================
     // ADMIN
     // =======================================================
-    function setAllowedSender(address newAllowedSender)
+    function addAllowedSender(address newSender)
         public
         onlyOwner
     {
-        allowedSender = newAllowedSender;
+        require(newSender != address(0));
+        allowedSenders[newSender] = true;
+    }
+
+    function removeAllowedSender(address oldSender)
+        public
+        onlyOwner
+    {
+        require(oldSender != address(0));
+        allowedSenders[oldSender] = false;
     }
 
     function addressToBytes32(address addressToConvert)
@@ -76,6 +84,7 @@ contract LAFAssetStorage is Ownable
         public
         onlyAllowedSenderOrOwner
     {
+        require(value != address(0));
         addressStorage[key] = value;
     }
 
