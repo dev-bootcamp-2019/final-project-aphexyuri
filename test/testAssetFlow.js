@@ -4,6 +4,7 @@ const LAFAssetStorage = artifacts.require("./LAFAssetStorage.sol")
 contract("LAFAssetRegistry (Asset Flows)", accounts => {
     var assetRegistryInstance
     var assetStorageInstance
+    var assetId
 
     beforeEach(async function () {
         // 1st time system setup...
@@ -20,9 +21,8 @@ contract("LAFAssetRegistry (Asset Flows)", accounts => {
 
         // 4. enable registry
         await assetRegistryInstance.unpause()
-    })
 
-    it('...create -> potentialMatch -> matchConfirmed -> assetRecovered', async () => {
+        // 5. create asset
         let titleStr = "Asset Title Placeholder"
         let descriptionStr = "This is some rando placeholder content added during testing"
         let countryIso = "CAN"
@@ -31,7 +31,7 @@ contract("LAFAssetRegistry (Asset Flows)", accounts => {
 
         let rewardStr = web3.utils.toWei("1.2345", 'ether').toString()
 
-        // create new asset
+        // call newLostAsset
         let { logs } =  await assetRegistryInstance.newLostAsset(
             titleStr,
             // descriptionStr,
@@ -41,9 +41,12 @@ contract("LAFAssetRegistry (Asset Flows)", accounts => {
             { from: accounts[1], value: rewardStr }
         )
         
-        let { assetId } = logs.find(x => x.event === 'AssetStored').args;
+        // let { assetId}
+        assetId = logs.find(x => x.event === 'AssetStored').args.assetId;
         console.log(assetId.toString())
+    })
 
+    it('...newLostAsset -> potentialMatch -> matchConfirmed -> assetRecovered', async () => {
         // call potentialMatch
         await assetRegistryInstance.potentialMatch(assetId, { from: accounts[2] })
         
@@ -52,5 +55,45 @@ contract("LAFAssetRegistry (Asset Flows)", accounts => {
 
         // call assetRecovered
         await assetRegistryInstance.assetRecovered(assetId, { from: accounts[1] })
+
+        // TODO assert balances
+        // TODO assert states
+        // TODO assert data
+    })
+
+    it('...newLostAsset -> potentialMatch -> matchConfirmed -> assetRecoveryFailed', async () => {
+        // call potentialMatch
+        await assetRegistryInstance.potentialMatch(assetId, { from: accounts[2] })
+       
+        // call matchConfirmed
+        await assetRegistryInstance.matchConfirmed(assetId, "", { from: accounts[1] })
+
+        // call assetRecovered
+        await assetRegistryInstance.assetRecoveryFailed(assetId, { from: accounts[1] })
+
+        // TODO assert balances
+        // TODO assert states
+        // TODO assert data
+   })
+
+    it('...newLostAsset -> potentialMatch -> matchInvalid', async () => {
+        // call potentialMatch
+        await assetRegistryInstance.potentialMatch(assetId, { from: accounts[2] })
+
+         // call matchInvalid
+         await assetRegistryInstance.matchInvalid(assetId, { from: accounts[1] })
+
+        // TODO assert balances
+        // TODO assert states
+        // TODO assert data
+    })
+
+    it('...newLostAsset -> cancelAsset', async () => {
+        // call matchInvalid
+        await assetRegistryInstance.cancelAsset(assetId, { from: accounts[1] })
+
+        // TODO assert balances
+        // TODO assert states
+        // TODO assert data
     })
 })
