@@ -204,6 +204,14 @@ contract LAFAssetRegistry is LAFRegistryBase
         initialAssetType = InitialAssetType(LAFStorageLib.getAssetInitialType(getAssetStorageAddress(), assetId));
         assetStatus = AssetStatus(LAFStorageLib.getAssetStatus(getAssetStorageAddress(), assetId));
     }
+
+    function getClaimableRewards()
+        public
+        view
+        returns(uint)
+    {
+        return LAFStorageLib.getClaimableReward(getAssetStorageAddress(), msg.sender);
+    }
     
     function newLostAsset(
         string memory assetTitle,
@@ -325,7 +333,7 @@ contract LAFAssetRegistry is LAFRegistryBase
         emit AssetCancelled(assetId);
     }
 
-    function withDrawRewards()
+    function withdrawRewards()
         public
         whenNotPaused
         storageSet
