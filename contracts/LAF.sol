@@ -4,24 +4,23 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 // import "./Ownable.sol"; // remix import
 
 // TODO
-// - IPFS hashes
+// - ability to modify item
+// - IPFS hashes (new & found items)
 // - improved tests
-// - system fees ???
-// - separate storage layer ???
 // - separate rewards to dedicated wallet ???
 // - fallback function
 // - method decorations
 
 contract LAF is Ownable
 {
+    // main service circuitbreaker
+    bool private _serviceEnabled = false;
+
     // counter for items, also id of items;
     uint256 public itemCount = 0;
 
     // main storage for items
     mapping (uint256 => LAFItem) public items;
-
-    // main service circuitbreaker
-    bool private _serviceEnabled = false;
 
     // storage for easy retrieval of items a user interacts with
     mapping (address => uint[]) private _userItems;
