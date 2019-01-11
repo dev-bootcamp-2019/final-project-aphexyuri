@@ -121,18 +121,6 @@ contract LAFAssetRegistry is LAFRegistryBase
     }
     
     // =======================================================
-    // ADMIN
-    // =======================================================
-    // function transferFunds(address payable newRegistryAddress)
-    //     public
-    //     onlyOwner
-    // {
-    //     // TODO make this better
-    //     // send contract ETH to new registry
-    //     newRegistryAddress.transfer(address(this).balance);
-    // }
-    
-    // =======================================================
     // INTERNAL / PRIVATE API
     // =======================================================
     /// @notice Internal method for creating a new asset

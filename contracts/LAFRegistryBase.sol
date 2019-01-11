@@ -24,17 +24,6 @@ contract LAFRegistryBase is Ownable, Pausable
     }
 
     // =======================================================
-    // PUBLIC API
-    // =======================================================
-    function getAssetStorageAddress()
-        public
-        view
-        returns(address)
-    {
-        return storageData.assetStorageAddress;
-    }
-    
-    // =======================================================
     // ADMIN
     // =======================================================
     function setAssetStorageAddress(address newStorageAddress)
@@ -43,5 +32,31 @@ contract LAFRegistryBase is Ownable, Pausable
     {
         // set the address of asset storage contract
         storageData.assetStorageAddress = newStorageAddress;
+    }
+
+    /// @notice Mothod for 'upgrading' to a new registry
+    /// @dev Will updated storage and transfer funds to new registry - use with caution. Old registry must be paused first
+    /// @param newRegistryAddress Address of new deployed registry contract
+    function updateRegistry(address payable newRegistryAddress)
+        public
+        onlyOwner
+        whenPaused
+    {
+        // set the new storage address
+        setAssetStorageAddress(msg.sender);
+
+        // transfer funds to new regsitry instance
+        address(this).transfer(address(this).balance);
+    }
+
+    // =======================================================
+    // PUBLIC API
+    // =======================================================
+    function getAssetStorageAddress()
+        public
+        view
+        returns(address)
+    {
+        return storageData.assetStorageAddress;
     }
 }
