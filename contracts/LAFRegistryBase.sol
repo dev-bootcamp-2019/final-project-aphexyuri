@@ -6,10 +6,14 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
 // import "./Pausable.sol"; // remix import
 
+import "openzeppelin-solidity/contracts/math/SafeMath.sol";
+// import "./SafeMath.sol"; // remix import
+
 import "./libraries/LAFStorageLib.sol";
 
 contract LAFRegistryBase is Ownable, Pausable
 {
+    using SafeMath for uint;
     using LAFStorageLib for LAFStorageLib.Data;
 
     LAFStorageLib.Data storageData;
@@ -21,6 +25,16 @@ contract LAFRegistryBase is Ownable, Pausable
     {
         require(storageData.assetStorageAddress != address(0));
         _;
+    }
+
+    // =======================================================
+    // CONSTRUCTOR
+    // =======================================================
+    constructor()
+        public
+    {
+        // start in paused state
+        pause();
     }
 
     // =======================================================
@@ -46,7 +60,7 @@ contract LAFRegistryBase is Ownable, Pausable
         setAssetStorageAddress(msg.sender);
 
         // transfer funds to new regsitry instance
-        address(this).transfer(address(this).balance);
+        newRegistryAddress.transfer(address(this).balance);
     }
 
     // =======================================================

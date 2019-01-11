@@ -1,9 +1,6 @@
 pragma solidity ^0.5.0;
 // pragma experimental ABIEncoderV2; //possible use: returning structs (indexed event params problem)
 
-import "openzeppelin-solidity/contracts/math/SafeMath.sol";
-// import "./SafeMath.sol"; // remix import
-
 import "./LAFRegistryBase.sol";
 import "./LAFAssetStorage.sol";
 
@@ -20,8 +17,6 @@ import "./LAFAssetStorage.sol";
 
 contract LAFAssetRegistry is LAFRegistryBase
 {
-    using SafeMath for uint;
-
     // =======================================================
     // EVENTS
     // =======================================================
@@ -39,7 +34,7 @@ contract LAFAssetRegistry is LAFRegistryBase
     event RecoveryFailed(uint256 assetId);
     
     // =======================================================
-    // STRCUTS
+    // STRUCTS
     // =======================================================
     enum InitialAssetType
     {
@@ -108,16 +103,6 @@ contract LAFAssetRegistry is LAFRegistryBase
         AssetStatus status = AssetStatus(LAFStorageLib.getAssetStatus(getAssetStorageAddress(), assetId));
         require(status == AssetStatus.Recovered);
         _;
-    }
-
-    // =======================================================
-    // CONSTRUCTOR
-    // =======================================================
-    constructor()
-        public
-    {
-        // start in paused state
-        pause();
     }
     
     // =======================================================
@@ -283,11 +268,13 @@ contract LAFAssetRegistry is LAFRegistryBase
         LAFStorageLib.storeAssetStatus(getAssetStorageAddress(), assetId, uint(AssetStatus.Recovered));
         
         address payable matcher = LAFStorageLib.getAssetMatcher(getAssetStorageAddress(), assetId);
-        uint256 rewardAmount = LAFStorageLib.getAssetReward(getAssetStorageAddress(), assetId);
+        uint256 assetRewardAmount = LAFStorageLib.getAssetReward(getAssetStorageAddress(), assetId);
+        uint256 matcherRewards = LAFStorageLib.getClaimableReward(getAssetStorageAddress(), matcher);
+        matcherRewards = matcherRewards.add(assetRewardAmount);
 
-        LAFStorageLib.storeClaimableReward(getAssetStorageAddress(), matcher, rewardAmount);
+        LAFStorageLib.storeClaimableReward(getAssetStorageAddress(), matcher, matcherRewards);
         
-        emit AssetRecovered(assetId, rewardAmount);
+        emit AssetRecovered(assetId, assetRewardAmount);
     }
     
     function assetRecoveryFailed(uint256 assetId)
@@ -315,8 +302,11 @@ contract LAFAssetRegistry is LAFRegistryBase
         
         // send reward back to creator
         address payable creator = LAFStorageLib.getAssetCreator(getAssetStorageAddress(), assetId);
-        uint256 reward = LAFStorageLib.getAssetReward(getAssetStorageAddress(), assetId);
-        // creator.transfer(reward); // TODO shoud we check for sufficient funde in contract? if so, why?
+        uint256 rewardAmount = LAFStorageLib.getAssetReward(getAssetStorageAddress(), assetId);
+        uint256 rewardsBalance = LAFStorageLib.getClaimableReward(getAssetStorageAddress(), creator);
+        rewardsBalance = rewardsBalance.sub(rewardAmount);
+        
+        LAFStorageLib.storeClaimableReward(getAssetStorageAddress(), creator, rewardsBalance);
         
         emit AssetCancelled(assetId);
     }
