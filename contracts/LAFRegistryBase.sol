@@ -13,9 +13,6 @@ contract LAFRegistryBase is Ownable, Pausable
     using LAFStorageLib for LAFStorageLib.Data;
 
     LAFStorageLib.Data storageData;
-    
-    event RegistryEnabled(address);
-    event RegistryDisabled(address);
 
     // =======================================================
     // MODIFIERS
@@ -36,14 +33,6 @@ contract LAFRegistryBase is Ownable, Pausable
     {
         return storageData.assetStorageAddress;
     }
-
-    function getRewardsBankAddress()
-        public
-        view
-        returns (address payable)
-    {
-        return storageData.rewardsBankAddress;
-    }
     
     // =======================================================
     // ADMIN
@@ -54,12 +43,5 @@ contract LAFRegistryBase is Ownable, Pausable
     {
         // set the address of asset storage contract
         storageData.assetStorageAddress = newStorageAddress;
-    }
-
-    function setRewardsBankAddress(address payable newRewardsBankAddress)
-        public
-        onlyOwner
-    {
-        storageData.rewardsBankAddress = newRewardsBankAddress;
     }
 }
