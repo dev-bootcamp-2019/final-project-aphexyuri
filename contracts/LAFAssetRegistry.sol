@@ -304,16 +304,20 @@ contract LAFAssetRegistry is LAFRegistryBase
         onlyContractOwnerOrAssetCreator(assetId)
         onlyAssetStatusNotCancelledOrRecovered(assetId)
     {
+        // change asset status to cancelled
         LAFStorageLib.storeAssetStatus(getAssetStorageAddress(), assetId, uint(AssetStatus.Cancelled));
         
-        // send reward back to creator
+        // get asset creator and asset reward amount
         address payable creator = LAFStorageLib.getAssetCreator(getAssetStorageAddress(), assetId);
         uint256 rewardAmount = LAFStorageLib.getAssetReward(getAssetStorageAddress(), assetId);
-        uint256 rewardsBalance = LAFStorageLib.getClaimableReward(getAssetStorageAddress(), creator);
-        rewardsBalance = rewardsBalance.sub(rewardAmount);
 
-        LAFStorageLib.storeClaimableReward(getAssetStorageAddress(), creator, rewardsBalance);
-        
+        // // creator's current claimable rewards
+        // uint256 creatorClaimableRewards = LAFStorageLib.getClaimableReward(getAssetStorageAddress(), creator);
+        // creatorClaimableRewards = creatorClaimableRewards.add(rewardAmount);
+        // LAFStorageLib.storeClaimableReward(getAssetStorageAddress(), creator, creatorClaimableRewards);
+
+        creator.transfer(rewardAmount);
+
         emit AssetCancelled(assetId);
     }
 

@@ -1,23 +1,37 @@
 const LAFAssetRegistry = artifacts.require("./LAFAssetRegistry.sol")
 const LAFAssetStorage = artifacts.require("./LAFAssetStorage.sol")
 
+getAddressEtherBalanceFloat = async (address) => {
+    return parseFloat(web3.utils.fromWei(await web3.eth.getBalance(address), 'ether'))
+}
+
 contract("LAFAssetRegistry (Asset Flows)", accounts => {
+    var contractsOwner = accounts[0]
+    var creator = accounts[1]
+    var matcher = accounts[2]
+
     var assetRegistryInstance
     var assetStorageInstance
     var assetId
 
+    var reward
+
     beforeEach(async function () {
+        // console.log('contractsOwner:', await getAddressEtherBalanceFloat(contractsOwner))
+        // console.log('creator:', await getAddressEtherBalanceFloat(creator))
+        // console.log('accounts:', await getAddressEtherBalanceFloat(matcher))
+
         // 1st time system setup...
 
         // 1. deploy new contract intstances
-        assetRegistryInstance = await LAFAssetRegistry.new({ from: accounts[0] })
-        assetStorageInstance = await LAFAssetStorage.new({ from: accounts[0] })
+        assetRegistryInstance = await LAFAssetRegistry.new({ from: contractsOwner })
+        assetStorageInstance = await LAFAssetStorage.new({ from: contractsOwner })
 
         // 2. set storage address
-        await assetRegistryInstance.setAssetStorageAddress(assetStorageInstance.address, { from: accounts[0] })
+        await assetRegistryInstance.setAssetStorageAddress(assetStorageInstance.address, { from: contractsOwner })
 
         // 3. set registry as allowed sender on storage
-        await assetStorageInstance.addAllowedSender(assetRegistryInstance.address, { from: accounts[0] })
+        await assetStorageInstance.addAllowedSender(assetRegistryInstance.address, { from: contractsOwner })
 
         // 4. enable registry
         await assetRegistryInstance.unpause()
@@ -29,7 +43,7 @@ contract("LAFAssetRegistry (Asset Flows)", accounts => {
         let stateProvince = "NS"
         let city = "Halifax"
 
-        let rewardStr = web3.utils.toWei("1.2345", 'ether').toString()
+        reward = web3.utils.toWei("2", 'ether')
 
         // call newLostAsset
         let { logs } =  await assetRegistryInstance.newLostAsset(
@@ -38,62 +52,97 @@ contract("LAFAssetRegistry (Asset Flows)", accounts => {
             web3.utils.asciiToHex(countryIso),
             web3.utils.asciiToHex(stateProvince),
             web3.utils.asciiToHex(city),
-            { from: accounts[1], value: rewardStr }
+            { from: creator, value: reward }
         )
         
         // let { assetId}
         assetId = logs.find(x => x.event === 'AssetStored').args.assetId;
-        console.log(assetId.toString())
+        // console.log(assetId.toString())  
     })
 
     it('...newLostAsset -> potentialMatch -> matchConfirmed -> assetRecovered', async () => {
+        let assetStatus = (await assetRegistryInstance.getAsset(assetId)).assetStatus
+        assert.equal(assetStatus, 0)
+
         // call potentialMatch
-        await assetRegistryInstance.potentialMatch(assetId, { from: accounts[2] })
+        await assetRegistryInstance.potentialMatch(assetId, { from: matcher })
+
+        assetStatus = (await assetRegistryInstance.getAsset(assetId)).assetStatus
+        assert.equal(assetStatus, 1)
         
         // call matchConfirmed
-        await assetRegistryInstance.matchConfirmed(assetId, "", { from: accounts[1] })
+        await assetRegistryInstance.matchConfirmed(assetId, "", { from: creator })
+
+        assetStatus = (await assetRegistryInstance.getAsset(assetId)).assetStatus
+        assert.equal(assetStatus, 2)
 
         // call assetRecovered
-        await assetRegistryInstance.assetRecovered(assetId, { from: accounts[1] })
+        await assetRegistryInstance.assetRecovered(assetId, { from: creator })
 
-        // TODO assert balances
-        // TODO assert states
-        // TODO assert data
+        assetStatus = (await assetRegistryInstance.getAsset(assetId)).assetStatus
+        assert.equal(assetStatus, 3)
+
+        // test assert the account's claimable reward matches the initial asset reward >>> 
+        let claimableReward = await assetRegistryInstance.getClaimableRewards({ from: matcher })
+        // console.log('claimableReward', claimableReward.toString())
+        assert.equal(claimableReward, reward, 'Claimable reward for mather shoud be initial reward amount')
+        // <<<
+
+        // test withdrawl >>>
+        let matcherBalanceBeforeWithdrawl = await web3.eth.getBalance(matcher)
+
+        // withdraw reward as matcher
+        await assetRegistryInstance.withdrawRewards({ from: matcher })
+
+        claimableReward = await assetRegistryInstance.getClaimableRewards({ from: matcher })
+
+        // assert claimable reward has been reset to 0
+        assert.equal(claimableReward, 0)
+
+        let matcherBalanceAfterWithdrawl = await web3.eth.getBalance(matcher)
+        let targetBalance = web3.utils.toBN(matcherBalanceBeforeWithdrawl).add(web3.utils.toBN(reward))
+
+        // assert matcher's account has received reward after withdrawl
+        // @dev NB note - this does not account for gas and will fail
+        assert.equal(
+            parseFloat(web3.utils.fromWei(matcherBalanceAfterWithdrawl, 'ether')).toFixed(1),
+            parseFloat(web3.utils.fromWei(targetBalance, 'ether')).toFixed(1)
+        )
     })
 
-    it('...newLostAsset -> potentialMatch -> matchConfirmed -> assetRecoveryFailed', async () => {
-        // call potentialMatch
-        await assetRegistryInstance.potentialMatch(assetId, { from: accounts[2] })
+//     it('...newLostAsset -> potentialMatch -> matchConfirmed -> assetRecoveryFailed', async () => {
+//         // call potentialMatch
+//         await assetRegistryInstance.potentialMatch(assetId, { from: matcher })
        
-        // call matchConfirmed
-        await assetRegistryInstance.matchConfirmed(assetId, "", { from: accounts[1] })
+//         // call matchConfirmed
+//         await assetRegistryInstance.matchConfirmed(assetId, "", { from: creator })
 
-        // call assetRecovered
-        await assetRegistryInstance.assetRecoveryFailed(assetId, { from: accounts[1] })
+//         // call assetRecovered
+//         await assetRegistryInstance.assetRecoveryFailed(assetId, { from: creator })
 
-        // TODO assert balances
-        // TODO assert states
-        // TODO assert data
-   })
+//         // TODO assert balances
+//         // TODO assert states
+//         // TODO assert data
+//    })
 
-    it('...newLostAsset -> potentialMatch -> matchInvalid', async () => {
-        // call potentialMatch
-        await assetRegistryInstance.potentialMatch(assetId, { from: accounts[2] })
+    // it('...newLostAsset -> potentialMatch -> matchInvalid', async () => {
+    //     // call potentialMatch
+    //     await assetRegistryInstance.potentialMatch(assetId, { from: matcher })
 
-         // call matchInvalid
-         await assetRegistryInstance.matchInvalid(assetId, { from: accounts[1] })
+    //      // call matchInvalid
+    //      await assetRegistryInstance.matchInvalid(assetId, { from: creator })
 
-        // TODO assert balances
-        // TODO assert states
-        // TODO assert data
-    })
+    //     // TODO assert balances
+    //     // TODO assert states
+    //     // TODO assert data
+    // })
 
-    it('...newLostAsset -> cancelAsset', async () => {
-        // call matchInvalid
-        await assetRegistryInstance.cancelAsset(assetId, { from: accounts[1] })
+    // it('...newLostAsset -> cancelAsset', async () => {
+    //     // call matchInvalid
+    //     await assetRegistryInstance.cancelAsset(assetId, { from: creator })
 
-        // TODO assert balances
-        // TODO assert states
-        // TODO assert data
-    })
+    //     // TODO assert balances
+    //     // TODO assert states
+    //     // TODO assert data
+    // })
 })
