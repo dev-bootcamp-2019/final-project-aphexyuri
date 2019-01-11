@@ -48,7 +48,6 @@ library LAFStorageLib
     function storeAddress(address assetStorageAddress, uint256 assetId, string memory key, address payable value)
         private
     {
-        require(value != address(0));
         LAFAssetStorage(assetStorageAddress).storeAddress(keccak256(abi.encodePacked(assetId, key)), value);
     }
     
@@ -155,7 +154,6 @@ library LAFStorageLib
     function storeAssetMatcher(address assetStorageAddress, uint256 assetId, address payable value)
         public
     {
-        require(value != address(0));
         storeAddress(assetStorageAddress, assetId, KEY_MATCHER, value);
     }
     

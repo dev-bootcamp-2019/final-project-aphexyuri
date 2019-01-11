@@ -84,7 +84,6 @@ contract LAFAssetStorage is Ownable
         public
         onlyAllowedSenderOrOwner
     {
-        require(value != address(0));
         addressStorage[key] = value;
     }
 
