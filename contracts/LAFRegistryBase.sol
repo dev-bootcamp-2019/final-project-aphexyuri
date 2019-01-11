@@ -3,15 +3,16 @@ pragma solidity ^0.5.0;
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 // import "./Ownable.sol"; // remix import
 
+import "openzeppelin-solidity/contracts/lifecycle/Pausable.sol";
+// import "./Pausable.sol"; // remix import
+
 import "./libraries/LAFStorageLib.sol";
 
-contract LAFRegistryBase is Ownable
+contract LAFRegistryBase is Ownable, Pausable
 {
     using LAFStorageLib for LAFStorageLib.Data;
 
     LAFStorageLib.Data storageData;
-
-    bool public _registryEnabled;
     
     event RegistryEnabled(address);
     event RegistryDisabled(address);
@@ -19,12 +20,6 @@ contract LAFRegistryBase is Ownable
     // =======================================================
     // MODIFIERS
     // =======================================================
-    modifier registryEnabled()
-    {
-        require(_registryEnabled);
-        _;
-    }
-    
     modifier storageSet()
     {
         require(storageData.assetStorageAddress != address(0));
@@ -41,31 +36,30 @@ contract LAFRegistryBase is Ownable
     {
         return storageData.assetStorageAddress;
     }
+
+    function getRewardsBankAddress()
+        public
+        view
+        returns (address payable)
+    {
+        return storageData.rewardsBankAddress;
+    }
     
     // =======================================================
     // ADMIN
     // =======================================================
-    function enableRegistry()
-        public
-        onlyOwner
-    {
-        _registryEnabled = true;
-        emit RegistryEnabled(address(this));
-    }
-    
-    function disableRegistry()
-        public
-        onlyOwner
-    {
-        _registryEnabled = false;
-        emit RegistryDisabled(address(this));
-    }
-    
     function setAssetStorageAddress(address newStorageAddress)
         public
         onlyOwner
     {
         // set the address of asset storage contract
         storageData.assetStorageAddress = newStorageAddress;
+    }
+
+    function setRewardsBankAddress(address payable newRewardsBankAddress)
+        public
+        onlyOwner
+    {
+        storageData.rewardsBankAddress = newRewardsBankAddress;
     }
 }

@@ -27,6 +27,7 @@ library LAFStorageLib
     string constant KEY_STATUS = "status";
     string constant KEY_MATCHER = "matcher";
     string constant KEY_EXCHANGE_DEAILS = "exchangeDetails";
+    string constant KEY_CLAIMABLE_REWARDS_LEDGER = "claimableRewardsLedger";
 
     // =======================================================
     // STORAGE MUTATORS
@@ -74,11 +75,11 @@ library LAFStorageLib
         LAFAssetStorage(assetStorageAddress).storeAddressUint256Mapping(keccak256(abi.encode(key)), addressValue, uint256Value);
     }
 
-    function storeAddressUint256ArrayMapping(address assetStorageAddress, string memory key, address addressValue, uint256[] memory uint256ArrayValue)
-        private
-    {
-        LAFAssetStorage(assetStorageAddress).storeAddressUint256ArrayMapping(keccak256(abi.encode(key)), addressValue, uint256ArrayValue);
-    }
+    // function storeAddressUint256ArrayMapping(address assetStorageAddress, string memory key, address addressValue, uint256[] memory uint256ArrayValue)
+    //     private
+    // {
+    //     LAFAssetStorage(assetStorageAddress).storeAddressUint256ArrayMapping(keccak256(abi.encode(key)), addressValue, uint256ArrayValue);
+    // }
     
     // ----- specific -----
     function setInitialAssetCount(address assetStorageAddress)
@@ -161,6 +162,12 @@ library LAFStorageLib
         storeString(assetStorageAddress, assetId, KEY_EXCHANGE_DEAILS, value);
     }
 
+    function storeClaimableReward(address assetStorageAddress, address recipient, uint256 rewardAmount)
+        public
+    {
+        storeAddressUint256Mapping(assetStorageAddress, KEY_CLAIMABLE_REWARDS_LEDGER, recipient, rewardAmount);
+    }
+
     // =======================================================
     // STORAGE ACCESSORS
     // =======================================================
@@ -212,6 +219,22 @@ library LAFStorageLib
     {
         return LAFAssetStorage(assetStorageAddress).intStorage(keccak256(abi.encodePacked(assetId, key)));
     }
+
+    function getUint256ForAddressFromMapping(address assetStorageAddress, string memory mappingKey, address addressValue)
+        private
+        view
+        returns(uint256)
+    {
+        return LAFAssetStorage(assetStorageAddress).addressUint256MappingStore(keccak256(abi.encode(mappingKey)), addressValue);
+    }
+
+    // function getUint256ArrayForAddressFromMapping(address assetStorageAddress, string memory mappingKey, address addressValue)
+    //     private
+    //     view
+    //     returns(uint256[] memory)
+    // {
+    //     return LAFAssetStorage(assetStorageAddress).getUint256ArrayForAddressFromMapping(keccak256(abi.encode(mappingKey)), addressValue);
+    // }
     
     // ----- specific -----
     function getAssetCount(address assetStorageAddress)
@@ -300,5 +323,13 @@ library LAFStorageLib
         returns (address payable)
     {
         return getAddress(assetStorageAddress, assetId, KEY_MATCHER);
+    }
+
+    function getClaimableReward(address assetStorageAddress, address claimer)
+        public
+        view
+        returns(uint256)
+    {
+        return getUint256ForAddressFromMapping(assetStorageAddress, KEY_CLAIMABLE_REWARDS_LEDGER, claimer);
     }
 }
