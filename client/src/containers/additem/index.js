@@ -4,7 +4,7 @@ import { Container, Button, Form } from 'semantic-ui-react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
-import { addLostAsset } from '../../modules/registry'
+var lafConstants = require('../../LAFConstants.js')
 
 class AddItem extends Component {
   state = {
@@ -35,7 +35,7 @@ class AddItem extends Component {
   handleCountrySelectionChange = (event, data) => {
     this.setState({ selectedCountry: data.value })
 
-    for (let country of this.props.countries) {
+    for (let country of lafConstants.countries) {
       if(country.value == data.value) {
         this.setState({stateProvinceOptions: country.stateprovince})
         break
@@ -62,14 +62,17 @@ class AddItem extends Component {
   }
 
   handlePostItemClicked = async () => {
+    console.log('this.state.selectedCountry', this.state.selectedCountry)
     var countryHex = this.props.app.web3.utils.asciiToHex(this.state.selectedCountry)
-    // console.log('countryHex', countryHex)
+    console.log('countryHex', countryHex)
 
+    console.log('this.state.selectedStateProvince', this.state.selectedStateProvince)
     var stateProvinceHex = this.props.app.web3.utils.asciiToHex(this.state.selectedStateProvince)
-    // console.log('stateProvinceHex', stateProvinceHex)
+    console.log('stateProvinceHex', stateProvinceHex)
 
+    console.log('this.state.city', this.state.city)
     var cityHex = this.props.app.web3.utils.asciiToHex(this.state.city)
-    // console.log('cityHex', cityHex)
+    console.log('cityHex', cityHex)
 
     // console.log('from', this.props.app.accounts[0])
     // console.log('amount', this.props.app.web3.utils.toWei(this.state.rewardAmount))
@@ -144,7 +147,7 @@ class AddItem extends Component {
             <Form.Select fluid
               value= {this.state.selectedCountry}
               label='Country'
-              options={this.props.countries}
+              options={lafConstants.countries}
               placeholder='Country'
               onChange={this.handleCountrySelectionChange} />
             {
@@ -167,12 +170,11 @@ class AddItem extends Component {
 }
 
 const mapStateToProps = state => ({
-  app: state.app,
-  countries: state.listings.countries,
+  app: state.app
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  addLostAsset
+
 }, dispatch)
 
 export default connect(
