@@ -16,17 +16,21 @@ export const initApp = () => {
       .then(function(account){
         web3.eth.net.getId()
         .then(function(networkId){
+          console.log('networkId', networkId)
           const deployedNetwork = LAFRegistryContract.networks[networkId]
+          console.log('deployedNetwork', deployedNetwork)
           const registryContract = new web3.eth.Contract(
             LAFRegistryContract.abi,
             deployedNetwork && deployedNetwork.address,
-            dispatch({  
-              type: INIT_COMPLETE,
-              web3: web3,
-              account: account,
-              registryContract: registryContract
-            })
           )
+          console.log('registryContract', registryContract)
+
+          dispatch({  
+            type: INIT_COMPLETE,
+            web3: web3,
+            account: account,
+            registryContract: registryContract
+          })
         })
       })
     })
