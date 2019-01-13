@@ -2,6 +2,7 @@ const truffleAssert = require('truffle-assertions')
 
 const LAFAssetRegistry = artifacts.require("./LAFAssetRegistry.sol")
 const LAFAssetStorage = artifacts.require("./LAFAssetStorage.sol")
+const LAFRewardsBank = artifacts.require("./LAFRewardsBank.sol")
 
 const delay = ms => new Promise(res => setTimeout(res, ms));
 
@@ -34,9 +35,9 @@ contract("LAFAssetRegistry", accounts => {
     })
     
     it("...set allowed sender in storage addresses & verify", async () => {
-        await assetStorageInstance.setAllowedSender(assetRegistryInstance.address, { from: accounts[0] })
-        let allowedSender = await assetStorageInstance.allowedSender()
-        assert.equal(allowedSender, assetRegistryInstance.address)
+        await assetStorageInstance.addAllowedSender(assetRegistryInstance.address, { from: accounts[0] })
+        let isAllowedSender = await assetStorageInstance.senderIsAllowed(assetRegistryInstance.address)
+        assert.ok(isAllowedSender)
     })
 
     it("...set storage addresses & verify", async () => {
@@ -46,8 +47,8 @@ contract("LAFAssetRegistry", accounts => {
     })
 
     it("...enable registry & verify", async () => {
-        assetRegistryInstance.enableRegistry( { from: accounts[0] } )
-        assert.ok(assetRegistryInstance._registryEnabled())
+        await assetRegistryInstance.unpause( { from: accounts[0] } )
+        assert.ok(!await assetRegistryInstance.paused())
     })
 
     it("...add asset, retrieve + verify fields, check stakeholder balances", async () => {
@@ -65,7 +66,7 @@ contract("LAFAssetRegistry", accounts => {
 
         let { logs } =  await assetRegistryInstance.newLostAsset(
             titleStr,
-            descriptionStr,
+            // descriptionStr,
             web3.utils.asciiToHex(countryIso),
             web3.utils.asciiToHex(stateProvince),
             web3.utils.asciiToHex(city),
@@ -87,7 +88,7 @@ contract("LAFAssetRegistry", accounts => {
         assert.equal(web3.utils.hexToAscii(retrievedAsset.city), city)
         assert.equal(web3.utils.fromWei(retrievedAsset.reward, 'ether'), 1.2345)
 
-        // check contract balance
+        // // check contract balance
         let rewardEth = parseFloat(web3.utils.fromWei(retrievedAsset.reward))
         let contractBalanceAfter = parseFloat(web3.utils.fromWei(await web3.eth.getBalance(assetRegistryInstance.address), 'ether'))
         assert.equal(contractBalanceAfter, rewardEth + contractBalanceBefore)
@@ -102,7 +103,7 @@ contract("LAFAssetRegistry", accounts => {
 
     it("...calling matchConfirmed as non-asset creator fails", async () => {
         // first call potentialMatch on asset to get it to AssetStatus.PotentialMatch status
-        await assetRegistryInstance.potentialMatch(0, { from: accounts[2]} )
+        await assetRegistryInstance.foundLostAsset(0, { from: accounts[2]} )
 
         await truffleAssert.fails(
             assetRegistryInstance.matchConfirmed(0, "Starbuck on corner on Noth and South April 1, 2019", { from: accounts[9] }),
@@ -131,13 +132,13 @@ contract("LAFAssetRegistry", accounts => {
         assert.ok(true)
     })
 
-    it("...calling withdrawReward as non-matcher fails", async () => {
-        // TODO implment contract code and test
-    })
+    // it("...calling withdrawReward as non-matcher fails", async () => {
+    //     // TODO implment contract code and test
+    // })
 
-    it("...calling withdrawReward as matcher succeeds", async () => {
-        // TODO implment contract code and test
-    })
+    // it("...calling withdrawReward as matcher succeeds", async () => {
+    //     // TODO implment contract code and test
+    // })
     
 
     // TODO matchInvalid flow
