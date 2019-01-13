@@ -18,10 +18,10 @@ contract('LAFAssetStorage', accounts => {
     })
 
     it('...set and verify allowedSender', async () => {
-        await assetStorageInstance.setAllowedSender(accounts[1], { from: accounts[0] })
+        await assetStorageInstance.addAllowedSender(accounts[1], { from: accounts[0] })
 
-        let allowedSender = await assetStorageInstance.allowedSender()
-        assert.equal(allowedSender, accounts[1])
+        let senderAllowed = await assetStorageInstance.senderIsAllowed(accounts[1])
+        assert.ok(senderAllowed)
     })
 
     it('...uint256 uninitialized value default to zero', async () => {
