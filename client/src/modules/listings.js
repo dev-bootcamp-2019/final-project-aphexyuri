@@ -31,7 +31,7 @@ export const getAssetStoredEvents = (web3, listingsContract, country, stateProvi
     getEventsOptions.filter = filter
   }
 
-  console.log('getPastEventsOptions', getEventsOptions)
+  // console.log('getPastEventsOptions', getEventsOptions)
 
   return function action(dispatch) {
     listingsContract.getPastEvents('AssetStored', getEventsOptions)

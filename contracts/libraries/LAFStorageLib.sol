@@ -57,6 +57,24 @@ library LAFStorageLib
         LAFAssetStorage(assetStorageAddress).storeBytes(keccak256(abi.encodePacked(assetId, key)), value);
     }
 
+    function storeBytes8(address assetStorageAddress, uint256 assetId, string memory key, bytes8 value)
+        private
+    {
+        LAFAssetStorage(assetStorageAddress).storeBytes8(keccak256(abi.encodePacked(assetId, key)), value);
+    }
+
+    function storeBytes16(address assetStorageAddress, uint256 assetId, string memory key, bytes16 value)
+        private
+    {
+        LAFAssetStorage(assetStorageAddress).storeBytes16(keccak256(abi.encodePacked(assetId, key)), value);
+    }
+
+    function storeBytes32(address assetStorageAddress, uint256 assetId, string memory key, bytes32 value)
+        private
+    {
+        LAFAssetStorage(assetStorageAddress).storeBytes32(keccak256(abi.encodePacked(assetId, key)), value);
+    }
+
     function storeBool(address assetStorageAddress, uint256 assetId, string memory key, bool value)
         private
     {
@@ -108,22 +126,22 @@ library LAFStorageLib
         storeString(assetStorageAddress, assetId, KEY_DESCRIPTION, value);
     }
     
-    function storeAssetIsoCountryCode(address assetStorageAddress, uint256 assetId, bytes memory value)
+    function storeAssetIsoCountryCode(address assetStorageAddress, uint256 assetId, bytes8 value)
         public
     {
-        storeBytes(assetStorageAddress, assetId, KEY_ISO_COUNTRY_CODE, value);
+        storeBytes8(assetStorageAddress, assetId, KEY_ISO_COUNTRY_CODE, value);
     }
     
-    function storeAssetStateProvince(address assetStorageAddress, uint256 assetId, bytes memory value)
+    function storeAssetStateProvince(address assetStorageAddress, uint256 assetId, bytes8 value)
         public
     {
-        storeBytes(assetStorageAddress, assetId, KEY_STATE_PROVINCE, value);
+        storeBytes8(assetStorageAddress, assetId, KEY_STATE_PROVINCE, value);
     }
     
-    function storeAssetCity(address assetStorageAddress, uint256 assetId, bytes memory value)
+    function storeAssetCity(address assetStorageAddress, uint256 assetId, bytes32 value)
         public
     {
-        storeBytes(assetStorageAddress, assetId, KEY_CITY, value);
+        storeBytes32(assetStorageAddress, assetId, KEY_CITY, value);
     }
     
     function storeAssetReward(address assetStorageAddress, uint256 assetId, uint256 value)
@@ -206,6 +224,30 @@ library LAFStorageLib
         return LAFAssetStorage(assetStorageAddress).bytesStorage(keccak256(abi.encodePacked(assetId, key)));
     }
 
+    function getBytes8Value(address assetStorageAddress, uint256 assetId, string memory key)
+        private
+        view
+        returns(bytes8)
+    {
+        return LAFAssetStorage(assetStorageAddress).bytes8Storage(keccak256(abi.encodePacked(assetId, key)));
+    }
+
+    function getBytes16Value(address assetStorageAddress, uint256 assetId, string memory key)
+        private
+        view
+        returns(bytes16)
+    {
+        return LAFAssetStorage(assetStorageAddress).bytes16Storage(keccak256(abi.encodePacked(assetId, key)));
+    }
+
+    function getBytes32Value(address assetStorageAddress, uint256 assetId, string memory key)
+        private
+        view
+        returns(bytes32)
+    {
+        return LAFAssetStorage(assetStorageAddress).bytes32Storage(keccak256(abi.encodePacked(assetId, key)));
+    }
+
     function getBoolValue(address assetStorageAddress, uint256 assetId, string memory key)
         private
         view
@@ -266,25 +308,25 @@ library LAFStorageLib
     function getAssetIsoCountryCode(address assetStorageAddress, uint256 assetId)
         public
         view
-        returns (bytes memory)
+        returns (bytes8)
     {
-        return getBytesValue(assetStorageAddress, assetId, KEY_ISO_COUNTRY_CODE);
+        return getBytes8Value(assetStorageAddress, assetId, KEY_ISO_COUNTRY_CODE);
     }
     
     function getAssetStateProvince(address assetStorageAddress, uint256 assetId)
         public
         view
-        returns (bytes memory)
+        returns (bytes8)
     {
-        return getBytesValue(assetStorageAddress, assetId, KEY_STATE_PROVINCE);
+        return getBytes8Value(assetStorageAddress, assetId, KEY_STATE_PROVINCE);
     }
     
     function getAssetCity(address assetStorageAddress, uint256 assetId)
         public
         view
-        returns (bytes memory)
+        returns (bytes32)
     {
-        return getBytesValue(assetStorageAddress, assetId, KEY_CITY);
+        return getBytes32Value(assetStorageAddress, assetId, KEY_CITY);
     }
     
     function getAssetReward(address assetStorageAddress, uint256 assetId)

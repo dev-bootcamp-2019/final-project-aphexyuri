@@ -12,6 +12,9 @@ contract LAFAssetStorage is Ownable
     mapping(bytes32 => string) public stringStorage;
     mapping(bytes32 => address payable) public addressStorage;
     mapping(bytes32 => bytes) public bytesStorage;
+    mapping(bytes32 => bytes8) public bytes8Storage;
+    mapping(bytes32 => bytes16) public bytes16Storage;
+    mapping(bytes32 => bytes32) public bytes32Storage;
     mapping(bytes32 => bool) public boolStorage;
     mapping(bytes32 => int256) public intStorage;
 
@@ -104,6 +107,27 @@ contract LAFAssetStorage is Ownable
         onlyAllowedSenderOrOwner
     {
         bytesStorage[key] = value;
+    }
+
+    function storeBytes8(bytes32 key, bytes8 value)
+        public
+        onlyAllowedSenderOrOwner
+    {
+        bytes8Storage[key] = value;
+    }
+
+    function storeBytes16(bytes32 key, bytes16 value)
+        public
+        onlyAllowedSenderOrOwner
+    {
+        bytes16Storage[key] = value;
+    }
+
+    function storeBytes32(bytes32 key, bytes32 value)
+        public
+        onlyAllowedSenderOrOwner
+    {
+        bytes32Storage[key] = value;
     }
 
     function storeBool(bytes32 key, bool value)

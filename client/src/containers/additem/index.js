@@ -62,17 +62,11 @@ class AddItem extends Component {
   }
 
   handlePostItemClicked = async () => {
-    console.log('this.state.selectedCountry', this.state.selectedCountry)
     var countryHex = this.props.app.web3.utils.asciiToHex(this.state.selectedCountry)
-    console.log('countryHex', countryHex)
 
-    console.log('this.state.selectedStateProvince', this.state.selectedStateProvince)
     var stateProvinceHex = this.props.app.web3.utils.asciiToHex(this.state.selectedStateProvince)
-    console.log('stateProvinceHex', stateProvinceHex)
 
-    console.log('this.state.city', this.state.city)
     var cityHex = this.props.app.web3.utils.asciiToHex(this.state.city)
-    console.log('cityHex', cityHex)
 
     // console.log('from', this.props.app.accounts[0])
     // console.log('amount', this.props.app.web3.utils.toWei(this.state.rewardAmount))

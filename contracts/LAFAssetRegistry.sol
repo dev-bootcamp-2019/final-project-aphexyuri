@@ -22,14 +22,14 @@ contract LAFAssetRegistry is LAFRegistryBase
     // =======================================================
     event AssetStored(
         uint256 assetId,
-        bytes indexed isoCountryCode,
-        bytes indexed stateProvince,
-        bytes city,
+        bytes8 indexed isoCountryCode,
+        bytes8 indexed stateProvince,
+        bytes32 city,
         string title,
         InitialAssetType indexed initialAssetType,
         uint256 reward);
     event AssetCancelled(uint256 assetId);
-    event FoundLostAsset(uint256 assetId, bytes indexed isoCountryCode, bytes indexed stateProvince);
+    event FoundLostAsset(uint256 assetId, bytes8 indexed isoCountryCode, bytes8 indexed stateProvince);
     event MatchConfirmed(uint256 assetId);
     event MatchInvalid(uint256 assetID);
     event AssetRecovered(uint256 assetId, uint256 reward);
@@ -127,9 +127,9 @@ contract LAFAssetRegistry is LAFRegistryBase
     function newAsset(
         InitialAssetType initialAssetType,
         string memory assetTitle,
-        bytes memory isoCountryCode,
-        bytes memory stateProvince,
-        bytes memory city
+        bytes8 isoCountryCode,
+        bytes8 stateProvince,
+        bytes32 city
         // string memory description
     )
         private
@@ -164,9 +164,9 @@ contract LAFAssetRegistry is LAFRegistryBase
         view
         returns(
             string memory title,
-            bytes memory isoCountryCode,
-            bytes memory stateProvince,
-            bytes memory city,
+            bytes8 isoCountryCode,
+            bytes8 stateProvince,
+            bytes32 city,
             // string memory description, // TODO get metadata? stack depth error!!!
             uint256 reward,
             address creator,
@@ -198,9 +198,9 @@ contract LAFAssetRegistry is LAFRegistryBase
     function newLostAsset(
         string memory assetTitle,
         // string memory description,
-        bytes memory isoCountryCode,
-        bytes memory stateProvince,
-        bytes memory city   
+        bytes8 isoCountryCode,
+        bytes8 stateProvince,
+        bytes32 city   
     )
         public
         payable
@@ -214,9 +214,9 @@ contract LAFAssetRegistry is LAFRegistryBase
     function newFoundAsset(
         string memory assetTitle,
         // string memory description,
-        bytes memory isoCountryCode,
-        bytes memory stateProvince,
-        bytes memory city
+        bytes8 isoCountryCode,
+        bytes8 stateProvince,
+        bytes32 city
     )
         public
         payable
@@ -237,8 +237,8 @@ contract LAFAssetRegistry is LAFRegistryBase
         LAFStorageLib.storeAssetStatus(getAssetStorageAddress(), assetId, uint(AssetStatus.PotentialMatch));
         LAFStorageLib.storeAssetMatcher(getAssetStorageAddress(), assetId, msg.sender);
         
-        bytes memory isoCountryCode = LAFStorageLib.getAssetIsoCountryCode(getAssetStorageAddress(), assetId);
-        bytes memory stateProvince = LAFStorageLib.getAssetStateProvince(getAssetStorageAddress(), assetId);
+        bytes8 isoCountryCode = LAFStorageLib.getAssetIsoCountryCode(getAssetStorageAddress(), assetId);
+        bytes8 stateProvince = LAFStorageLib.getAssetStateProvince(getAssetStorageAddress(), assetId);
         
         emit FoundLostAsset(assetId, isoCountryCode, stateProvince);
     }
