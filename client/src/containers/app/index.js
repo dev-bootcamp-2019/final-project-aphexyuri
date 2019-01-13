@@ -24,6 +24,10 @@ class App extends Component {
             // Get network provider and web3 instance.
             const web3 = await getWeb3()
 
+            web3.eth.net.getId().then(function (id) {
+                console.log('Ethereum network id: ', id)
+            })
+
             // Use web3 to get the user's accounts.
             const accounts = await web3.eth.getAccounts();
 

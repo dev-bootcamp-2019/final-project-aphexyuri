@@ -22,7 +22,7 @@ class ListingItem extends Component {
                     <Card.Meta>{ location }</Card.Meta>
                     <Card.Content extra>
                         <Icon name='ethereum' />
-                        { this.props.web3.utils.fromWei(this.props.item.returnValues.rewardAmount, 'ether') } ETH
+                        { this.props.web3.utils.fromWei(this.props.item.returnValues.reward, 'ether') } ETH
                     </Card.Content>
                 </Card.Content>
             </Card>

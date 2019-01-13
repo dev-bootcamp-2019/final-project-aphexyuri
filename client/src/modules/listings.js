@@ -110,7 +110,7 @@ export const getListingsPastEvents = (web3, listingsContract, country, stateProv
     return function action(dispatch) {
         listingsContract.getPastEvents('ItemStored', getEventsOptions)
         .then(function(listings){
-            console.log('retrieved past events')
+            console.log('retrieved past events', listings)
             dispatch({
                 type: LISTINGS_RETRIEVED,
                 listings: listings
