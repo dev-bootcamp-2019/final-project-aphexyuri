@@ -27,7 +27,7 @@ contract LAFAssetRegistry is LAFRegistryBase
         string title,
         InitialAssetType indexed initialAssetType);
     event AssetCancelled(uint256 assetId);
-    event PotentialMatch(uint256 assetId, bytes indexed isoCountryCode, bytes indexed stateProvince);
+    event FoundLostAsset(uint256 assetId, bytes indexed isoCountryCode, bytes indexed stateProvince);
     event MatchConfirmed(uint256 assetId);
     event MatchInvalid(uint256 assetID);
     event AssetRecovered(uint256 assetId, uint256 reward);
@@ -102,6 +102,13 @@ contract LAFAssetRegistry is LAFRegistryBase
     {
         AssetStatus status = AssetStatus(LAFStorageLib.getAssetStatus(getAssetStorageAddress(), assetId));
         require(status == AssetStatus.Recovered);
+        _;
+    }
+
+    modifier onlyAssetIntialTypeLost(uint256 assetId)
+    {
+        InitialAssetType initialAssetType = InitialAssetType(LAFStorageLib.getAssetInitialType(getAssetStorageAddress(), assetId));
+        require(initialAssetType == InitialAssetType.Lost);
         _;
     }
     
@@ -217,12 +224,13 @@ contract LAFAssetRegistry is LAFRegistryBase
         // newAsset(InitialAssetType.Found, assetTitle, isoCountryCode, stateProvince, city, description);
         newAsset(InitialAssetType.Found, assetTitle, isoCountryCode, stateProvince, city);
     }
-    
-    function potentialMatch(uint256 assetId)
+
+    function foundLostAsset(uint256 assetId)
         public
         whenNotPaused
         storageSet
         onlyAssetStatusPosted(assetId)
+        onlyAssetIntialTypeLost(assetId)
     {
         LAFStorageLib.storeAssetStatus(getAssetStorageAddress(), assetId, uint(AssetStatus.PotentialMatch));
         LAFStorageLib.storeAssetMatcher(getAssetStorageAddress(), assetId, msg.sender);
@@ -230,8 +238,16 @@ contract LAFAssetRegistry is LAFRegistryBase
         bytes memory isoCountryCode = LAFStorageLib.getAssetIsoCountryCode(getAssetStorageAddress(), assetId);
         bytes memory stateProvince = LAFStorageLib.getAssetStateProvince(getAssetStorageAddress(), assetId);
         
-        emit PotentialMatch(assetId, isoCountryCode, stateProvince);
+        emit FoundLostAsset(assetId, isoCountryCode, stateProvince);
     }
+
+    // function asetOwnerFound(uint256 assetId)
+    //     public
+    //     whenNotPaused
+    //     storageSet
+    // {
+    //     // TODO
+    // }
     
     // exchangeDetails = date, time, [public] place
     function matchConfirmed(uint256 assetId, string memory exchangeDetails)

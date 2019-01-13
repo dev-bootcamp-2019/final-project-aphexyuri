@@ -65,7 +65,7 @@ contract("LAFAssetRegistry (Asset Flows)", accounts => {
         assert.equal(assetStatus, 0)
 
         // call potentialMatch
-        await assetRegistryInstance.potentialMatch(assetId, { from: matcher })
+        await assetRegistryInstance.foundLostAsset(assetId, { from: matcher })
 
         assetStatus = (await assetRegistryInstance.getAsset(assetId)).assetStatus
         assert.equal(assetStatus, 1)
