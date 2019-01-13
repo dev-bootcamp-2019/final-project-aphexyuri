@@ -44,6 +44,18 @@ contract LAFAssetStorage is Ownable
         allowedSenders[oldSender] = false;
     }
 
+    // =======================================================
+    // HELPERS
+    // =======================================================
+    /// @dev used for testing
+    function senderIsAllowed(address sender)
+        public
+        view
+        returns(bool)
+    {
+        return allowedSenders[sender];
+    }
+
     function addressToBytes32(address addressToConvert)
         public
         pure
