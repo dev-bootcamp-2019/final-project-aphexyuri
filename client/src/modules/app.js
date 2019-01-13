@@ -5,30 +5,28 @@ import getWeb3 from "../utils/getWeb3";
 export const INIT_COMPLETE = 'app/INIT_COMPLETE'
 
 const initialState = {
-  web3: null
+  web3: null,
+  registryContract: null
 }
 
-export const initApp = () => {
+export const initWeb3 = () => {
   return function action(dispatch) {
     getWeb3()
     .then(function(web3) {
       web3.eth.getAccounts()
-      .then(function(account){
+      .then(function(accounts) {
         web3.eth.net.getId()
         .then(function(networkId){
-          console.log('networkId', networkId)
           const deployedNetwork = LAFRegistryContract.networks[networkId]
-          console.log('deployedNetwork', deployedNetwork)
           const registryContract = new web3.eth.Contract(
             LAFRegistryContract.abi,
             deployedNetwork && deployedNetwork.address,
           )
-          console.log('registryContract', registryContract)
 
           dispatch({  
             type: INIT_COMPLETE,
             web3: web3,
-            account: account,
+            accounts: accounts,
             registryContract: registryContract
           })
         })
@@ -44,7 +42,8 @@ export default (state = initialState, action) => {
       return {
         ...state,
         web3: action.web3,
-        account: action.account
+        accounts: action.accounts,
+        registryContract: action.registryContract
       }
 
     default:

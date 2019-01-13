@@ -9,8 +9,8 @@ import "./LAFAssetStorage.sol";
  * deploy LAFAssetStorage - once only
  * deploy LAFAssetRegistry
  * call setAssetStorageAddress on LAFAssetRegistry with address or storage contract
- * call enableRegistry on LAFAssetRegistry
- * call setAllowedSender on LAFAssetStorage with address of registry contract
+ * call unpause on LAFAssetRegistry
+ * call addAllowedSender on LAFAssetStorage with address of registry contract
  *
  * not suire if intial assetCount needs to be set as an attempt to retreive unset from mapping might result in a zero response
  */

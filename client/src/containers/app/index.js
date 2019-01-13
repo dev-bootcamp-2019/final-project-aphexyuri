@@ -17,12 +17,17 @@ import {
 import Listings from '../listings'
 import AddItem from '../additem'
 
-import { initApp } from '../../modules/app'
+import { initWeb3 } from '../../modules/app'
 
 class App extends Component {
   componentDidMount = async () => {
-    this.props.initApp()
+    // console.log('App componentDidMount', this.props)
+    this.props.initWeb3()
   }
+
+  // componentDidUpdate = async () => {
+  //   console.log('App componentDidUpdate', this.props) 
+  // }
 
   render() {
     return (
@@ -31,16 +36,26 @@ class App extends Component {
           <div>
             <Menu>
               <Menu.Item name='listing' as={Link} to={'/'}>
-                Listing
+                Lost & Found Stuff
               </Menu.Item>
           
               <Menu.Item name='listing' as={Link} to={'/lost'}>
                 I lost something
               </Menu.Item>
             </Menu>
-            <Segment style={{ padding: '0em 0em' }} vertical>
-              <Route exact path='/' component={Listings} />
-              <Route path={'/lost'} component={AddItem} />
+            <Segment style={{ padding: '0em 0em' }} vertical loading={ this.props.app.web3 == null }>
+              <Route exact path='/'
+                render={ (props) =>
+                  <Listings
+                    {...props}/>
+                }
+              />
+              <Route path={'/lost'}
+                render={ (props) => 
+                  <AddItem
+                    {...props}/>    
+                }
+              />
             </Segment>
           </div>
         </Router>
@@ -50,11 +65,11 @@ class App extends Component {
 }
 
 const mapStateToProps = state => ({
-    // sale: state.sale
+    app: state.app
 })
   
 const mapDispatchToProps = dispatch => bindActionCreators({
-  initApp
+  initWeb3
 }, dispatch)
   
   
