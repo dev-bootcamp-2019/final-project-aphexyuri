@@ -51,16 +51,19 @@ class AddItem extends Component {
 
     handlePostItemClicked = async () => {
         var countryHex = web3.utils.asciiToHex(this.state.selectedCountry)
-        // console.log('countryHex', countryHex)
+        console.log('countryHex', countryHex)
 
         var stateProvinceHex = web3.utils.asciiToHex(this.state.selectedStateProvince)
-        // console.log('stateProvinceHex', stateProvinceHex)
+        console.log('stateProvinceHex', stateProvinceHex)
 
         var cityHex = web3.utils.asciiToHex(this.state.city)
-        // console.log('cityHex', cityHex)
+        console.log('cityHex', cityHex)
 
         var titleHex = web3.utils.asciiToHex(this.state.title)
-        // console.log('titleHex', titleHex)
+        console.log('titleHex', titleHex)
+
+        console.log('from', this.props.accounts[0])
+        console.log('amount', web3.utils.toWei(this.state.rewardAmount))
 
         await this.props.listingsContract.methods.newLostItem(
             countryHex,
