@@ -1,21 +1,30 @@
 import React, { Component } from 'react'
-import { Container, Button, Form } from 'semantic-ui-react'
+import { Container, Button, Form, Image } from 'semantic-ui-react'
 
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
+import classNames from 'classnames'
+import Dropzone from 'react-dropzone'
+
+import Ipfs from 'ipfs'
+
 var lafConstants = require('../../LAFConstants.js')
 
+const clearState = {
+  title: '',
+  description: '',
+  selectedCountry: null,
+  selectedStateProvince: null,
+  city: null,
+  stateProvinceOptions: null,
+  rewardAmount: null,
+  imagePreview: null,
+  imageBuffer: null
+}
+
 class AddItem extends Component {
-  state = {
-    title: '',
-    description: '',
-    selectedCountry: null,
-    selectedStateProvince: null,
-    city: null,
-    stateProvinceOptions: null,
-    rewardAmount: null
-  }
+  state = clearState
 
   constructor (props) {
       super(props)
@@ -25,6 +34,8 @@ class AddItem extends Component {
   // componentDidUpdate = async () => {
   //   console.log('AddItem componentDidUpdate', this.props)
   // }
+
+  setClearedState = () => {}
 
   handleTitleFieldChange = e => {
     // console.log('title', e.target.value)
@@ -75,36 +86,45 @@ class AddItem extends Component {
 
     var cityHex = this.props.app.web3.utils.asciiToHex(this.state.city)
 
+    let ipfs = new Ipfs()
+    
+    let content = ipfs.types.Buffer.from('ABC');
+    let results = await ipfs.files.add(content);
+    let hash = results[0].hash; // "Qm...WW"
+
+    console.log(hash)
+
+    // ipfs.files.add(this.state.imageBuffer, (error, result) => {
+    //   if(error) {
+    //     console.log('error', error)
+    //     return
+    //   }
+    //   console.log(result[0].hash)
+    // })
+
     // console.log('from', this.props.app.accounts[0])
     // console.log('amount', this.props.app.web3.utils.toWei(this.state.rewardAmount))
 
-    try {
-      let newLostAssetResponse = await this.props.app.registryContract.methods.newLostAsset(
-        this.state.title,
-        this.state.description,
-        countryHex,
-        stateProvinceHex,
-        cityHex
-      ).send({
-        from: this.props.app.accounts[0],
-        value: this.props.app.web3.utils.toWei(this.state.rewardAmount)
-      });
+    // try {
+    //   let newLostAssetResponse = await this.props.app.registryContract.methods.newLostAsset(
+    //     this.state.title,
+    //     this.state.description,
+    //     countryHex,
+    //     stateProvinceHex,
+    //     cityHex
+    //   ).send({
+    //     from: this.props.app.accounts[0],
+    //     value: this.props.app.web3.utils.toWei(this.state.rewardAmount)
+    //   });
 
-      // TODO feedback that item has been added + clear UI
-    }
-    catch(e) {
-      console.log('newLostAsset Error', e)
-      // TODO feedback of error
-    }
+    //   // TODO feedback that item has been added + clear UI
+    // }
+    // catch(e) {
+    //   console.log('newLostAsset Error', e)
+    //   // TODO feedback of error
+    // }
 
-    this.setState({
-      title: '',
-      selectedCountry: null,
-      selectedStateProvince: null,
-      city: null,
-      stateProvinceOptions: null,
-      rewardAmount: null
-    })    
+    this.setState(clearState)    
   }
 
   renderNearestCityField = e => {
@@ -137,6 +157,34 @@ class AddItem extends Component {
     }
   }
 
+  onDrop = (acceptedFiles, rejectedFiles) => {
+    console.log('acceptedFiles', acceptedFiles)
+    console.log('rejectedFiles', rejectedFiles)
+
+    if(acceptedFiles.length > 1) {
+      // TODO user feedback, jsut one file allowed
+      return
+    }
+
+    acceptedFiles.forEach(file => {
+      const url = URL.createObjectURL(file)
+      this.setState({ imagePreview: url })
+
+      const reader = new FileReader()
+      // reader.onloadend = () => {}
+      reader.onload = () => {
+        const fileAsBinaryString = reader.result;
+        console.log('file loaded')
+        this.setState({ imageBuffer: Buffer(fileAsBinaryString) })
+      };
+      reader.onabort = () => console.log('file reading was aborted');
+      reader.onerror = () => console.log('file reading has failed');
+
+      reader.readAsBinaryString(file);
+      console.log(reader)
+    })
+  }
+
   render () {
     return (
       <div>
@@ -167,8 +215,27 @@ class AddItem extends Component {
             }
             { this.renderNearestCityField() }
             { this.renderRewardAmountField() }
-            { this.renderPostItemField() }
+            
           </Form>
+
+          <Dropzone accept="image/jpeg, image/png" onDrop={this.onDrop}>
+            {({getRootProps, getInputProps, isDragActive}) => {
+              return (
+                <div {...getRootProps()} className={classNames('dropzone', {'dropzone--isActive': isDragActive})}>
+                  <input {...getInputProps()} />
+                  {
+                    isDragActive ?
+                      <p>Drop files here...</p> :
+                      <p>Try dropping some files here, or click to select files to upload.</p>
+                  }
+                </div>
+              )
+            }}
+          </Dropzone>
+
+          <Image src={this.state.imagePreview} size='small' />
+
+          { this.renderPostItemField() }
         </Container>
       </div>
     )
