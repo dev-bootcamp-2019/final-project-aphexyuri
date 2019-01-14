@@ -28,11 +28,20 @@ library LAFStorageLib
     string constant KEY_MATCHER = "matcher";
     string constant KEY_EXCHANGE_DEAILS = "exchangeDetails";
     string constant KEY_CLAIMABLE_REWARDS_LEDGER = "claimableRewardsLedger";
+    string constant KEY_IPFS_DIGEST = "ipfsDigest";
+    string constant KEY_IPFS_HASH_FUNCTION = "ipfsHashFunction";
+    string constant KEY_IPFS_SIZE = "ipfsSie";
 
     // =======================================================
     // STORAGE MUTATORS
     // =======================================================
     // ----- generic -----
+    function storeUint8(address assetStorageAddress, uint256 assetId, string memory key, uint8 value)
+        private
+    {
+        LAFAssetStorage(assetStorageAddress).storeUint8(keccak256(abi.encodePacked(assetId, key)), value);
+    }
+
     function storeUint256(address assetStorageAddress, uint256 assetId, string memory key, uint256 value)
         private
     {
@@ -157,16 +166,16 @@ library LAFStorageLib
         storeAddress(assetStorageAddress, assetId, KEY_CREATOR, value);
     }
     
-    function storeAssetInitialType(address assetStorageAddress, uint256 assetId, uint value)
+    function storeAssetInitialType(address assetStorageAddress, uint256 assetId, uint8 value)
         public
     {
-        storeUint256(assetStorageAddress, assetId, KEY_INITIAL_TYPE, value);
+        storeUint8(assetStorageAddress, assetId, KEY_INITIAL_TYPE, value);
     }
     
-    function storeAssetStatus(address assetStorageAddress, uint256 assetId, uint value)
+    function storeAssetStatus(address assetStorageAddress, uint256 assetId, uint8 value)
         public
     {
-        storeUint256(assetStorageAddress, assetId, KEY_STATUS, value);
+        storeUint8(assetStorageAddress, assetId, KEY_STATUS, value);
     }
     
     function storeAssetMatcher(address assetStorageAddress, uint256 assetId, address payable value)
@@ -188,16 +197,42 @@ library LAFStorageLib
         storeAddressUint256Mapping(assetStorageAddress, KEY_CLAIMABLE_REWARDS_LEDGER, recipient, rewardAmount);
     }
 
+    function storeAssetIfsDigest(address assetStorageAddress, uint256 assetId, bytes32 value)
+        public
+    {
+        storeBytes32(assetStorageAddress, assetId, KEY_IPFS_DIGEST, value);
+    }
+
+    function storeAssetIfsHashFunction(address assetStorageAddress, uint256 assetId, uint8 value)
+        public
+    {
+        storeUint8(assetStorageAddress, assetId, KEY_IPFS_HASH_FUNCTION, value);
+    }
+
+    function storeAssetIfsSize(address assetStorageAddress, uint256 assetId, uint8 value)
+        public
+    {
+        storeUint8(assetStorageAddress, assetId, KEY_IPFS_SIZE, value);
+    }
+
     // =======================================================
     // STORAGE ACCESSORS
     // =======================================================
     // ----- generic -----
+    function getUint8Value(address assetStorageAddress, uint256 assetId, string memory key)
+        private
+        view
+        returns(uint8)
+    {
+        return LAFAssetStorage(assetStorageAddress).uint8Storage(keccak256(abi.encodePacked(assetId, key)));
+    }
+
     function getUint256Value(address assetStorageAddress, uint256 assetId, string memory key)
         private
         view
         returns(uint256)
     {
-        return LAFAssetStorage(assetStorageAddress).uintStorage(keccak256(abi.encodePacked(assetId, key)));
+        return LAFAssetStorage(assetStorageAddress).uint256Storage(keccak256(abi.encodePacked(assetId, key)));
     }
     
     function getStringValue(address assetStorageAddress, uint256 assetId, string memory key)
@@ -286,7 +321,7 @@ library LAFStorageLib
         view
         returns (uint256)
     {
-        return LAFAssetStorage(assetStorageAddress).uintStorage(keccak256(KEY_ASSET_COUNT));
+        return LAFAssetStorage(assetStorageAddress).uint256Storage(keccak256(KEY_ASSET_COUNT));
     }
     
     function getAssetTitle(address assetStorageAddress, uint256 assetId)
@@ -375,5 +410,30 @@ library LAFStorageLib
         returns(uint256)
     {
         return getUint256ForAddressFromMapping(assetStorageAddress, KEY_CLAIMABLE_REWARDS_LEDGER, claimer);
+    }
+    
+
+    function getAssetIpfsDigest(address assetStorageAddress, uint256 assetId)
+        public
+        view
+        returns (bytes32)
+    {
+        return getBytes32Value(assetStorageAddress, assetId, KEY_IPFS_DIGEST);
+    }
+
+    function getAssetIpfsHashFunction(address assetStorageAddress, uint256 assetId)
+        public
+        view
+        returns (uint8)
+    {
+        return getUint8Value(assetStorageAddress, assetId, KEY_IPFS_HASH_FUNCTION);
+    }
+
+    function getAssetIpfsSize(address assetStorageAddress, uint256 assetId)
+        public
+        view
+        returns (uint8)
+    {
+        return getUint8Value(assetStorageAddress, assetId, KEY_IPFS_SIZE);
     }
 }

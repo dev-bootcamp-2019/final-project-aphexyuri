@@ -7,8 +7,9 @@ contract LAFAssetStorage is Ownable
 {
     mapping (address => bool) allowedSenders;
 
-    // basic types    
-    mapping(bytes32 => uint256) public uintStorage;
+    // basic types
+    mapping(bytes32 => uint8) public uint8Storage;
+    mapping(bytes32 => uint256) public uint256Storage;
     mapping(bytes32 => string) public stringStorage;
     mapping(bytes32 => address payable) public addressStorage;
     mapping(bytes32 => bytes) public bytesStorage;
@@ -81,11 +82,18 @@ contract LAFAssetStorage is Ownable
     // =======================================================
     // STORAGE MODIFIERS
     // =======================================================
+    function storeUint8(bytes32 key, uint8 value)
+        public
+        onlyAllowedSenderOrOwner
+    {
+        uint8Storage[key] = value;
+    }
+
     function storeUint256(bytes32 key, uint256 value)
         public
         onlyAllowedSenderOrOwner
     {
-        uintStorage[key] = value;
+        uint256Storage[key] = value;
     }
 
     function storeString(bytes32 key, string memory value)
