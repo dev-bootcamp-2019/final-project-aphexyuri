@@ -9,6 +9,7 @@ var lafConstants = require('../../LAFConstants.js')
 class AddItem extends Component {
   state = {
     title: '',
+    description: '',
     selectedCountry: null,
     selectedStateProvince: null,
     city: null,
@@ -29,6 +30,12 @@ class AddItem extends Component {
     // console.log('title', e.target.value)
     this.setState({
       title: e.target.value
+    })
+  }
+
+  handleDescriptionFieldChange = e => {
+    this.setState({
+      description: e.target.value
     })
   }
 
@@ -71,9 +78,10 @@ class AddItem extends Component {
     // console.log('from', this.props.app.accounts[0])
     // console.log('amount', this.props.app.web3.utils.toWei(this.state.rewardAmount))
 
-    try{
+    try {
       let newLostAssetResponse = await this.props.app.registryContract.methods.newLostAsset(
         this.state.title,
+        this.state.description,
         countryHex,
         stateProvinceHex,
         cityHex
@@ -137,6 +145,10 @@ class AddItem extends Component {
             <Form.Field>
               <label>Title</label>
               <input placeholder='Title of item' value={this.state.title} onChange={this.handleTitleFieldChange}/>
+            </Form.Field>
+            <Form.Field>
+              <label>Description</label>
+              <input placeholder='Descrption of item' value={this.state.description} onChange={this.handleDescriptionFieldChange}/>
             </Form.Field>
             <Form.Select fluid
               value= {this.state.selectedCountry}
