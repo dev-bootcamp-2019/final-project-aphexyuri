@@ -72,7 +72,7 @@ class AddItem extends Component {
     this.setState({ selectedCountry: data.value })
 
     for (let country of lafConstants.countries) {
-      if(country.value == data.value) {
+      if(country.value === data.value) {
         this.setState({stateProvinceOptions: country.stateprovince})
         break
       }
