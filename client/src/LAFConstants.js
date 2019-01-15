@@ -1,3 +1,7 @@
+export const IPFS_HOST = 'ipfs.infura.io'
+export const IPFS_PORT = '5001'
+export const IPFS_PROTOCOL = 'https'
+
 export const countries = [
   // { key: 'AUS', text: 'Australia', value: 'AUS' },
   { key: 'CAN', text: 'Canada', value: 'CAN', stateprovince: [

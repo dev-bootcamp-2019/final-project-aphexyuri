@@ -13,7 +13,7 @@ import bs58 from 'bs58';
  * @param {string} multihash A base58 encoded multihash string
  * @returns {Multihash}
  */
-export function getBytes32FromMultiash(multihash) {
+export function getBytes32FromMultihash(multihash) {
   const decoded = bs58.decode(multihash);
 
   return {

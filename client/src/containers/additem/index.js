@@ -7,9 +7,14 @@ import { connect } from 'react-redux'
 import classNames from 'classnames'
 import Dropzone from 'react-dropzone'
 
-import Ipfs from 'ipfs'
+// import getBytes32FromMultihash from '../../utils/multihash'
 
+var ipfsClient = require('ipfs-http-client')
+const ipfs = ipfsClient('ipfs.infura.io', '5001', { protocol: 'https' })
+
+var multihash = require('../../utils/multihash')
 var lafConstants = require('../../LAFConstants.js')
+var that
 
 const clearState = {
   title: '',
@@ -19,8 +24,10 @@ const clearState = {
   city: null,
   stateProvinceOptions: null,
   rewardAmount: null,
-  imagePreview: null,
-  imageBuffer: null
+  ipfsHash: null,
+  ipfsDigest: null,
+  ipfsHashFunction: null,
+  ipfsSize: null
 }
 
 class AddItem extends Component {
@@ -28,6 +35,7 @@ class AddItem extends Component {
 
   constructor (props) {
       super(props)
+      that = this
       // console.log('AddItem constructor', this.props)
   }
 
@@ -80,51 +88,33 @@ class AddItem extends Component {
   }
 
   handlePostItemClicked = async () => {
-    var countryHex = this.props.app.web3.utils.asciiToHex(this.state.selectedCountry)
+    let titleHex = this.state.title
+    let countryHex = this.props.app.web3.utils.asciiToHex(this.state.selectedCountry)
+    let stateProvinceHex = this.props.app.web3.utils.asciiToHex(this.state.selectedStateProvince)
+    let cityHex = this.props.app.web3.utils.asciiToHex(this.state.city)
 
-    var stateProvinceHex = this.props.app.web3.utils.asciiToHex(this.state.selectedStateProvince)
+    try {
+      await this.props.app.registryContract.methods.newLostAsset(
+        titleHex,
+        this.state.description,
+        countryHex,
+        stateProvinceHex,
+        cityHex,
+        this.state.ipfsDigest,
+        this.state.ipfsHashFunction,
+        this.state.ipfsSize
+      ).send({
+        from: this.props.app.accounts[0],
+        value: this.props.app.web3.utils.toWei(this.state.rewardAmount)
+      });
 
-    var cityHex = this.props.app.web3.utils.asciiToHex(this.state.city)
-
-    let ipfs = new Ipfs()
-    
-    let content = ipfs.types.Buffer.from('ABC');
-    let results = await ipfs.files.add(content);
-    let hash = results[0].hash; // "Qm...WW"
-
-    console.log(hash)
-
-    // ipfs.files.add(this.state.imageBuffer, (error, result) => {
-    //   if(error) {
-    //     console.log('error', error)
-    //     return
-    //   }
-    //   console.log(result[0].hash)
-    // })
-
-    // console.log('from', this.props.app.accounts[0])
-    // console.log('amount', this.props.app.web3.utils.toWei(this.state.rewardAmount))
-
-    // try {
-    //   let newLostAssetResponse = await this.props.app.registryContract.methods.newLostAsset(
-    //     this.state.title,
-    //     this.state.description,
-    //     countryHex,
-    //     stateProvinceHex,
-    //     cityHex
-    //   ).send({
-    //     from: this.props.app.accounts[0],
-    //     value: this.props.app.web3.utils.toWei(this.state.rewardAmount)
-    //   });
-
-    //   // TODO feedback that item has been added + clear UI
-    // }
-    // catch(e) {
-    //   console.log('newLostAsset Error', e)
-    //   // TODO feedback of error
-    // }
-
-    this.setState(clearState)    
+      this.setState(clearState)
+      // TODO feedback that item has been added + clear UI
+    }
+    catch(e) {
+      console.log('newLostAsset Error', e)
+      // TODO feedback of error
+    }
   }
 
   renderNearestCityField = e => {
@@ -157,32 +147,55 @@ class AddItem extends Component {
     }
   }
 
-  onDrop = (acceptedFiles, rejectedFiles) => {
+  onDrop = async (acceptedFiles, rejectedFiles) => {
     console.log('acceptedFiles', acceptedFiles)
     console.log('rejectedFiles', rejectedFiles)
 
     if(acceptedFiles.length > 1) {
-      // TODO user feedback, jsut one file allowed
+      // TODO user feedback, just one file allowed
       return
     }
 
     acceptedFiles.forEach(file => {
-      const url = URL.createObjectURL(file)
-      this.setState({ imagePreview: url })
-
-      const reader = new FileReader()
-      // reader.onloadend = () => {}
-      reader.onload = () => {
-        const fileAsBinaryString = reader.result;
-        console.log('file loaded')
-        this.setState({ imageBuffer: Buffer(fileAsBinaryString) })
-      };
+      let reader = new window.FileReader()
+      reader.onloadend = () => this.saveToIpfs(reader)
       reader.onabort = () => console.log('file reading was aborted');
       reader.onerror = () => console.log('file reading has failed');
+      reader.readAsArrayBuffer(file)
 
-      reader.readAsBinaryString(file);
-      console.log(reader)
+      // TODO handle file reading errors
     })
+  }
+
+  saveToIpfs = (reader) => {
+    const buffer = Buffer.from(reader.result)
+
+    console.log('adding file to ipfs')
+
+    this.setState({ipfsFileProgress: 10})  
+
+    // --- ipfs addReadableStream ---
+    const stream = ipfs.addReadableStream({progress: this.ipfsProgress})
+    stream.on('data', function (data) {
+      console.log(`Added hash: ${data.hash}`)
+
+      let multihashObj = multihash.getBytes32FromMultihash(data.hash)
+
+      that.setState({
+        ipfsHash: data.hash,
+        ipfsDigest: multihashObj.digest,
+        ipfsHashFunction: multihashObj.hashFunction,
+        ipfsSize: multihashObj.size,
+      })
+    })
+    // TODO handle stream error
+
+    stream.write(buffer)
+    stream.end()
+  }
+
+  ipfsProgress = (progress) => {
+    console.log('IPFS upload progress', progress)
   }
 
   render () {
@@ -218,7 +231,9 @@ class AddItem extends Component {
             
           </Form>
 
-          <Dropzone accept="image/jpeg, image/png" onDrop={this.onDrop}>
+          <Dropzone
+            accept="image/jpeg, image/png"
+            onDrop={this.onDrop}>
             {({getRootProps, getInputProps, isDragActive}) => {
               return (
                 <div {...getRootProps()} className={classNames('dropzone', {'dropzone--isActive': isDragActive})}>
@@ -232,8 +247,12 @@ class AddItem extends Component {
               )
             }}
           </Dropzone>
-
-          <Image src={this.state.imagePreview} size='small' />
+          
+          {
+            this.state.ipfsHash ? <Image src={'https://gateway.ipfs.io/ipfs/' + this.state.ipfsHash} size='small' /> : null
+          }
+          {/* https://gateway.ipfs.io/ipfs/QmRFYwD1sna2Tqzq45yq5UccjYkDBVN9NYNBxrPXKmKjNv */}
+          {/* https://gateway.ipfs.io/ipfs/QmaSwvR434nGXrTtQShkypBHYkEn5xp9VHB6ycURYwpm8A */}
 
           { this.renderPostItemField() }
         </Container>
