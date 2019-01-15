@@ -1,5 +1,14 @@
 import React, { Component } from 'react'
-import { Container, Button, Form, Image } from 'semantic-ui-react'
+
+import {
+  Segment,
+  Container,
+  Button,
+  Form,
+  Image,
+  Header,
+  Icon
+} from 'semantic-ui-react'
 
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
@@ -24,6 +33,7 @@ const clearState = {
   city: null,
   stateProvinceOptions: null,
   rewardAmount: null,
+  ipfsUploadInProgress: false,
   ipfsHash: null,
   ipfsDigest: null,
   ipfsHashFunction: null,
@@ -87,6 +97,159 @@ class AddItem extends Component {
     })
   }
 
+  renderNearestCityField = e => {
+    if(this.state.selectedCountry && this.state.selectedStateProvince) {
+      return (
+        <Form.Field>
+          <label>Nearest City/Landmark</label>
+          <input placeholder='City or Landmark' onChange={this.handleCityFieldChange}/>
+        </Form.Field>
+      )
+    }
+  }
+
+  renderRewardAmountField = e => {
+    if(this.state.selectedCountry && this.state.selectedStateProvince) {
+      return (
+        <Form.Field>
+          <label>Reward amount</label>
+          <input placeholder='Amount of ETH' onChange={this.handleRewardAmountFieldChange}/>
+        </Form.Field>
+      )
+    }
+  }
+
+  renderDropZoneStatusSegment = (isDragActive) => {
+    if(this.state.ipfsHash) {
+      return (
+        <Segment placeholder loading={ this.state.ipfsUploadInProgress }>
+          {
+            isDragActive ?
+              <Header icon>
+                <div>
+                  <Icon name='check' />
+                  Drop file here
+                </div>
+              </Header>
+            :
+              <Image rounded centered src={ 'https://gateway.ipfs.io/ipfs/' + this.state.ipfsHash } size='medium' />
+          }
+        </Segment>
+      )
+    }
+    else {
+      return (
+        <Segment placeholder
+          loading={ this.state.ipfsUploadInProgress }>
+          <Header icon>
+            {
+              isDragActive ?
+                <div>
+                  <Icon name='check' />
+                  Drop file here
+                </div>
+              :
+              <div>
+                <Icon name='add' />
+                Drag file here 
+                <p>or Click to browse</p>
+                <p>(image files only)</p>
+              </div>
+            }
+          </Header>
+        </Segment>
+      )
+    }
+  }
+
+  renderDropZone = e => {
+    if(this.state.selectedCountry && this.state.selectedStateProvince) {
+      return (
+        <Dropzone
+          accept="image/jpeg, image/png"
+          onDrop={this.onDrop}>
+          {
+            ({ getRootProps, getInputProps, isDragActive }) => {
+              return (
+                <div { ...getRootProps() } className={ classNames('dropzone', { 'dropzone--isActive': isDragActive }) }>
+                  <input { ...getInputProps() } />
+                  { this.renderDropZoneStatusSegment(isDragActive) }
+                </div>
+              )
+            }
+          }
+        </Dropzone>
+      )
+    }
+  }
+
+  renderSubmitBtn = e => {
+    if(this.state.selectedCountry &&
+      this.state.selectedStateProvince &&
+      this.state.ipfsDigest &&
+      this.state.ipfsHashFunction &&
+      this.state.ipfsSize) {
+      return (
+        <Button fluid positive type='submit' onClick={this.handlePostItemClicked}>Submit</Button>
+      )
+    }
+  }
+
+  onDrop = async (acceptedFiles, rejectedFiles) => {
+    // console.log('acceptedFiles', acceptedFiles)
+    // console.log('rejectedFiles', rejectedFiles)
+
+    if(acceptedFiles.length > 1) {
+      // TODO user feedback, just one file allowed
+      return
+    }
+
+    acceptedFiles.forEach(file => {
+      let reader = new window.FileReader()
+      reader.onloadend = () => this.saveToIpfs(reader)
+      reader.onabort = () => console.log('file reading was aborted');
+      reader.onerror = () => console.log('file reading has failed');
+      reader.readAsArrayBuffer(file)
+
+      // TODO handle file reading errors
+    })
+  }
+
+  saveToIpfs = (reader) => {
+    const buffer = Buffer.from(reader.result)
+
+    // console.log('adding file to ipfs')
+
+    this.setState({
+      ipfsFileProgress: 10,
+      ipfsUploadInProgress: true
+    })  
+
+    // --- ipfs addReadableStream ---
+    const stream = ipfs.addReadableStream({progress: this.ipfsProgress})
+    stream.on('data', function (data) {
+      // console.log(`Added hash: ${data.hash}`)
+
+      let multihashObj = multihash.getBytes32FromMultihash(data.hash)
+
+      that.setState({
+        ipfsHash: data.hash,
+        ipfsDigest: multihashObj.digest,
+        ipfsHashFunction: multihashObj.hashFunction,
+        ipfsSize: multihashObj.size,
+        ipfsUploadInProgress: false
+      })
+    })
+    // TODO handle stream error
+
+    stream.write(buffer)
+    stream.end()
+  }
+
+  ipfsProgress = (progress) => {
+    // console.log('IPFS upload progress', progress)
+  }
+
   handlePostItemClicked = async () => {
     let titleHex = this.state.title
     let countryHex = this.props.app.web3.utils.asciiToHex(this.state.selectedCountry)
@@ -117,92 +280,11 @@ class AddItem extends Component {
     }
   }
 
-  renderNearestCityField = e => {
-    if(this.state.selectedCountry && this.state.selectedStateProvince) {
-      return (
-        <Form.Field>
-          <label>Nearest City</label>
-          <input placeholder='Nearest City' onChange={this.handleCityFieldChange}/>
-        </Form.Field>
-      )
-    }
-  }
-
-  renderRewardAmountField = e => {
-    if(this.state.selectedCountry && this.state.selectedStateProvince) {
-      return (
-        <Form.Field>
-          <label>Reward amount</label>
-          <input placeholder='ETH' onChange={this.handleRewardAmountFieldChange}/>
-        </Form.Field>
-      )
-    }
-  }
-
-  renderPostItemField = e => {
-    if(this.state.selectedCountry && this.state.selectedStateProvince) {
-      return (
-        <Button type='submit' onClick={this.handlePostItemClicked}>Post Item</Button>
-      )
-    }
-  }
-
-  onDrop = async (acceptedFiles, rejectedFiles) => {
-    console.log('acceptedFiles', acceptedFiles)
-    console.log('rejectedFiles', rejectedFiles)
-
-    if(acceptedFiles.length > 1) {
-      // TODO user feedback, just one file allowed
-      return
-    }
-
-    acceptedFiles.forEach(file => {
-      let reader = new window.FileReader()
-      reader.onloadend = () => this.saveToIpfs(reader)
-      reader.onabort = () => console.log('file reading was aborted');
-      reader.onerror = () => console.log('file reading has failed');
-      reader.readAsArrayBuffer(file)
-
-      // TODO handle file reading errors
-    })
-  }
-
-  saveToIpfs = (reader) => {
-    const buffer = Buffer.from(reader.result)
-
-    console.log('adding file to ipfs')
-
-    this.setState({ipfsFileProgress: 10})  
-
-    // --- ipfs addReadableStream ---
-    const stream = ipfs.addReadableStream({progress: this.ipfsProgress})
-    stream.on('data', function (data) {
-      console.log(`Added hash: ${data.hash}`)
-
-      let multihashObj = multihash.getBytes32FromMultihash(data.hash)
-
-      that.setState({
-        ipfsHash: data.hash,
-        ipfsDigest: multihashObj.digest,
-        ipfsHashFunction: multihashObj.hashFunction,
-        ipfsSize: multihashObj.size,
-      })
-    })
-    // TODO handle stream error
-
-    stream.write(buffer)
-    stream.end()
-  }
-
-  ipfsProgress = (progress) => {
-    console.log('IPFS upload progress', progress)
-  }
-
   render () {
     return (
       <div>
         <Container>
-          <Form ref='form'>
+          <Form>
             <Form.Field>
               <label>Title</label>
               <input placeholder='Title of item' value={this.state.title} onChange={this.handleTitleFieldChange}/>
@@ -211,50 +293,38 @@ class AddItem extends Component {
               <label>Description</label>
               <input placeholder='Descrption of item' value={this.state.description} onChange={this.handleDescriptionFieldChange}/>
             </Form.Field>
-            <Form.Select fluid
-              value= {this.state.selectedCountry}
-              label='Country'
-              options={lafConstants.countries}
-              placeholder='Country'
-              onChange={this.handleCountrySelectionChange} />
-            {
-              this.state.stateProvinceOptions ?
-                <Form.Select fluid
-                  label='State/Province'
-                  options={this.state.stateProvinceOptions}
-                  placeholder='State/Province'
-                  onChange={this.handleStateProvinceSelectionChange} />
-              : null
-            }
+            <Form.Group widths='equal'>
+              <Form.Select fluid
+                value= {this.state.selectedCountry}
+                label='Country'
+                options={lafConstants.countries}
+                placeholder='Country'
+                onChange={this.handleCountrySelectionChange} />
+              
+              {
+                this.state.stateProvinceOptions ?
+                  <Form.Select fluid
+                    label='State/Province'
+                    options={this.state.stateProvinceOptions}
+                    placeholder='State/Province'
+                    onChange={this.handleStateProvinceSelectionChange} />
+                : null
+              }
+            </Form.Group>
+            
             { this.renderNearestCityField() }
             { this.renderRewardAmountField() }
+            { this.renderDropZone() }
+
+            <br/>
+
+            { this.renderSubmitBtn() }
             
           </Form>
-
-          <Dropzone
-            accept="image/jpeg, image/png"
-            onDrop={this.onDrop}>
-            {({getRootProps, getInputProps, isDragActive}) => {
-              return (
-                <div {...getRootProps()} className={classNames('dropzone', {'dropzone--isActive': isDragActive})}>
-                  <input {...getInputProps()} />
-                  {
-                    isDragActive ?
-                      <p>Drop files here...</p> :
-                      <p>Try dropping some files here, or click to select files to upload.</p>
-                  }
-                </div>
-              )
-            }}
-          </Dropzone>
           
-          {
-            this.state.ipfsHash ? <Image src={'https://gateway.ipfs.io/ipfs/' + this.state.ipfsHash} size='small' /> : null
-          }
           {/* https://gateway.ipfs.io/ipfs/QmRFYwD1sna2Tqzq45yq5UccjYkDBVN9NYNBxrPXKmKjNv */}
           {/* https://gateway.ipfs.io/ipfs/QmaSwvR434nGXrTtQShkypBHYkEn5xp9VHB6ycURYwpm8A */}
 
-          { this.renderPostItemField() }
         </Container>
       </div>
     )
