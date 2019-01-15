@@ -27,7 +27,10 @@ contract LAFAssetRegistry is LAFRegistryBase
         bytes32 city,
         string title,
         InitialAssetType indexed initialAssetType,
-        uint256 reward);
+        uint256 reward,
+        bytes32 ipfsDigest,
+        uint8 ipfsHashFunction,
+        uint8 ipfsSize);
     event AssetCancelled(uint256 assetId);
     event FoundLostAsset(uint256 assetId, bytes8 indexed isoCountryCode, bytes8 indexed stateProvince);
     event MatchConfirmed(uint256 assetId);
@@ -160,7 +163,17 @@ contract LAFAssetRegistry is LAFRegistryBase
         LAFStorageLib.storeAssetIfsHashFunction(getAssetStorageAddress(), assetId, ipfsHashFunction);
         LAFStorageLib.storeAssetIfsSize(getAssetStorageAddress(), assetId, ipfsSize);
         
-        emit AssetStored(assetId, isoCountryCode, stateProvince, city, assetTitle, initialAssetType, msg.value);
+        emit AssetStored(
+            assetId,
+            isoCountryCode,
+            stateProvince,
+            city,
+            assetTitle,
+            initialAssetType,
+            msg.value,
+            ipfsDigest,
+            ipfsHashFunction,
+            ipfsSize);
     }
     
     // =======================================================
