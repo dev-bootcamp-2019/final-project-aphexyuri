@@ -1,13 +1,12 @@
 import React, { Component } from 'react'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 
 import {
   BrowserRouter as Router,
   Route,
   Link
 } from 'react-router-dom'
-
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
 
 import {
   Menu,
@@ -16,6 +15,7 @@ import {
 
 import Listings from '../listings'
 import AddItem from '../additem'
+import Asset from '../asset'
 
 import { initWeb3 } from '../../modules/app'
 
@@ -50,12 +50,14 @@ class App extends Component {
                     {...props}/>
                 }
               />
-              <Route path={'/lost'}
+              <Route exact path={'/lost'}
                 render={ (props) => 
                   <AddItem
                     {...props}/>    
                 }
               />
+
+              <Route exact path={'/listings/:id'} component={Asset} />
             </Segment>
           </div>
         </Router>

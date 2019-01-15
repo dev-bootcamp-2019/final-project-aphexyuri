@@ -1,13 +1,14 @@
 import React, { Component } from 'react'
-
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-
 import PropTypes from 'prop-types';
 
-import { Card, Icon } from 'semantic-ui-react'
+import { Card, Icon, Button } from 'semantic-ui-react'
 
 class ListingItem extends Component {
+  handleItemSelect = (evt) => {
+    this.props.itemSelectHandler(this.props.item.returnValues.assetId)
+  }
   render () {
     // console.log(this.props.item)
     
@@ -25,6 +26,9 @@ class ListingItem extends Component {
           <Card.Content extra>
             <Icon name='ethereum' />
             { this.props.app.web3.utils.fromWei(this.props.item.returnValues.reward, 'ether') } ETH
+            <Button basic color='green' floated='right' size='mini' onClick={ this.handleItemSelect }>
+              See more
+            </Button>
           </Card.Content>
         </Card.Content>
       </Card>
@@ -33,7 +37,8 @@ class ListingItem extends Component {
 }
 
 ListingItem.propTypes = {
-  item: PropTypes.object.isRequired
+  item: PropTypes.object.isRequired,
+  itemSelectHandler: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({

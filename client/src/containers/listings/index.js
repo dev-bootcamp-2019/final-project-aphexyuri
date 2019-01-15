@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import PropTypes from 'prop-types';
 
 import { Container, Header, Form, Button, Icon } from 'semantic-ui-react'
 
@@ -31,7 +31,8 @@ class Listings extends Component {
     return (
       <ListingItem
         key={item.id}
-        item={item}/>
+        item={item}
+        itemSelectHandler={this.handleItemSelect}/>
     )
   }
 
@@ -65,11 +66,15 @@ class Listings extends Component {
       this.props.app.registryContract)
   }
 
+  handleItemSelect = (itemId) => {
+    this.props.history.push('listings/' + itemId)
+  }
+
   render () {
     return (
       <div>
         <Container>
-          <Header as='h3'>Search Lost & Found Items near you</Header>
+          <Header as='h3'>Find Lost & Found Stuff near you</Header>
 
           <Form>
             <Form.Group widths='equal'>
@@ -112,6 +117,10 @@ class Listings extends Component {
       </div>
     )
   }
+}
+
+Listings.contextTypes = {
+  store: PropTypes.object.isRequired
 }
 
 const mapStateToProps = state => ({
