@@ -28,11 +28,20 @@ library LAFStorageLib
     string constant KEY_MATCHER = "matcher";
     string constant KEY_EXCHANGE_DEAILS = "exchangeDetails";
     string constant KEY_CLAIMABLE_REWARDS_LEDGER = "claimableRewardsLedger";
+    string constant KEY_IPFS_DIGEST = "ipfsDigest";
+    string constant KEY_IPFS_HASH_FUNCTION = "ipfsHashFunction";
+    string constant KEY_IPFS_SIZE = "ipfsSie";
 
     // =======================================================
     // STORAGE MUTATORS
     // =======================================================
     // ----- generic -----
+    function storeUint8(address assetStorageAddress, uint256 assetId, string memory key, uint8 value)
+        private
+    {
+        LAFAssetStorage(assetStorageAddress).storeUint8(keccak256(abi.encodePacked(assetId, key)), value);
+    }
+
     function storeUint256(address assetStorageAddress, uint256 assetId, string memory key, uint256 value)
         private
     {
@@ -55,6 +64,24 @@ library LAFStorageLib
         private
     {
         LAFAssetStorage(assetStorageAddress).storeBytes(keccak256(abi.encodePacked(assetId, key)), value);
+    }
+
+    function storeBytes8(address assetStorageAddress, uint256 assetId, string memory key, bytes8 value)
+        private
+    {
+        LAFAssetStorage(assetStorageAddress).storeBytes8(keccak256(abi.encodePacked(assetId, key)), value);
+    }
+
+    function storeBytes16(address assetStorageAddress, uint256 assetId, string memory key, bytes16 value)
+        private
+    {
+        LAFAssetStorage(assetStorageAddress).storeBytes16(keccak256(abi.encodePacked(assetId, key)), value);
+    }
+
+    function storeBytes32(address assetStorageAddress, uint256 assetId, string memory key, bytes32 value)
+        private
+    {
+        LAFAssetStorage(assetStorageAddress).storeBytes32(keccak256(abi.encodePacked(assetId, key)), value);
     }
 
     function storeBool(address assetStorageAddress, uint256 assetId, string memory key, bool value)
@@ -108,22 +135,22 @@ library LAFStorageLib
         storeString(assetStorageAddress, assetId, KEY_DESCRIPTION, value);
     }
     
-    function storeAssetIsoCountryCode(address assetStorageAddress, uint256 assetId, bytes memory value)
+    function storeAssetIsoCountryCode(address assetStorageAddress, uint256 assetId, bytes8 value)
         public
     {
-        storeBytes(assetStorageAddress, assetId, KEY_ISO_COUNTRY_CODE, value);
+        storeBytes8(assetStorageAddress, assetId, KEY_ISO_COUNTRY_CODE, value);
     }
     
-    function storeAssetStateProvince(address assetStorageAddress, uint256 assetId, bytes memory value)
+    function storeAssetStateProvince(address assetStorageAddress, uint256 assetId, bytes8 value)
         public
     {
-        storeBytes(assetStorageAddress, assetId, KEY_STATE_PROVINCE, value);
+        storeBytes8(assetStorageAddress, assetId, KEY_STATE_PROVINCE, value);
     }
     
-    function storeAssetCity(address assetStorageAddress, uint256 assetId, bytes memory value)
+    function storeAssetCity(address assetStorageAddress, uint256 assetId, bytes32 value)
         public
     {
-        storeBytes(assetStorageAddress, assetId, KEY_CITY, value);
+        storeBytes32(assetStorageAddress, assetId, KEY_CITY, value);
     }
     
     function storeAssetReward(address assetStorageAddress, uint256 assetId, uint256 value)
@@ -139,16 +166,16 @@ library LAFStorageLib
         storeAddress(assetStorageAddress, assetId, KEY_CREATOR, value);
     }
     
-    function storeAssetInitialType(address assetStorageAddress, uint256 assetId, uint value)
+    function storeAssetInitialType(address assetStorageAddress, uint256 assetId, uint8 value)
         public
     {
-        storeUint256(assetStorageAddress, assetId, KEY_INITIAL_TYPE, value);
+        storeUint8(assetStorageAddress, assetId, KEY_INITIAL_TYPE, value);
     }
     
-    function storeAssetStatus(address assetStorageAddress, uint256 assetId, uint value)
+    function storeAssetStatus(address assetStorageAddress, uint256 assetId, uint8 value)
         public
     {
-        storeUint256(assetStorageAddress, assetId, KEY_STATUS, value);
+        storeUint8(assetStorageAddress, assetId, KEY_STATUS, value);
     }
     
     function storeAssetMatcher(address assetStorageAddress, uint256 assetId, address payable value)
@@ -170,16 +197,42 @@ library LAFStorageLib
         storeAddressUint256Mapping(assetStorageAddress, KEY_CLAIMABLE_REWARDS_LEDGER, recipient, rewardAmount);
     }
 
+    function storeAssetIfsDigest(address assetStorageAddress, uint256 assetId, bytes32 value)
+        public
+    {
+        storeBytes32(assetStorageAddress, assetId, KEY_IPFS_DIGEST, value);
+    }
+
+    function storeAssetIfsHashFunction(address assetStorageAddress, uint256 assetId, uint8 value)
+        public
+    {
+        storeUint8(assetStorageAddress, assetId, KEY_IPFS_HASH_FUNCTION, value);
+    }
+
+    function storeAssetIfsSize(address assetStorageAddress, uint256 assetId, uint8 value)
+        public
+    {
+        storeUint8(assetStorageAddress, assetId, KEY_IPFS_SIZE, value);
+    }
+
     // =======================================================
     // STORAGE ACCESSORS
     // =======================================================
     // ----- generic -----
+    function getUint8Value(address assetStorageAddress, uint256 assetId, string memory key)
+        private
+        view
+        returns(uint8)
+    {
+        return LAFAssetStorage(assetStorageAddress).uint8Storage(keccak256(abi.encodePacked(assetId, key)));
+    }
+
     function getUint256Value(address assetStorageAddress, uint256 assetId, string memory key)
         private
         view
         returns(uint256)
     {
-        return LAFAssetStorage(assetStorageAddress).uintStorage(keccak256(abi.encodePacked(assetId, key)));
+        return LAFAssetStorage(assetStorageAddress).uint256Storage(keccak256(abi.encodePacked(assetId, key)));
     }
     
     function getStringValue(address assetStorageAddress, uint256 assetId, string memory key)
@@ -204,6 +257,30 @@ library LAFStorageLib
         returns(bytes memory)
     {
         return LAFAssetStorage(assetStorageAddress).bytesStorage(keccak256(abi.encodePacked(assetId, key)));
+    }
+
+    function getBytes8Value(address assetStorageAddress, uint256 assetId, string memory key)
+        private
+        view
+        returns(bytes8)
+    {
+        return LAFAssetStorage(assetStorageAddress).bytes8Storage(keccak256(abi.encodePacked(assetId, key)));
+    }
+
+    function getBytes16Value(address assetStorageAddress, uint256 assetId, string memory key)
+        private
+        view
+        returns(bytes16)
+    {
+        return LAFAssetStorage(assetStorageAddress).bytes16Storage(keccak256(abi.encodePacked(assetId, key)));
+    }
+
+    function getBytes32Value(address assetStorageAddress, uint256 assetId, string memory key)
+        private
+        view
+        returns(bytes32)
+    {
+        return LAFAssetStorage(assetStorageAddress).bytes32Storage(keccak256(abi.encodePacked(assetId, key)));
     }
 
     function getBoolValue(address assetStorageAddress, uint256 assetId, string memory key)
@@ -244,7 +321,7 @@ library LAFStorageLib
         view
         returns (uint256)
     {
-        return LAFAssetStorage(assetStorageAddress).uintStorage(keccak256(KEY_ASSET_COUNT));
+        return LAFAssetStorage(assetStorageAddress).uint256Storage(keccak256(KEY_ASSET_COUNT));
     }
     
     function getAssetTitle(address assetStorageAddress, uint256 assetId)
@@ -266,25 +343,25 @@ library LAFStorageLib
     function getAssetIsoCountryCode(address assetStorageAddress, uint256 assetId)
         public
         view
-        returns (bytes memory)
+        returns (bytes8)
     {
-        return getBytesValue(assetStorageAddress, assetId, KEY_ISO_COUNTRY_CODE);
+        return getBytes8Value(assetStorageAddress, assetId, KEY_ISO_COUNTRY_CODE);
     }
     
     function getAssetStateProvince(address assetStorageAddress, uint256 assetId)
         public
         view
-        returns (bytes memory)
+        returns (bytes8)
     {
-        return getBytesValue(assetStorageAddress, assetId, KEY_STATE_PROVINCE);
+        return getBytes8Value(assetStorageAddress, assetId, KEY_STATE_PROVINCE);
     }
     
     function getAssetCity(address assetStorageAddress, uint256 assetId)
         public
         view
-        returns (bytes memory)
+        returns (bytes32)
     {
-        return getBytesValue(assetStorageAddress, assetId, KEY_CITY);
+        return getBytes32Value(assetStorageAddress, assetId, KEY_CITY);
     }
     
     function getAssetReward(address assetStorageAddress, uint256 assetId)
@@ -333,5 +410,30 @@ library LAFStorageLib
         returns(uint256)
     {
         return getUint256ForAddressFromMapping(assetStorageAddress, KEY_CLAIMABLE_REWARDS_LEDGER, claimer);
+    }
+    
+
+    function getAssetIpfsDigest(address assetStorageAddress, uint256 assetId)
+        public
+        view
+        returns (bytes32)
+    {
+        return getBytes32Value(assetStorageAddress, assetId, KEY_IPFS_DIGEST);
+    }
+
+    function getAssetIpfsHashFunction(address assetStorageAddress, uint256 assetId)
+        public
+        view
+        returns (uint8)
+    {
+        return getUint8Value(assetStorageAddress, assetId, KEY_IPFS_HASH_FUNCTION);
+    }
+
+    function getAssetIpfsSize(address assetStorageAddress, uint256 assetId)
+        public
+        view
+        returns (uint8)
+    {
+        return getUint8Value(assetStorageAddress, assetId, KEY_IPFS_SIZE);
     }
 }

@@ -8,125 +8,123 @@ import { Container, Header, Form, Button, Icon } from 'semantic-ui-react'
 import ListingItem from './listingItem.js'
 
 import {
-    getListingsPastEvents
+  getAssetStoredEvents
 } from '../../modules/listings'
 
+var lafConstants = require('../../LAFConstants.js')
+
 class Listings extends Component {
-    state = { selectedCountry: null, selectedStateProvince: null, stateProvinceOptions: null }
+  state = { selectedCountry: null, selectedStateProvince: null, stateProvinceOptions: null, initialAssetType: null }
 
-    // constructor(props) {
-    //     super(props)
-    // }
+  // constructor(props) {
+  //     super(props)
+  // }
 
-    componentDidMount () {
-        if(this.props.listingsContract) {
-            // console.log('Listings componentsDidMount')
-            // this.props.getListingsPastEvents(this.props.web3, this.props.listingsContract)
-        }
+  componentDidMount () {
+    if(this.props.listingsContract) {
+      // console.log('Listings componentsDidMount')
+      // this.props.getListingsPastEvents(this.props.web3, this.props.listingsContract)
     }
+  }
 
-    renderEntry = item => {
-        return (
-            // title
-            <ListingItem
-                web3={this.props.web3}
-                key={item.id}
-                item={item}/>
-        )
-    }
+  renderEntry = item => {
+    return (
+      <ListingItem
+        key={item.id}
+        item={item}/>
+    )
+  }
 
-    handleCountrySelectionChange = (event, data) => {
-        this.setState({ selectedCountry: data.value })
+  handleCountrySelectionChange = (event, data) => {
+    this.setState({ selectedCountry: data.value })
 
-        for (let country of this.props.countries) {
-            if(country.value == data.value) {
-                this.setState({stateProvinceOptions: country.stateprovince})
-                break
-            }
-        }
-    }
-
-    handleStateProvinceSelectionChange = (event, data) => {
-        this.setState({ selectedStateProvince: data.value })
-    }
-
-    handleFindItemsClicked = () => {
-        this.props.getListingsPastEvents(
-            this.props.web3,
-            this.props.listingsContract,
-            this.state.selectedCountry,
-            this.state.selectedStateProvince)
-    }
-
-    handleFindAllItemsClicked = () => {
-        this.props.getListingsPastEvents(
-            this.props.web3,
-            this.props.listingsContract)
-    }
-
-    render () {
-        return (
-            <div>
-                <Container>
-                    <Header as='h3'>Search Lost & Found Items near you</Header>
-
-                    <Form>
-                        <Form.Group widths='equal'>
-                            <Form.Select fluid
-                                label='Country'
-                                options={this.props.countries}
-                                placeholder='Country'
-                                onChange={this.handleCountrySelectionChange} />
-                            {
-                                this.state.stateProvinceOptions ?
-                                    <Form.Select fluid
-                                        label='State/Province'
-                                        options={this.state.stateProvinceOptions}
-                                        placeholder='State/Province'
-                                        onChange={this.handleStateProvinceSelectionChange} />
-                                : null
-                            }
-                        </Form.Group>
-
-                        <Button positive
-                            size='huge'
-                            color='black'
-                            onClick={this.handleFindItemsClicked}
-                            disabled={!this.state.selectedCountry || !this.state.selectedStateProvince} >
-                            <Icon name='search' />
-                            Filter Items
-                        </Button>
-
-                        <Button basic
-                            size='huge'
-                            color='black'
-                            onClick={this.handleFindAllItemsClicked} >
-                            Find All
-                        </Button>
-                    </Form>
-                    {
-                        this.props.listings ?
-                            this.props.listings.map(this.renderEntry)
-                        : null
-                    }
-                </Container>
-            </div>
-        )
+    for (let country of lafConstants.countries) {
+      if(country.value == data.value) {
+        this.setState({stateProvinceOptions: country.stateprovince})
+        break
       }
+    }
+  }
+
+  handleStateProvinceSelectionChange = (event, data) => {
+    this.setState({ selectedStateProvince: data.value })
+  }
+
+  handleFindItemsClicked = () => {
+    this.props.getAssetStoredEvents(
+      this.props.app.web3,
+      this.props.app.registryContract,
+      this.state.selectedCountry,
+      this.state.selectedStateProvince,
+      this.state.initialAssetType)
+  }
+
+  handleFindAllItemsClicked = () => {
+    this.props.getAssetStoredEvents(
+      this.props.app.web3,
+      this.props.app.registryContract)
+  }
+
+  render () {
+    return (
+      <div>
+        <Container>
+          <Header as='h3'>Search Lost & Found Items near you</Header>
+
+          <Form>
+            <Form.Group widths='equal'>
+              <Form.Select fluid
+                label='Country'
+                options={lafConstants.countries}
+                placeholder='Country'
+                onChange={this.handleCountrySelectionChange} />
+              {
+                this.state.stateProvinceOptions ?
+                  <Form.Select fluid
+                    label='State/Province'
+                    options={this.state.stateProvinceOptions}
+                    placeholder='State/Province'
+                    onChange={this.handleStateProvinceSelectionChange} />
+                : null
+              }
+            </Form.Group>
+
+            <Button positive
+              color='black'
+              onClick={this.handleFindItemsClicked}
+              disabled={!this.state.selectedCountry || !this.state.selectedStateProvince} >
+              <Icon name='search' />
+              Filter Items
+            </Button>
+
+            <Button basic
+              color='black'
+              onClick={this.handleFindAllItemsClicked} >
+              Find All
+            </Button>
+          </Form>
+          {
+            this.props.assetStoredEvents ?
+              this.props.assetStoredEvents.map(this.renderEntry)
+            : null
+          }
+        </Container>
+      </div>
+    )
+  }
 }
 
 const mapStateToProps = state => ({
-    countries: state.listings.countries,
-    listings: state.listings.listings,
-    listingsRetrieved: state.listings.listingsRetrieved,
-    countries: state.listings.countries
-  })
+  app: state.app,
+  assetStoredEvents: state.listings.assetStoredEvents,
+  assetStoredEventsRetrieved: state.listings.assetStoredEventsRetrieved
+})
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-    getListingsPastEvents
-  }, dispatch)
+  getAssetStoredEvents
+}, dispatch)
 
 export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(Listings)
+  mapStateToProps,
+  mapDispatchToProps
+)(Listings)

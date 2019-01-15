@@ -2,7 +2,6 @@ const truffleAssert = require('truffle-assertions')
 
 const LAFAssetRegistry = artifacts.require("./LAFAssetRegistry.sol")
 const LAFAssetStorage = artifacts.require("./LAFAssetStorage.sol")
-const LAFRewardsBank = artifacts.require("./LAFRewardsBank.sol")
 
 const delay = ms => new Promise(res => setTimeout(res, ms));
 
