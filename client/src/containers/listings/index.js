@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 
 import {
   Container,
+  Segment,
   Header,
   Form,
   Button,
@@ -21,18 +22,22 @@ import {
 var lafConstants = require('../../LAFConstants.js')
 
 class Listings extends Component {
-  state = { selectedCountry: null, selectedStateProvince: null, stateProvinceOptions: null, initialAssetType: null }
+  state = {
+    selectedCountry: null,
+    selectedStateProvince: null,
+    stateProvinceOptions: null,
+    initialAssetType: null }
 
   // constructor(props) {
   //     super(props)
   // }
 
-  componentDidMount () {
-    if(this.props.listingsContract) {
-      // console.log('Listings componentsDidMount')
-      // this.props.getListingsPastEvents(this.props.web3, this.props.listingsContract)
-    }
-  }
+  // componentDidMount () {
+  //   if(this.props.listingsContract) {
+  //     console.log('Listings componentsDidMount')
+  //     this.props.getListingsPastEvents(this.props.web3, this.props.listingsContract)
+  //   }
+  // }
 
   renderEntry = item => {
     return (
@@ -68,6 +73,12 @@ class Listings extends Component {
   }
 
   handleFindAllItemsClicked = () => {
+    this.setState({
+      selectedCountry: null,
+      selectedStateProvince: null,
+      stateProvinceOptions: null
+    })
+
     this.props.getAssetStoredEvents(
       this.props.app.web3,
       this.props.app.registryContract)
@@ -81,40 +92,42 @@ class Listings extends Component {
     return (
       <div>
         <Container>
-          <Header as='h3'>Find Lost & Found Stuff near you</Header>
+          <Header as='h2'>Find Lost & Found Stuff near you</Header>
+          <Segment basic textAlign='center'>
+            <Form style={{ paddingBottom: '0.5em' }}>
+              <Form.Group widths='equal'>
+                <Form.Select fluid
+                  value= {this.state.selectedCountry}
+                  // label='Country'
+                  options={lafConstants.countries}
+                  placeholder='Country'
+                  onChange={this.handleCountrySelectionChange} />
+                {
+                  this.state.stateProvinceOptions ?
+                    <Form.Select fluid
+                      // label='State/Province'
+                      options={this.state.stateProvinceOptions}
+                      placeholder='State/Province'
+                      onChange={this.handleStateProvinceSelectionChange} />
+                  : null
+                }
+              </Form.Group>
 
-          <Form>
-            <Form.Group widths='equal'>
-              <Form.Select fluid
-                label='Country'
-                options={lafConstants.countries}
-                placeholder='Country'
-                onChange={this.handleCountrySelectionChange} />
-              {
-                this.state.stateProvinceOptions ?
-                  <Form.Select fluid
-                    label='State/Province'
-                    options={this.state.stateProvinceOptions}
-                    placeholder='State/Province'
-                    onChange={this.handleStateProvinceSelectionChange} />
-                : null
-              }
-            </Form.Group>
-
-            <Button positive
-              color='black'
-              onClick={this.handleFindItemsClicked}
-              disabled={!this.state.selectedCountry || !this.state.selectedStateProvince} >
-              <Icon name='search' />
-              Filter Items
-            </Button>
-
-            <Button basic
-              color='black'
+              <Button positive
+                color='black'
+                onClick={this.handleFindItemsClicked}
+                disabled={!this.state.selectedCountry} >
+                <Icon name='search' />
+                Filter Items
+              </Button>
+            </Form>
+              
+            <Button basic compact
+              size='mini'
               onClick={this.handleFindAllItemsClicked} >
               Find All
             </Button>
-          </Form>
+          </Segment>
 
           <Container textAlign='left' style={{ paddingTop: '2em', paddingBottom: '1em'}}>
             {
