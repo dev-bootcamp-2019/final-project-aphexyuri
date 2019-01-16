@@ -3,7 +3,14 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types';
 
-import { Container, Header, Form, Button, Icon } from 'semantic-ui-react'
+import {
+  Container,
+  Header,
+  Form,
+  Button,
+  Icon,
+  Grid
+} from 'semantic-ui-react'
 
 import ListingItem from './listingItem.js'
 
@@ -108,11 +115,18 @@ class Listings extends Component {
               Find All
             </Button>
           </Form>
-          {
-            this.props.assetStoredEvents ?
-              this.props.assetStoredEvents.map(this.renderEntry)
-            : null
-          }
+
+          <Container textAlign='left' style={{ paddingTop: '2em', paddingBottom: '1em'}}>
+            {
+              this.props.assetStoredEvents ?
+                // <Card.Group>
+                <Grid>
+                  { this.props.assetStoredEvents.map(this.renderEntry) }
+                </Grid>
+                // </Card.Group>
+              : null
+            }
+          </Container>
         </Container>
       </div>
     )

@@ -9,7 +9,8 @@ import {
   Form,
   Image,
   Header,
-  Icon
+  Icon,
+  TextArea
 } from 'semantic-ui-react'
 
 import classNames from 'classnames'
@@ -51,8 +52,6 @@ class AddItem extends Component {
   // componentDidUpdate = async () => {
   //   console.log('AddItem componentDidUpdate', this.props)
   // }
-
-  setClearedState = () => {}
 
   handleTitleFieldChange = e => {
     // console.log('title', e.target.value)
@@ -220,7 +219,7 @@ class AddItem extends Component {
     // console.log('adding file to ipfs')
 
     this.setState({
-      ipfsFileProgress: 10,
+      // ipfsFileProgress: 10,
       ipfsUploadInProgress: true
     })  
 
@@ -290,7 +289,8 @@ class AddItem extends Component {
             </Form.Field>
             <Form.Field>
               <label>Description</label>
-              <input placeholder='Descrption of item' value={this.state.description} onChange={this.handleDescriptionFieldChange}/>
+              <TextArea autoHeight rows={1}
+                placeholder='Descrption of item' value={this.state.description} onChange={this.handleDescriptionFieldChange} />
             </Form.Field>
             <Form.Group widths='equal'>
               <Form.Select fluid

@@ -48,7 +48,7 @@ export const getAssetStoredEvents = (web3, listingsContract, country, stateProvi
 export default (state = initialState, action) => {
   switch (action.type) {
     case ASSETS_STORED_EVENTS_RETRIEVED:
-      console.log(action)
+      // console.log(action)
       return {
         ...state,
         assetStoredEvents: action.assetStoredEvents,
