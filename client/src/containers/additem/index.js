@@ -282,13 +282,14 @@ class AddItem extends Component {
     return (
       <div>
         <Container>
+          <Header as='h2'>Submit details about your lost item</Header>
           <Form>
             <Form.Field>
               <label>Title</label>
               <input placeholder='Title of item' value={this.state.title} onChange={this.handleTitleFieldChange}/>
             </Form.Field>
             <Form.Field>
-              <label>Description</label>
+              <label>Details</label>
               <TextArea autoHeight rows={1}
                 placeholder='Descrption of item' value={this.state.description} onChange={this.handleDescriptionFieldChange} />
             </Form.Field>

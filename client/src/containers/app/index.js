@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import PropTypes from 'prop-types';
 
 import {
   BrowserRouter as Router,
@@ -24,13 +25,18 @@ class App extends Component {
   state = { activeItem: 'home' }
 
   componentDidMount = async () => {
-    // console.log('App componentDidMount', this.props)
+    var routerPath = this.context.router.route.location.pathname
+    console.log('routerPath', routerPath)
+
+    if(routerPath === '/') {
+      this.setState({ activeItem: 'home' })
+    }
+    else if(routerPath === '/lost') {
+      this.setState({ activeItem: 'lost' })
+    }
+
     this.props.initWeb3()
   }
-
-  // componentDidUpdate = async () => {
-  //   console.log('App componentDidUpdate', this.props) 
-  // }
 
   handleMenuItemClick = (e, { name }) => this.setState({ activeItem: name })
 
@@ -44,7 +50,7 @@ class App extends Component {
                 <Icon name='home' size='large'/>
               </Menu.Item>
           
-              <Menu.Item name='listing' as={Link} to={'/lost'} active={this.state.activeItem === 'listing'} onClick={this.handleMenuItemClick}>
+              <Menu.Item name='lost' as={Link} to={'/lost'} active={this.state.activeItem === 'lost'} onClick={this.handleMenuItemClick}>
                 I lost something
               </Menu.Item>
             </Menu>
@@ -71,6 +77,11 @@ class App extends Component {
   }
 }
 
+App.contextTypes = {
+  router: PropTypes.object,
+  store: PropTypes.object
+}
+
 const mapStateToProps = state => ({
     app: state.app
 })
@@ -83,4 +94,4 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(App)
+) (App)
