@@ -189,6 +189,7 @@ contract LAFAssetRegistry is LAFRegistryBase
             uint256 reward,
             InitialAssetType initialAssetType,
             AssetStatus assetStatus,
+            address creator,
             bytes32 ipfsDigest,
             uint8 ipfsHashFunction,
             uint8 ipfsSize
@@ -201,6 +202,7 @@ contract LAFAssetRegistry is LAFRegistryBase
         
         initialAssetType = InitialAssetType(LAFStorageLib.getAssetInitialType(getAssetStorageAddress(), assetId));
         assetStatus = AssetStatus(LAFStorageLib.getAssetStatus(getAssetStorageAddress(), assetId));
+        creator = LAFStorageLib.getAssetCreator(getAssetStorageAddress(), assetId);
 
         ipfsDigest = LAFStorageLib.getAssetIpfsDigest(getAssetStorageAddress(), assetId);
         ipfsHashFunction = LAFStorageLib.getAssetIpfsHashFunction(getAssetStorageAddress(), assetId);
@@ -210,16 +212,15 @@ contract LAFAssetRegistry is LAFRegistryBase
     function getAssetMetadata(uint256 assetId)
         public
         view
-        returns(string memory description,
+        returns(
+            string memory description,
             bytes32 city,
-            address matcher,
-            address creator
+            address matcher
         )
     {
         description = LAFStorageLib.getAssetDescription(getAssetStorageAddress(), assetId);
         city = LAFStorageLib.getAssetCity(getAssetStorageAddress(), assetId);
         matcher = LAFStorageLib.getAssetMatcher(getAssetStorageAddress(), assetId);
-        creator = LAFStorageLib.getAssetCreator(getAssetStorageAddress(), assetId);
 
         // TODO retrieve exchange data
     }
