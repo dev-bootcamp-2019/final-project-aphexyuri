@@ -393,7 +393,7 @@ library LAFStorageLib
         view
         returns(uint256)
     {
-        return getUint256Value(assetStorageAddress, assetId, KEY_STATUS);
+        return getUint8Value(assetStorageAddress, assetId, KEY_STATUS);
     }
     
     function getAssetMatcher(address assetStorageAddress, uint256 assetId)
