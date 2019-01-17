@@ -187,7 +187,6 @@ contract LAFAssetRegistry is LAFRegistryBase
             bytes8 isoCountryCode,
             bytes8 stateProvince,
             uint256 reward,
-            address creator,
             InitialAssetType initialAssetType,
             AssetStatus assetStatus,
             bytes32 ipfsDigest,
@@ -199,7 +198,6 @@ contract LAFAssetRegistry is LAFRegistryBase
         isoCountryCode = LAFStorageLib.getAssetIsoCountryCode(getAssetStorageAddress(), assetId);
         stateProvince = LAFStorageLib.getAssetStateProvince(getAssetStorageAddress(), assetId);
         reward = LAFStorageLib.getAssetReward(getAssetStorageAddress(), assetId);
-        creator = LAFStorageLib.getAssetCreator(getAssetStorageAddress(), assetId);
         
         initialAssetType = InitialAssetType(LAFStorageLib.getAssetInitialType(getAssetStorageAddress(), assetId));
         assetStatus = AssetStatus(LAFStorageLib.getAssetStatus(getAssetStorageAddress(), assetId));
@@ -214,12 +212,16 @@ contract LAFAssetRegistry is LAFRegistryBase
         view
         returns(string memory description,
             bytes32 city,
-            address matcher
+            address matcher,
+            address creator
         )
     {
         description = LAFStorageLib.getAssetDescription(getAssetStorageAddress(), assetId);
         city = LAFStorageLib.getAssetCity(getAssetStorageAddress(), assetId);
         matcher = LAFStorageLib.getAssetMatcher(getAssetStorageAddress(), assetId);
+        creator = LAFStorageLib.getAssetCreator(getAssetStorageAddress(), assetId);
+
+        // TODO retrieve exchange data
     }
 
     function getClaimableRewards()
