@@ -17,7 +17,8 @@ import ListingItem from './listingItem.js'
 
 import {
   getAssetStoredEvents,
-  getAsset
+  getAsset,
+  getAssetMetadata
 } from '../../modules/listings'
 
 var lafConstants = require('../../LAFConstants.js')
@@ -83,6 +84,7 @@ class Listings extends Component {
 
   handleItemSelect = (assetId) => {
     this.props.getAsset(assetId)
+    this.props.getAssetMetadata(assetId)
     this.props.history.push('listings/' + assetId)
   }
 
@@ -156,7 +158,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   getAssetStoredEvents,
-  getAsset
+  getAsset,
+  getAssetMetadata
 }, dispatch)
 
 export default connect(

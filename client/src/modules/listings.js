@@ -1,11 +1,13 @@
 export const ASSETS_STORED_EVENTS_RETRIEVED = 'listings/ASSETS_STORED_EVENTS_RETRIEVED'
 export const ASSET_RETRIEVED = 'listing/ASSET_RETRIEVED'
+export const ASSET_METADATA_RETRIEVED = 'listing/ASSET_METADATA_RETRIEVED'
 export const CLEAR_ASSET = 'listing/CLEAR_ASSET'
 
 const initialState = {
   assetsStoredEvents: null,
   assetsStoredEventsRetrieved: false,
-  asset: null
+  asset: null,
+  assetMetadata: null
 }
 
 export const getAssetStoredEvents = (country, stateProvince, initialAssetType) => {
@@ -59,7 +61,20 @@ export const getAsset = (assetId) => {
         asset: asset
       })
     })
-    
+  }
+}
+
+export const getAssetMetadata = (assetId) => {
+  return function action(dispatch, getState) {
+    const state = getState()
+
+    state.app.registryContract.methods.getAssetMetadata(assetId).call()
+    .then(function(assetMetadata) {
+      dispatch({
+        type: ASSET_METADATA_RETRIEVED,
+        assetMetadata: assetMetadata
+      })
+    })
   }
 }
 
@@ -84,11 +99,18 @@ export default (state = initialState, action) => {
         asset: action.asset
       }
 
+    case ASSET_METADATA_RETRIEVED:
+      return {
+        ...state,
+        assetMetadata: action.assetMetadata
+      }
+
     case CLEAR_ASSET:
       console.log('CLEAR_ASSET')
       return {
         ...state,
-        asset: null
+        asset: null,
+        assetMetadata: null
       }
 
     default:
