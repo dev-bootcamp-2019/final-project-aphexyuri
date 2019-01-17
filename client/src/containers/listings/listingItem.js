@@ -48,7 +48,7 @@ class ListingItem extends Component {
               <Icon name='ethereum' />
               { this.props.app.web3.utils.fromWei(this.props.item.returnValues.reward, 'ether') } ETH
               <Button basic color='green' floated='right' size='mini' onClick={ this.handleItemSelect }>
-                See more
+                See details
               </Button>
             </Card.Content>
           </Card.Content>

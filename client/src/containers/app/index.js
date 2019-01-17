@@ -10,7 +10,8 @@ import {
 
 import {
   Menu,
-  Segment
+  Segment,
+  Icon
 } from 'semantic-ui-react';
 
 import Listings from '../listings'
@@ -20,6 +21,8 @@ import Asset from '../asset'
 import { initWeb3 } from '../../modules/app'
 
 class App extends Component {
+  state = { activeItem: 'home' }
+
   componentDidMount = async () => {
     // console.log('App componentDidMount', this.props)
     this.props.initWeb3()
@@ -29,17 +32,19 @@ class App extends Component {
   //   console.log('App componentDidUpdate', this.props) 
   // }
 
+  handleMenuItemClick = (e, { name }) => this.setState({ activeItem: name })
+
   render() {
     return (
       <div>
         <Router>
           <div>
-            <Menu>
-              <Menu.Item name='listing' as={Link} to={'/'}>
-                Lost & Found Stuff
+            <Menu pointing style={{borderWidth: '0px'}} >
+              <Menu.Item name='home' as={Link} to={'/'} active={this.state.activeItem === 'home'}  onClick={this.handleMenuItemClick}>
+                <Icon name='home' size='large'/>
               </Menu.Item>
           
-              <Menu.Item name='listing' as={Link} to={'/lost'}>
+              <Menu.Item name='listing' as={Link} to={'/lost'} active={this.state.activeItem === 'listing'} onClick={this.handleMenuItemClick}>
                 I lost something
               </Menu.Item>
             </Menu>

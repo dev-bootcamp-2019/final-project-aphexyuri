@@ -10,6 +10,7 @@ const initialState = {
 }
 
 export const initWeb3 = () => {
+  // console.log('app.initWeb3')
   return function action(dispatch) {
     getWeb3()
     .then(function(web3) {

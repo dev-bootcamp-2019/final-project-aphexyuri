@@ -16,7 +16,8 @@ import {
 import ListingItem from './listingItem.js'
 
 import {
-  getAssetStoredEvents
+  getAssetStoredEvents,
+  getAsset
 } from '../../modules/listings'
 
 var lafConstants = require('../../LAFConstants.js')
@@ -65,8 +66,6 @@ class Listings extends Component {
 
   handleFindItemsClicked = () => {
     this.props.getAssetStoredEvents(
-      this.props.app.web3,
-      this.props.app.registryContract,
       this.state.selectedCountry,
       this.state.selectedStateProvince,
       this.state.initialAssetType)
@@ -79,13 +78,12 @@ class Listings extends Component {
       stateProvinceOptions: null
     })
 
-    this.props.getAssetStoredEvents(
-      this.props.app.web3,
-      this.props.app.registryContract)
+    this.props.getAssetStoredEvents()
   }
 
-  handleItemSelect = (itemId) => {
-    this.props.history.push('listings/' + itemId)
+  handleItemSelect = (assetId) => {
+    this.props.getAsset(assetId)
+    this.props.history.push('listings/' + assetId)
   }
 
   render () {
@@ -118,7 +116,7 @@ class Listings extends Component {
                 onClick={this.handleFindItemsClicked}
                 disabled={!this.state.selectedCountry} >
                 <Icon name='search' />
-                Filter Items
+                Gind by Geo
               </Button>
             </Form>
               
@@ -157,10 +155,11 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  getAssetStoredEvents
+  getAssetStoredEvents,
+  getAsset
 }, dispatch)
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(Listings)
+) (Listings)
