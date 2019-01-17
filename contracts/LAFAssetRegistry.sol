@@ -94,12 +94,11 @@ contract LAFAssetRegistry is LAFRegistryBase
         require(AssetStatus(LAFStorageLib.getAssetStatus(getAssetStorageAddress(), assetId)) == AssetStatus.MatchConfirmed);
         _;
     }
-    
-    modifier onlyAssetStatusNotCancelledOrRecovered(uint256 assetId)
+
+    modifier onlyAssetStatusPostedOrPotentialMatch(uint256 assetId)
     {
         AssetStatus status = AssetStatus(LAFStorageLib.getAssetStatus(getAssetStorageAddress(), assetId));
-        require(status != AssetStatus.Cancelled);
-        require(status != AssetStatus.Recovered);
+        require(status == AssetStatus.Posted || status == AssetStatus.PotentialMatch);
         _;
     }
 
@@ -378,7 +377,7 @@ contract LAFAssetRegistry is LAFRegistryBase
         whenNotPaused
         storageSet
         onlyContractOwnerOrAssetCreator(assetId)
-        onlyAssetStatusNotCancelledOrRecovered(assetId)
+        onlyAssetStatusPostedOrPotentialMatch(assetId)
     {
         // change asset status to cancelled
         LAFStorageLib.storeAssetStatus(getAssetStorageAddress(), assetId, uint8(AssetStatus.Cancelled));
