@@ -3,6 +3,12 @@ export const ASSET_RETRIEVED = 'listing/ASSET_RETRIEVED'
 export const ASSET_METADATA_RETRIEVED = 'listing/ASSET_METADATA_RETRIEVED'
 export const CLEAR_ASSET = 'listing/CLEAR_ASSET'
 
+export const CANCEL_ASSET_REQUESTED = 'listings/CANCEL_ASSET_REQUESTED'
+export const FOUND_LOST_ASSET_REQUESTED = 'listings/FOUND_LOST_ASSET_REQUESTED'
+export const MATCH_CONFIRMED_REQUESTED = 'listings/MATCH_CONFIRMED_REQUESTED'
+export const MATCH_INVALID_REQUESTED = 'listings/MATCH_INVALID_REQUESTED'
+export const ASSET_RECOVERED_REQUESTED = 'listings/ASSET_RECOVERED_REQUESTED'
+
 const initialState = {
   assetsStoredEvents: null,
   assetsStoredEventsRetrieved: false,
@@ -84,6 +90,81 @@ export const clearAsset = (assetId) => {
   }
 }
 
+export const cancelAsset = (assetId) => {
+  return function action(dispatch, getState) {
+    const state = getState()
+
+    state.app.registryContract.methods.cancelAsset(assetId).call()
+    .then(function(result) {
+      console.log('cancelAsset', result)
+      dispatch({
+        type: CANCEL_ASSET_REQUESTED,
+        assetId: assetId
+      })
+    })
+  }
+}
+
+export const foundLostAsset = (assetId) => {
+  return function action(dispatch, getState) {
+    const state = getState()
+
+    state.app.registryContract.methods.foundLostAsset(assetId).send({ from: state.app.accounts[0] })
+    .then(function(result) {
+      console.log('foundLostAsset', result)
+      dispatch({
+        type: FOUND_LOST_ASSET_REQUESTED,
+        assetId: assetId
+      })
+    })
+  }
+}
+
+export const matchConfirmed = (assetId, excahngeDetails) => {
+  return function action(dispatch, getState) {
+    const state = getState()
+
+    state.app.registryContract.methods.matchConfirmed(assetId, excahngeDetails).send({ from: state.app.accounts[0] })
+    .then(function(result) {
+      console.log('matchConfirmed', result)
+      dispatch({
+        type: MATCH_CONFIRMED_REQUESTED,
+        assetId: assetId
+      })
+    })
+  }
+}
+
+export const matchInvalid = (assetId) => {
+  return function action(dispatch, getState) {
+    const state = getState()
+
+    state.app.registryContract.methods.matchInvalid(assetId).send({ from: state.app.accounts[0] })
+    .then(function(result) {
+      console.log('matchInvalid', result)
+      dispatch({
+        type: MATCH_INVALID_REQUESTED,
+        assetId: assetId
+      })
+    })
+  }
+}
+
+export const assetRecovered = (assetId) => {
+  return function action(dispatch, getState) {
+    const state = getState()
+
+    state.app.registryContract.methods.assetRecovered(assetId).send({ from: state.app.accounts[0] })
+    .then(function(result) {
+      console.log('assetRecovered', result)
+      dispatch({
+        type: ASSET_RECOVERED_REQUESTED,
+        assetId: assetId
+      })
+    })
+  }
+}
+
 export default (state = initialState, action) => {
   switch (action.type) {
     case ASSETS_STORED_EVENTS_RETRIEVED:
@@ -111,6 +192,31 @@ export default (state = initialState, action) => {
         ...state,
         asset: null,
         assetMetadata: null
+      }
+    
+    case CANCEL_ASSET_REQUESTED:
+      return {
+        ...state
+      }
+
+    case FOUND_LOST_ASSET_REQUESTED:
+      return {
+        ...state
+      }
+
+    case MATCH_CONFIRMED_REQUESTED:
+      return {
+        ...state
+      }
+
+    case MATCH_INVALID_REQUESTED:
+      return {
+        ...state
+      }
+
+    case ASSET_RECOVERED_REQUESTED:
+      return {
+        ...state
       }
 
     default:

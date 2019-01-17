@@ -17,19 +17,27 @@ import {
 import {
   getAsset,
   getAssetMetadata,
-  clearAsset
+  clearAsset,
+  cancelAsset,
+  foundLostAsset,
+  matchConfirmed,
+  matchInvalid,
+  assetRecovered
 } from '../../modules/listings'
 
 import { AssetStatus } from '../../utils/app.js'
 import { getMultihashFromBytes32 } from '../../utils/multihash'
 
 var loadFromUrl
+var assetId
 
 class Asset extends Component {
   state = { ipfsHash: null }
 
   constructor(props) {
     super(props)
+
+    assetId = this.props.history.location.pathname.replace('/listings/', '')
 
     if(!this.props.app.web3) {
       loadFromUrl = true
@@ -38,7 +46,6 @@ class Asset extends Component {
 
   componentDidUpdate = async () => {
     if(loadFromUrl) {
-      let assetId = this.props.history.location.pathname.replace('/listings/', '')
       this.props.getAsset(assetId)
       this.props.getAssetMetadata(assetId)
       loadFromUrl = false
@@ -48,6 +55,27 @@ class Asset extends Component {
   onBreakCrumbBackClick = () => {
     this.props.history.push('/')
     this.props.clearAsset()
+  }
+
+  onCancelBtnClick = () => {
+    this.props.cancelAsset(assetId)
+  }
+
+  onMatchConfirmedBtnClick = () => {
+    this.props.matchConfirmed(assetId, "Starbuck, Downtown")
+    // TODO echange details
+  }
+
+  onMatchInvalidBtnClick = () => {
+    this.props.matchInvalid(assetId)
+  }
+
+  onAssetRecoveredBtnClick = () => {
+    this.props.assetRecovered(assetId)
+  }
+
+  onFoundLostAssetBtnClick = () => {
+    this.props.foundLostAsset(assetId)
   }
 
   renderInteractionsUI = () => {
@@ -63,21 +91,25 @@ class Asset extends Component {
           {/* cancel button */}
           {
             asset.assetStatus == AssetStatus.Posted || asset.assetStatus == AssetStatus.PotentialMatch ?
-              <Button fluid negative>Cancel</Button>
+              <Button fluid negative onClick={ this.onCancelBtnClick }>Cancel Item</Button>
             : null
           }
 
           {/* confirm find btn */}
           {
             asset.assetStatus == AssetStatus.PotentialMatch ?
-              <Button fluid>Yes, that is my item</Button>
+              <div>
+                <Button primary fluid onClick={ this.onMatchConfirmedBtnClick }>Yes, that is my item</Button>
+                <br/>
+                <Button color='orange' fluid onClick={ this.onatchInvalidBtnClick }>No, not my item</Button>
+              </div>
             : null
           }
           
           {/* mark as recovered btn */}
           {
             asset.assetStatus == AssetStatus.MatchConfirmed ?
-              <Button fluid>Item recovered</Button>
+              <Button positive fluid onClick={ this.onAssetRecoveredBtnClick }>Item recovered</Button>
             : null
           }
         </div>
@@ -90,7 +122,7 @@ class Asset extends Component {
           {/* i found it button */}
           {
             asset.assetStatus == AssetStatus.Posted ?
-              <Button fluid>I found this item</Button>
+              <Button positive fluid onClick={ this.onFoundLostAssetBtnClick }>I found this item</Button>
             : null
           }
         </div>
@@ -136,7 +168,7 @@ class Asset extends Component {
 
               <Grid.Row>
                 <Step.Group widths={4} size='mini'>
-                  <Step active={ asset.assetStatus === AssetStatus.Posted }>
+                  <Step active={ asset.assetStatus == AssetStatus.Posted }>
                     <Icon name='find'/>
                     <Step.Content>
                       <Step.Title>Lost</Step.Title>
@@ -144,7 +176,7 @@ class Asset extends Component {
                     </Step.Content>
                   </Step>
                   <Step
-                    active={ asset.assetStatus === AssetStatus.PotentialMatch }
+                    active={ asset.assetStatus == AssetStatus.PotentialMatch }
                     disabled={ asset.assetStatus < AssetStatus.PotentialMatch }>
                     <Icon name='question'/>
                     <Step.Content>
@@ -153,7 +185,7 @@ class Asset extends Component {
                     </Step.Content>
                   </Step>
                   <Step
-                    active={ asset.assetStatus === AssetStatus.MatchConfirmed }
+                    active={ asset.assetStatus == AssetStatus.MatchConfirmed }
                     disabled={ asset.assetStatus < AssetStatus.MatchConfirmed }>
                     <Icon name='smile outline'/>
                     <Step.Content>
@@ -162,7 +194,7 @@ class Asset extends Component {
                     </Step.Content>
                   </Step>
                   <Step
-                    active={ asset.assetStatus === AssetStatus.Recovered }
+                    active={ asset.assetStatus == AssetStatus.Recovered }
                     disabled={ asset.assetStatus < AssetStatus.Recovered }>
                     <Icon name='check'/>
                     <Step.Content>
@@ -212,7 +244,12 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => bindActionCreators({
   getAsset,
   getAssetMetadata,
-  clearAsset
+  clearAsset,
+  cancelAsset,
+  foundLostAsset,
+  matchConfirmed,
+  matchInvalid,
+  assetRecovered
 }, dispatch)
 
 export default connect(
