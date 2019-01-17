@@ -48,10 +48,13 @@ contract("LAFAssetRegistry (Asset Flows)", accounts => {
         // call newLostAsset
         let { logs } =  await assetRegistryInstance.newLostAsset(
             titleStr,
-            // descriptionStr,
+            descriptionStr,
             web3.utils.asciiToHex(countryIso),
             web3.utils.asciiToHex(stateProvince),
             web3.utils.asciiToHex(city),
+            "0x39a8cb1d77c213889e8a638394c9a5190d1fa703ebb02e23a091a99566dd8ccf",
+            18,
+            32,
             { from: creator, value: reward }
         )
         

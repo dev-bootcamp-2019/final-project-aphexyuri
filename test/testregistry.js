@@ -12,6 +12,9 @@ addAssetHelperNoAwait = async (assetRegistryInstance, title, description, countr
         web3.utils.asciiToHex(countryIso),
         web3.utils.asciiToHex(stateProvince),
         web3.utils.asciiToHex(city),
+        "0x39a8cb1d77c213889e8a638394c9a5190d1fa703ebb02e23a091a99566dd8ccf",
+        18,
+        32,
         { from: account }
     )
 }
@@ -65,10 +68,13 @@ contract("LAFAssetRegistry", accounts => {
 
         let { logs } =  await assetRegistryInstance.newLostAsset(
             titleStr,
-            // descriptionStr,
+            descriptionStr,
             web3.utils.asciiToHex(countryIso),
             web3.utils.asciiToHex(stateProvince),
             web3.utils.asciiToHex(city),
+            "0x39a8cb1d77c213889e8a638394c9a5190d1fa703ebb02e23a091a99566dd8ccf",
+            18,
+            32,
             { from: accounts[1], value: rewardStr }
         )
         
@@ -81,10 +87,9 @@ contract("LAFAssetRegistry", accounts => {
         
         assert.equal(assetId, 0)
         assert.equal(retrievedAsset.title, titleStr)
-        // assert.equal(retrievedAsset.description, descriptionStr)
-        assert.equal(web3.utils.hexToAscii(retrievedAsset.isoCountryCode), countryIso)
-        assert.equal(web3.utils.hexToAscii(retrievedAsset.stateProvince), stateProvince)
-        assert.equal(web3.utils.hexToAscii(retrievedAsset.city), city)
+        assert.equal(web3.utils.hexToUtf8(retrievedAsset.isoCountryCode), countryIso)
+        assert.equal(web3.utils.hexToUtf8(retrievedAsset.stateProvince), stateProvince)
+        // assert.equal(web3.utils.hexToUtf8(retrievedAsset.city), city)
         assert.equal(web3.utils.fromWei(retrievedAsset.reward, 'ether'), 1.2345)
 
         // // check contract balance
