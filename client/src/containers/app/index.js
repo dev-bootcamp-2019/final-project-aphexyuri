@@ -26,13 +26,12 @@ class App extends Component {
 
   componentDidMount = async () => {
     var routerPath = this.context.router.route.location.pathname
-    console.log('routerPath', routerPath)
 
     if(routerPath === '/') {
       this.setState({ activeItem: 'home' })
     }
-    else if(routerPath === '/lost') {
-      this.setState({ activeItem: 'lost' })
+    else if(routerPath === '/newlost') {
+      this.setState({ activeItem: 'newlost' })
     }
 
     this.props.initWeb3()
@@ -50,10 +49,11 @@ class App extends Component {
                 <Icon name='home' size='large'/>
               </Menu.Item>
           
-              <Menu.Item name='lost' as={Link} to={'/lost'} active={this.state.activeItem === 'lost'} onClick={this.handleMenuItemClick}>
+              <Menu.Item name='newlost' as={Link} to={'/newlost'} active={this.state.activeItem === 'newlost'} onClick={this.handleMenuItemClick}>
                 I lost something
               </Menu.Item>
             </Menu>
+
             <Segment style={{ padding: '0em 0em' }} vertical loading={ this.props.app.web3 == null }>
               <Route exact path='/'
                 render={ (props) =>
@@ -61,13 +61,12 @@ class App extends Component {
                     {...props}/>
                 }
               />
-              <Route exact path={'/lost'}
+              <Route exact path={'/newlost'}
                 render={ (props) => 
                   <AddItem
                     {...props}/>    
                 }
               />
-
               <Route exact path={'/listings/:id'} component={Asset} />
             </Segment>
           </div>

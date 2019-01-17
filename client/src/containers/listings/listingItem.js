@@ -40,7 +40,7 @@ class ListingItem extends Component {
             src={ 'https://gateway.ipfs.io/ipfs/' + this.state.ipfsHash }
             size='medium'
             verticalAlign='middle'
-            style={{'fontSize':130}} />
+            style={{'fontSize':130}} onClick={ this.handleItemSelect }/>
           <Card.Content>
             <Card.Header>{ this.props.item.returnValues.title }</Card.Header>
             <Card.Meta>{ location }</Card.Meta>
