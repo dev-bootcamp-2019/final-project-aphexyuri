@@ -90,7 +90,7 @@ library LAFStorageLib
         LAFAssetStorage(assetStorageAddress).storeBool(keccak256(abi.encodePacked(assetId, key)), value);
     }
 
-    function storeInt256(address assetStorageAddress, uint256 assetId, string memory key, int value)
+    function storeInt256(address assetStorageAddress, uint256 assetId, string memory key, int256 value)
         private
     {
         LAFAssetStorage(assetStorageAddress).storeInt256(keccak256(abi.encodePacked(assetId, key)), value);
@@ -294,9 +294,9 @@ library LAFStorageLib
     function getInt256Value(address assetStorageAddress, uint256 assetId, string memory key)
         private
         view
-        returns(int)
+        returns(int256)
     {
-        return LAFAssetStorage(assetStorageAddress).intStorage(keccak256(abi.encodePacked(assetId, key)));
+        return LAFAssetStorage(assetStorageAddress).int256Storage(keccak256(abi.encodePacked(assetId, key)));
     }
 
     function getUint256ForAddressFromMapping(address assetStorageAddress, string memory mappingKey, address addressValue)
