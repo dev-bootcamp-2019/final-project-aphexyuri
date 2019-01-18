@@ -3,6 +3,8 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types';
 
+import Flag from "react-flags";
+
 import {
   Breadcrumb,
   Container,
@@ -25,7 +27,7 @@ import {
   assetRecovered
 } from '../../modules/listings'
 
-import { AssetStatus } from '../../utils/app.js'
+import { AssetStatus, longLocationString } from '../../utils/app.js'
 import { getMultihashFromBytes32 } from '../../utils/multihash'
 
 var loadFromUrl
@@ -150,6 +152,12 @@ class Asset extends Component {
         size: asset.ipfsSize
       })
 
+      let isoCountryCode = this.props.app.web3.utils.hexToUtf8(asset.isoCountryCode)
+      let stateProvince = this.props.app.web3.utils.hexToUtf8(asset.stateProvince)
+      let city = this.props.app.web3.utils.hexToUtf8(assetMetadata.city)
+      let longLocation = longLocationString(isoCountryCode, stateProvince)
+      let location = longLocation[0] + ', ' + longLocation[1] + ', ' + city
+
       return (
         <div>
           <Breadcrumb style={{ paddingLeft: '1em'}}>
@@ -163,6 +171,23 @@ class Asset extends Component {
               <Grid.Row>
                 <Grid.Column width={16}>
                   <Header as='h2' content={asset.title}/>
+                </Grid.Column>
+              </Grid.Row>
+
+              <Grid.Row>
+                <Grid.Column width={12}>
+                  <Flag
+                    name={isoCountryCode}
+                    format='png'
+                    pngSize={16}
+                    basePath='../images/flags'
+                  />
+                  { ' ' + location }
+                </Grid.Column>
+                <Grid.Column width={4} textAlign='right'>
+                  <Icon name='ethereum' />
+                  <b>{ this.props.app.web3.utils.fromWei(asset.reward, 'ether') } </b>
+                  Reward
                 </Grid.Column>
               </Grid.Row>
 
