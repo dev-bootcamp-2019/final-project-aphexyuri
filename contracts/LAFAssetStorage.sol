@@ -234,10 +234,10 @@ contract LAFAssetStorage is Ownable
         addressUint256MappingStore[key][addressValue] = uint256Value;
     }
 
-    // function storeAddressUint256ArrayMapping(bytes32 key, address addressValue, uint256[] memory uint256ArrayValue)
-    //     public
-    //     onlyAllowedSenderOrOwner
-    // {
-    //     addressUint256ArrayMappingStore[key][addressValue] = uint256ArrayValue;
-    // }
+    function storeAddressUint256ArrayMapping(bytes32 key, address addressValue, uint256[] memory uint256ArrayValue)
+        public
+        onlyAllowedSenderOrOwner
+    {
+        addressUint256ArrayMappingStore[key][addressValue] = uint256ArrayValue;
+    }
 }
