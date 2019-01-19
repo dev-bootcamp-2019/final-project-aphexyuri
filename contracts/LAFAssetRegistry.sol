@@ -49,6 +49,7 @@ contract LAFAssetRegistry is LAFRegistryBase
     
     enum AssetStatus
     {
+        None,
         Posted,
         PotentialMatch,
         MatchConfirmed,
@@ -68,6 +69,12 @@ contract LAFAssetRegistry is LAFRegistryBase
     modifier onlyAssetCreator(uint256 assetId)
     {
         require(msg.sender == LAFStorageLib.getAssetCreator(getAssetStorageAddress(), assetId));
+        _;
+    }
+
+    modifier notAssetCreator(uint256 assetId)
+    {
+        require(msg.sender != LAFStorageLib.getAssetCreator(getAssetStorageAddress(), assetId));
         _;
     }
 
@@ -158,9 +165,9 @@ contract LAFAssetRegistry is LAFRegistryBase
         LAFStorageLib.storeAssetInitialType(getAssetStorageAddress(), assetId, uint8(initialAssetType));
         LAFStorageLib.storeAssetStatus(getAssetStorageAddress(), assetId, uint8(AssetStatus.Posted));
 
-        LAFStorageLib.storeAssetIfsDigest(getAssetStorageAddress(), assetId, ipfsDigest);
-        LAFStorageLib.storeAssetIfsHashFunction(getAssetStorageAddress(), assetId, ipfsHashFunction);
-        LAFStorageLib.storeAssetIfsSize(getAssetStorageAddress(), assetId, ipfsSize);
+        LAFStorageLib.storeAssetIfsDigest(getAssetStorageAddress(), assetId, true, ipfsDigest);
+        LAFStorageLib.storeAssetIfsHashFunction(getAssetStorageAddress(), assetId, true, ipfsHashFunction);
+        LAFStorageLib.storeAssetIfsSize(getAssetStorageAddress(), assetId, true, ipfsSize);
         
         emit AssetStored(
             assetId,
@@ -189,9 +196,9 @@ contract LAFAssetRegistry is LAFRegistryBase
             InitialAssetType initialAssetType,
             AssetStatus assetStatus,
             address creator,
-            bytes32 ipfsDigest,
-            uint8 ipfsHashFunction,
-            uint8 ipfsSize
+            bytes32 primaryIpfsDigest,
+            uint8 primaryIpfsHashFunction,
+            uint8 primaryIpfsSize
         )
     {
         title = LAFStorageLib.getAssetTitle(getAssetStorageAddress(), assetId);
@@ -203,9 +210,9 @@ contract LAFAssetRegistry is LAFRegistryBase
         assetStatus = AssetStatus(LAFStorageLib.getAssetStatus(getAssetStorageAddress(), assetId));
         creator = LAFStorageLib.getAssetCreator(getAssetStorageAddress(), assetId);
 
-        ipfsDigest = LAFStorageLib.getAssetIpfsDigest(getAssetStorageAddress(), assetId);
-        ipfsHashFunction = LAFStorageLib.getAssetIpfsHashFunction(getAssetStorageAddress(), assetId);
-        ipfsSize = LAFStorageLib.getAssetIpfsSize(getAssetStorageAddress(), assetId);
+        primaryIpfsDigest = LAFStorageLib.getAssetIpfsDigest(getAssetStorageAddress(), assetId, true);
+        primaryIpfsHashFunction = LAFStorageLib.getAssetIpfsHashFunction(getAssetStorageAddress(), assetId, true);
+        primaryIpfsSize = LAFStorageLib.getAssetIpfsSize(getAssetStorageAddress(), assetId, true);
     }
 
     function getAssetMetadata(uint256 assetId)
@@ -214,14 +221,23 @@ contract LAFAssetRegistry is LAFRegistryBase
         returns(
             string memory description,
             bytes32 city,
-            address matcher
+            address matcher,
+            string memory foundDetails,
+            string memory exchangeDetails,
+            bytes32 secondaryIpfsDigest,
+            uint8 secondaryIpfsHashFunction,
+            uint8 secondaryIpfsSize
         )
     {
         description = LAFStorageLib.getAssetDescription(getAssetStorageAddress(), assetId);
         city = LAFStorageLib.getAssetCity(getAssetStorageAddress(), assetId);
         matcher = LAFStorageLib.getAssetMatcher(getAssetStorageAddress(), assetId);
+        foundDetails = LAFStorageLib.getAssetFoundDetails(getAssetStorageAddress(), assetId);
+        exchangeDetails = LAFStorageLib.getExchangeDetails(getAssetStorageAddress(), assetId);
 
-        // TODO retrieve exchange data
+        secondaryIpfsDigest = LAFStorageLib.getAssetIpfsDigest(getAssetStorageAddress(), assetId, false);
+        secondaryIpfsHashFunction = LAFStorageLib.getAssetIpfsHashFunction(getAssetStorageAddress(), assetId, false);
+        secondaryIpfsSize = LAFStorageLib.getAssetIpfsSize(getAssetStorageAddress(), assetId, false);
     }
 
     function getClaimableRewards()
@@ -257,56 +273,28 @@ contract LAFAssetRegistry is LAFRegistryBase
             ipfsHashFunction,
             ipfsSize);
     }
-    
-    function newFoundAsset(
-        string memory assetTitle,
-        string memory description,
-        bytes8 isoCountryCode,
-        bytes8 stateProvince,
-        bytes32 city,
-        bytes32 ipfsDigest,
-        uint8 ipfsHashFunction,
-        uint8 ipfsSize
-    )
-        public
-        payable
-        whenNotPaused
-        storageSet
-    {
-        newAsset(InitialAssetType.Found,
-            assetTitle,
-            description,
-            isoCountryCode,
-            stateProvince,
-            city,
-            ipfsDigest,
-            ipfsHashFunction,
-            ipfsSize);
-    }
 
-    function foundLostAsset(uint256 assetId)
+    function foundLostAsset(uint256 assetId, string memory details, bytes32 ipfsDigest, uint8 ipfsHashFunction, uint8 ipfsSize)
         public
         whenNotPaused
         storageSet
         onlyAssetStatusPosted(assetId)
         onlyAssetIntialTypeLost(assetId)
+        notAssetCreator(assetId)
     {
         LAFStorageLib.storeAssetStatus(getAssetStorageAddress(), assetId, uint8(AssetStatus.PotentialMatch));
         LAFStorageLib.storeAssetMatcher(getAssetStorageAddress(), assetId, msg.sender);
+        LAFStorageLib.storeAssetFoundDetails(getAssetStorageAddress(), assetId, details);
+
+        LAFStorageLib.storeAssetIfsDigest(getAssetStorageAddress(), assetId, false, ipfsDigest);
+        LAFStorageLib.storeAssetIfsHashFunction(getAssetStorageAddress(), assetId, false, ipfsHashFunction);
+        LAFStorageLib.storeAssetIfsSize(getAssetStorageAddress(), assetId, false, ipfsSize);
         
         bytes8 isoCountryCode = LAFStorageLib.getAssetIsoCountryCode(getAssetStorageAddress(), assetId);
         bytes8 stateProvince = LAFStorageLib.getAssetStateProvince(getAssetStorageAddress(), assetId);
         
         emit FoundLostAsset(assetId, isoCountryCode, stateProvince);
     }
-
-    // function asetOwnerFound(uint256 assetId)
-    //     public
-    //     whenNotPaused
-    //     storageSet
-    // {
-    //     // TODO
-    // }
     
     // exchangeDetails = date, time, [public] place
     function matchConfirmed(uint256 assetId, string memory exchangeDetails)

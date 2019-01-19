@@ -100,14 +100,27 @@ contract("LAFAssetRegistry", accounts => {
 
     it("...calling matchConfirmed on asset with status AssetStatus.Posted fails", async () => {
         await truffleAssert.fails(
-            assetRegistryInstance.matchConfirmed(0, "Starbuck on corner of 43rd and 6th. April 1, 2019", { from: accounts[9] }),
+            assetRegistryInstance.matchConfirmed(0, "Starbuck on corner of 43rd and 6th. April 1, 2019", { from: accounts[1] }),
+            truffleAssert.ErrorType.REVERT
+        )
+    })
+
+    it("...calling matchInvalid on asset with status AssetStatus.Posted fails", async () => {
+        await truffleAssert.fails(
+            assetRegistryInstance.matchInvalid(0, { from: accounts[1] }),
             truffleAssert.ErrorType.REVERT
         )
     })
 
     it("...calling matchConfirmed as non-asset creator fails", async () => {
         // first call potentialMatch on asset to get it to AssetStatus.PotentialMatch status
-        await assetRegistryInstance.foundLostAsset(0, { from: accounts[2]} )
+        await assetRegistryInstance.foundLostAsset(
+            0,
+            "Details of finding items",
+            "0x39a8cb1d77c213889e8a638394c9a5190d1fa703ebb02e23a091a99566dd8ccf",
+            18,
+            32,
+            { from: accounts[2]} )
 
         await truffleAssert.fails(
             assetRegistryInstance.matchConfirmed(0, "Starbuck on corner on Noth and South April 1, 2019", { from: accounts[9] }),

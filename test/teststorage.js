@@ -125,7 +125,7 @@ contract('LAFAssetStorage', accounts => {
     it('...5x ingt256 write/read verifies', async () => {
         for(let i = 0; i < 5; i++) {
             await assetStorageInstance.storeInt256(web3.utils.keccak256('int256_key_' + i), i - 1000, { from: accounts[1] })
-            let storedInt256 = await assetStorageInstance.intStorage(web3.utils.keccak256('int256_key_' + i))
+            let storedInt256 = await assetStorageInstance.int256Storage(web3.utils.keccak256('int256_key_' + i))
             assert.equal(storedInt256, i - 1000)    
         }
     })
