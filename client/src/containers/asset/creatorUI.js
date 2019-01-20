@@ -18,7 +18,8 @@ import {
   cancelAsset,
   matchConfirmed,
   matchInvalid,
-  assetRecovered
+  assetRecovered,
+  assetRecoveryFailed
 } from '../../modules/listings'
 
 import { AssetStatus } from '../../utils/app.js'
@@ -53,6 +54,10 @@ class CreatorUI extends Component {
 
   onRecoveredBtnClick = () => {
     this.props.assetRecovered(this.props.assetId)
+  }
+
+  onRecoveryFailedBtnClick = () => {
+    this.props.assetRecoveryFailed(this.props.assetId)
   }
 
   render () {
@@ -161,7 +166,14 @@ class CreatorUI extends Component {
             header='Go collect your item!'
             content='Once collected, please mark it as recovered below' />
           <br/>
-          <Button fluid positive onClick={ this.onRecoveredBtnClick }>Set item as recovered</Button>
+          <Grid columns='equal'>
+            <Grid.Column>
+              <Button fluid negative onClick={ this.onRecoveryFailedBtnClick }>Recovery Failed</Button>
+            </Grid.Column>
+            <Grid.Column>
+              <Button fluid positive onClick={ this.onRecoveredBtnClick }>Set item as recovered</Button>
+            </Grid.Column>
+          </Grid>
         </Container>
       )
     }
@@ -191,7 +203,8 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   cancelAsset,
   matchConfirmed,
   matchInvalid,
-  assetRecovered
+  assetRecovered,
+  assetRecoveryFailed
 }, dispatch)
 
 export default connect(

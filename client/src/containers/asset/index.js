@@ -71,7 +71,7 @@ class Asset extends Component {
   renderInteractionsUI = () => {
     let { asset, assetMetadata } = this.props.listings
 
-    console.log('asset', asset)
+    // console.log('asset', asset)
     // console.log('assetMetadata', assetMetadata)
 
     if(asset.assetStatus == AssetStatus.Cancelled) {
@@ -86,14 +86,14 @@ class Asset extends Component {
     else {
       if(asset.creator === this.props.app.accounts[0]) {
         // creator is viewing
-        console.log('viewing as creator, assetId: ', this.state.assetId)
+        // console.log('viewing as creator, assetId: ', this.state.assetId)
         return (
           <CreatorUI assetId={ this.state.assetId } />
         )
       }
       else {
         // non-creator is viewing
-        console.log('viewing as non-creator, assetId: ', this.state.assetId)
+        // console.log('viewing as non-creator, assetId: ', this.state.assetId)
 
         if(asset.assetStatus == AssetStatus.Cancelled) {
           return (

@@ -8,6 +8,7 @@ export const FOUND_LOST_ASSET_REQUESTED = 'listings/FOUND_LOST_ASSET_REQUESTED'
 export const MATCH_CONFIRMED_REQUESTED = 'listings/MATCH_CONFIRMED_REQUESTED'
 export const MATCH_INVALID_REQUESTED = 'listings/MATCH_INVALID_REQUESTED'
 export const ASSET_RECOVERED_REQUESTED = 'listings/ASSET_RECOVERED_REQUESTED'
+export const ASSET_RECOVERY_FAILED_REQUESTED = 'listings/ASSET_RECOVERY_FAILED_REQUESTED'
 
 const initialState = {
   assetsStoredEvents: null,
@@ -170,6 +171,21 @@ export const assetRecovered = (assetId) => {
   }
 }
 
+export const assetRecoveryFailed = (assetId) => {
+  return function action(dispatch, getState) {
+    const state = getState()
+
+    state.app.registryContract.methods.assetRecoveryFailed(assetId).send({ from: state.app.accounts[0] })
+    .then(function(result) {
+      console.log('assetRecoveryFailed', result)
+      dispatch({
+        type: ASSET_RECOVERY_FAILED_REQUESTED,
+        assetId: assetId
+      })
+    })
+  }
+}
+
 export default (state = initialState, action) => {
   switch (action.type) {
     case ASSETS_STORED_EVENTS_RETRIEVED:
@@ -221,6 +237,11 @@ export default (state = initialState, action) => {
       }
 
     case ASSET_RECOVERED_REQUESTED:
+      return {
+        ...state
+      }
+
+    case ASSET_RECOVERY_FAILED_REQUESTED:
       return {
         ...state
       }
