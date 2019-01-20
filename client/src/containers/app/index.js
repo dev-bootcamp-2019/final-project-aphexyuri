@@ -15,12 +15,31 @@ import {
   Icon
 } from 'semantic-ui-react'
 
-import Listings from '../listings'
-import AddItem from '../additem'
-import Asset from '../asset'
-import MyLAF from '../mylaf'
+import Loadable from 'react-loadable';
 
 import { initWeb3 } from '../../modules/app'
+
+const Loading = () => <Segment style={{ padding: '4em 0em' }} vertical loading/>;
+
+const Listings = Loadable({
+  loader: () => import('../listings'),
+  loading: Loading
+})
+
+const AddItem = Loadable({
+  loader: () => import('../additem'),
+  loading: Loading
+})
+
+const Asset = Loadable({
+  loader: () => import('../asset'),
+  loading: Loading
+})
+
+const MyLAF = Loadable({
+  loader: () => import('../mylaf'),
+  loading: Loading
+})
 
 class App extends Component {
   state = { activeItem: 'home' }

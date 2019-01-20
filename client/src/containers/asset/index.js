@@ -13,9 +13,11 @@ import {
   Grid,
   Step,
   Icon,
-  Button,
+  Segment,
   Message
 } from 'semantic-ui-react'
+
+import Loadable from 'react-loadable';
 
 import {
   getAsset,
@@ -23,11 +25,20 @@ import {
   clearAsset
 } from '../../modules/listings'
 
-import CreatorUI from './creatorUI.js'
-import FoundAssetUI from './foundAssetUI.js'
-
 import { AssetStatus, longLocationString } from '../../utils/app.js'
 import { getMultihashFromBytes32 } from '../../utils/multihash'
+
+const Loading = () => <Segment style={{ padding: '4em 0em' }} vertical loading/>;
+
+const CreatorUI = Loadable({
+  loader: () => import('./creatorUI'),
+  loading: Loading
+})
+
+const FoundAssetUI = Loadable({
+  loader: () => import('./foundAssetUI'),
+  loading: Loading
+})
 
 var loadFromUrl
 
@@ -159,7 +170,9 @@ class Asset extends Component {
 
     if(!this.props.listings.asset || !this.props.listings.assetMetadata) {
       return (
-        <div>Waiting for asset data...</div>
+        <Container style={{ paddingTop: '2em', paddingBottom: '1em'}}>
+          Waiting for asset data...
+        </Container>
       )
     }
     else {

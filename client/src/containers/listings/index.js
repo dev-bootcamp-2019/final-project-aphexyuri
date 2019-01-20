@@ -13,13 +13,20 @@ import {
   Grid
 } from 'semantic-ui-react'
 
-import ListingItem from './listingItem.js'
+import Loadable from 'react-loadable';
 
 import {
   getAssetStoredEvents,
   getAsset,
   getAssetMetadata
 } from '../../modules/listings'
+
+const Loading = () => <Segment style={{ padding: '4em 0em' }} vertical loading/>;
+
+const ListingItem = Loadable({
+  loader: () => import('./listingItem'),
+  loading: Loading
+})
 
 var lafConstants = require('../../LAFConstants.js')
 
