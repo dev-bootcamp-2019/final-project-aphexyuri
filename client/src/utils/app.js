@@ -1,11 +1,12 @@
 var lafConstants = require('../LAFConstants.js')
 
 export const AssetStatus = {
-    Posted: 0,
-    PotentialMatch: 1,
-    MatchConfirmed: 2,
-    Recovered: 3,
-    Cancelled: 4
+    None: 0,
+    Posted: 1,
+    PotentialMatch: 2,
+    MatchConfirmed: 3,
+    Recovered: 4,
+    Cancelled: 5
 }
 
 const assetStatusEnumMapping = [

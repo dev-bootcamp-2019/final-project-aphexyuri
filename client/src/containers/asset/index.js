@@ -13,25 +13,23 @@ import {
   Grid,
   Step,
   Icon,
-  Button
+  Button,
+  Message
 } from 'semantic-ui-react'
 
 import {
   getAsset,
   getAssetMetadata,
-  clearAsset,
-  cancelAsset,
-  foundLostAsset,
-  matchConfirmed,
-  matchInvalid,
-  assetRecovered
+  clearAsset
 } from '../../modules/listings'
+
+import CreatorUI from './creatorUI.js'
+import FoundAssetUI from './foundAssetUI.js'
 
 import { AssetStatus, longLocationString } from '../../utils/app.js'
 import { getMultihashFromBytes32 } from '../../utils/multihash'
 
 var loadFromUrl
-var assetId
 
 class Asset extends Component {
   state = { ipfsHash: null }
@@ -39,7 +37,7 @@ class Asset extends Component {
   constructor(props) {
     super(props)
 
-    assetId = this.props.history.location.pathname.replace('/listings/', '')
+    this.state = { assetId: this.props.history.location.pathname.replace('/listings/', '') }
 
     if(!this.props.app.web3) {
       loadFromUrl = true
@@ -48,8 +46,8 @@ class Asset extends Component {
 
   componentDidUpdate = async () => {
     if(loadFromUrl) {
-      this.props.getAsset(assetId)
-      this.props.getAssetMetadata(assetId)
+      this.props.getAsset(this.state.assetId)
+      this.props.getAssetMetadata(this.state.assetId)
       loadFromUrl = false
     }
   }
@@ -59,76 +57,100 @@ class Asset extends Component {
     this.props.clearAsset()
   }
 
-  onCancelBtnClick = () => {
-    this.props.cancelAsset(assetId)
-  }
-
-  onMatchConfirmedBtnClick = () => {
-    this.props.matchConfirmed(assetId, "Starbuck, Downtown")
-    // TODO echange details
-  }
-
-  onMatchInvalidBtnClick = () => {
-    this.props.matchInvalid(assetId)
-  }
-
-  onAssetRecoveredBtnClick = () => {
-    this.props.assetRecovered(assetId)
-  }
-
-  onFoundLostAssetBtnClick = () => {
-    this.props.foundLostAsset(assetId)
-  }
-
   renderInteractionsUI = () => {
-    let { asset } = this.props.listings
+    let { asset, assetMetadata } = this.props.listings
 
-    console.log('this.props', this.props)
+    console.log('asset', asset)
+    // console.log('assetMetadata', assetMetadata)
 
-    if(asset.creator === this.props.app.accounts[0]) {
-      // creator is viewing
-      console.log('viewing as creator')
+    if(asset.assetStatus == AssetStatus.Cancelled) {
       return (
-        <div>
-          {/* cancel button */}
-          {
-            asset.assetStatus == AssetStatus.Posted || asset.assetStatus == AssetStatus.PotentialMatch ?
-              <Button fluid negative onClick={ this.onCancelBtnClick }>Cancel Item</Button>
-            : null
-          }
-
-          {/* confirm find btn */}
-          {
-            asset.assetStatus == AssetStatus.PotentialMatch ?
-              <div>
-                <Button primary fluid onClick={ this.onMatchConfirmedBtnClick }>Yes, that is my item</Button>
-                <br/>
-                <Button color='orange' fluid onClick={ this.onatchInvalidBtnClick }>No, not my item</Button>
-              </div>
-            : null
-          }
-          
-          {/* mark as recovered btn */}
-          {
-            asset.assetStatus == AssetStatus.MatchConfirmed ?
-              <Button positive fluid onClick={ this.onAssetRecoveredBtnClick }>Item recovered</Button>
-            : null
-          }
-        </div>
+        <Container textAlign='right' style={{ paddingTop: '1em'}}>
+          <Message attached negative
+            header='This item has been cancelled'
+            content='No actions available' />
+        </Container>
       )
     }
     else {
-      console.log('viewing as 2nd party')
-      return (
-        <div>
-          {/* i found it button */}
-          {
-            asset.assetStatus == AssetStatus.Posted ?
-              <Button positive fluid onClick={ this.onFoundLostAssetBtnClick }>I found this item</Button>
-            : null
+      if(asset.creator === this.props.app.accounts[0]) {
+        // creator is viewing
+        console.log('viewing as creator, assetId: ', this.state.assetId)
+        return (
+          <CreatorUI assetId={ this.state.assetId } />
+        )
+      }
+      else {
+        // non-creator is viewing
+        console.log('viewing as non-creator, assetId: ', this.state.assetId)
+
+        if(asset.assetStatus == AssetStatus.Cancelled) {
+          return (
+            <Container textAlign='right' style={{ paddingTop: '1em'}}>
+              <Message attached warning
+                header='This item has been cancelled'
+                content='No actions available' />
+            </Container>
+          )
+        }
+        else if(asset.assetStatus == AssetStatus.Posted) {
+          return (
+            <FoundAssetUI assetId={ this.state.assetId } />
+          )
+        }
+        else {
+          if(assetMetadata.matcher === this.props.app.accounts[0]) {
+            if(asset.assetStatus == AssetStatus.PotentialMatch) {
+              return (
+                <Container textAlign='right' style={{ paddingTop: '1em'}}>
+                  <Message attached warning
+                    header='Waiting for response from owner'
+                    content='Thank you for letting us know that you found this. Waiting for owner confirmation - check back soon!' />
+                </Container>
+              )
+            }
+            else if(asset.assetStatus == AssetStatus.MatchConfirmed) {
+              return (
+                <Container textAlign='right' style={{ paddingTop: '1em'}}>
+                <Message attached warning
+                    header='Fantastic - the item you found has been verified found!'
+                    content='Follow the instructions below to return it to the owner' />
+                <p>{ assetMetadata.exchangeDetails }</p>
+                </Container>
+              )
+            }
+            else if(asset.assetStatus == AssetStatus.Recovered) {
+              return (
+                <Container textAlign='right' style={{ paddingTop: '1em'}}>
+                  <Message attached positive
+                    header='This item has been recovered'
+                    content='No actions available' />
+                </Container>
+              )
+            }
           }
-        </div>
-      )
+          else {
+            if(asset.assetStatus == AssetStatus.Recovered) {
+              return (
+                <Container textAlign='right' style={{ paddingTop: '1em'}}>
+                  <Message attached positive
+                    header='This item has been recovered'
+                    content='No actions available' />
+                </Container>
+              )
+            }
+            else {
+              return (
+                <Container textAlign='right' style={{ paddingTop: '1em'}}>
+                  <Message attached warning
+                    header='Somebody already claimed to have found this'
+                    content='Check back soon for more info or find something else?' />
+                </Container>
+              )
+            }
+          }
+        }
+      }
     }
   }
 
@@ -143,13 +165,13 @@ class Asset extends Component {
     else {
       let { asset, assetMetadata } = this.props.listings
 
-      console.log('asset', asset)
-      console.log('assetMetadata', assetMetadata)
+      // console.log('asset', asset)
+      // console.log('assetMetadata', assetMetadata)
 
       ipfsHash =  getMultihashFromBytes32({
-        digest: asset.ipfsDigest,
-        hashFunction: asset.ipfsHashFunction,
-        size: asset.ipfsSize
+        digest: asset.primaryIpfsDigest,
+        hashFunction: asset.primaryIpfsHashFunction,
+        size: asset.primaryIpfsSize
       })
 
       let isoCountryCode = this.props.app.web3.utils.hexToUtf8(asset.isoCountryCode)
@@ -166,15 +188,15 @@ class Asset extends Component {
             <Breadcrumb.Section active>Item Details:</Breadcrumb.Section>
           </Breadcrumb>
 
-          <Container style={{ paddingTop: '2em'}}>
+          <Container style={{ paddingTop: '2em', paddingBottom: '1em'}}>
             <Grid>
-              <Grid.Row>
+              <Grid.Row style={{ paddingBottom: '0em'}}>
                 <Grid.Column width={16}>
                   <Header as='h2' content={asset.title}/>
                 </Grid.Column>
               </Grid.Row>
 
-              <Grid.Row>
+              <Grid.Row style={{ paddingTop: '0.25em', paddingBottom: '0.0em'}}>
                 <Grid.Column width={12}>
                   <Flag
                     name={isoCountryCode}
@@ -244,13 +266,12 @@ class Asset extends Component {
                   <Grid.Row>
                     { assetMetadata.description }
                   </Grid.Row>
-                  <Grid.Row style={{ paddingTop: '1em'}}>
-                    { this.renderInteractionsUI() }
-                  </Grid.Row>
                 </Grid.Column>
               </Grid.Row>
             </Grid>
           </Container>
+
+          { this.renderInteractionsUI() }
         </div>
       )
     }
@@ -269,12 +290,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => bindActionCreators({
   getAsset,
   getAssetMetadata,
-  clearAsset,
-  cancelAsset,
-  foundLostAsset,
-  matchConfirmed,
-  matchInvalid,
-  assetRecovered
+  clearAsset
 }, dispatch)
 
 export default connect(

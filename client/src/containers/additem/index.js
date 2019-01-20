@@ -20,14 +20,13 @@ import Dropzone from 'react-dropzone'
 
 var ipfsClient = require('ipfs-http-client')
 const ipfs = ipfsClient('ipfs.infura.io', '5001', { protocol: 'https' })
-
 var multihash = require('../../utils/multihash')
 var lafConstants = require('../../LAFConstants.js')
 var that
 
 const clearState = {
   title: '',
-  description: '',
+  details: '',
   selectedCountry: null,
   selectedStateProvince: null,
   city: null,
@@ -60,9 +59,9 @@ class AddItem extends Component {
     })
   }
 
-  handleDescriptionFieldChange = e => {
+  handleDetailsFieldChange = e => {
     this.setState({
-      description: e.target.value
+      details: e.target.value
     })
   }
 
@@ -257,7 +256,7 @@ class AddItem extends Component {
     try {
       await this.props.app.registryContract.methods.newLostAsset(
         titleHex,
-        this.state.description,
+        this.state.details,
         countryHex,
         stateProvinceHex,
         cityHex,
@@ -290,8 +289,8 @@ class AddItem extends Component {
             </Form.Field>
             <Form.Field>
               <label>Details</label>
-              <TextArea autoHeight rows={1}
-                placeholder='Descrption of item' value={this.state.description} onChange={this.handleDescriptionFieldChange} />
+              <TextArea autoHeight rows={2}
+                placeholder='Details about item and where, how when it got lost' value={this.state.details} onChange={this.handleDetailsFieldChange} />
             </Form.Field>
             <Form.Group widths='equal'>
               <Form.Select fluid

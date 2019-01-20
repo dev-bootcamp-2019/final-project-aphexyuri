@@ -94,7 +94,7 @@ export const cancelAsset = (assetId) => {
   return function action(dispatch, getState) {
     const state = getState()
 
-    state.app.registryContract.methods.cancelAsset(assetId).call()
+    state.app.registryContract.methods.cancelAsset(assetId).send({ from: state.app.accounts[0] })
     .then(function(result) {
       console.log('cancelAsset', result)
       dispatch({
@@ -105,13 +105,18 @@ export const cancelAsset = (assetId) => {
   }
 }
 
-export const foundLostAsset = (assetId) => {
+export const foundLostAsset = (assetId, details, ipfsDigest, ipfsHashFunction, ipfsSize) => {
   return function action(dispatch, getState) {
     const state = getState()
 
-    state.app.registryContract.methods.foundLostAsset(assetId).send({ from: state.app.accounts[0] })
+    state.app.registryContract.methods.foundLostAsset(
+      assetId,
+      details,
+      ipfsDigest,
+      ipfsHashFunction,
+      ipfsSize).send({ from: state.app.accounts[0], value: 0 })
     .then(function(result) {
-      console.log('foundLostAsset', result)
+      // console.log('foundLostAsset', result)
       dispatch({
         type: FOUND_LOST_ASSET_REQUESTED,
         assetId: assetId
@@ -187,7 +192,7 @@ export default (state = initialState, action) => {
       }
 
     case CLEAR_ASSET:
-      console.log('CLEAR_ASSET')
+      // console.log('CLEAR_ASSET')
       return {
         ...state,
         asset: null,
@@ -200,6 +205,7 @@ export default (state = initialState, action) => {
       }
 
     case FOUND_LOST_ASSET_REQUESTED:
+      console.log('FOUND_LOST_ASSET_REQUESTED reducer')
       return {
         ...state
       }
