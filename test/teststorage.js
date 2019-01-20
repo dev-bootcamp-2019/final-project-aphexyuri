@@ -17,15 +17,22 @@ contract('LAFAssetStorage', accounts => {
         assert.equal(owner, accounts[0])
     })
 
-    it('...set and verify allowedSender', async () => {
+    it('...set and verify allowed sender', async () => {
+        // account[1]
         await assetStorageInstance.addAllowedSender(accounts[1], { from: accounts[0] })
 
-        let senderAllowed = await assetStorageInstance.senderIsAllowed(accounts[1])
-        assert.ok(senderAllowed)
+        let senderAllowedAcc1 = await assetStorageInstance.senderIsAllowed(accounts[1])
+        assert.ok(senderAllowedAcc1)
+
+        // account[7]
+        await assetStorageInstance.addAllowedSender(accounts[7], { from: accounts[0] })
+
+        let senderAllowedAcc7 = await assetStorageInstance.senderIsAllowed(accounts[7])
+        assert.ok(senderAllowedAcc7)
     })
 
     it('...uint256 uninitialized value default to zero', async () => {
-        let unsetUint256 = await assetStorageInstance.uintStorage(web3.utils.keccak256('unsetval_key'))
+        let unsetUint256 = await assetStorageInstance.uint256Storage(web3.utils.keccak256('unsetval_key'))
         assert.equal(unsetUint256, 0)
     })
 
@@ -74,7 +81,7 @@ contract('LAFAssetStorage', accounts => {
     it('...5x uint256 write/read verifies', async () => {
         for(let i = 0; i < 5; i++) {
             await assetStorageInstance.storeUint256(web3.utils.keccak256('uint256_key_' + i), i, { from: accounts[1] })
-            let storedUint256 = await assetStorageInstance.uintStorage(web3.utils.keccak256('uint256_key_' + i))
+            let storedUint256 = await assetStorageInstance.uint256Storage(web3.utils.keccak256('uint256_key_' + i))
             assert.equal(storedUint256, i)
         }
     })
@@ -118,7 +125,7 @@ contract('LAFAssetStorage', accounts => {
     it('...5x ingt256 write/read verifies', async () => {
         for(let i = 0; i < 5; i++) {
             await assetStorageInstance.storeInt256(web3.utils.keccak256('int256_key_' + i), i - 1000, { from: accounts[1] })
-            let storedInt256 = await assetStorageInstance.intStorage(web3.utils.keccak256('int256_key_' + i))
+            let storedInt256 = await assetStorageInstance.int256Storage(web3.utils.keccak256('int256_key_' + i))
             assert.equal(storedInt256, i - 1000)    
         }
     })

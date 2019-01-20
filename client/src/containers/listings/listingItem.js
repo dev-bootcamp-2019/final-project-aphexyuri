@@ -27,11 +27,11 @@ class ListingItem extends Component {
   render () {
     // console.log('ListingItem.render', this.props.item)
     
-    var isoCountryCode = this.props.app.web3.utils.hexToAscii(this.props.item.returnValues.isoCountryCode)
-    var stateProvince = this.props.app.web3.utils.hexToAscii(this.props.item.returnValues.stateProvince)
-    var city = this.props.app.web3.utils.hexToAscii(this.props.item.returnValues.city)
+    let isoCountryCode = this.props.app.web3.utils.hexToAscii(this.props.item.returnValues.isoCountryCode)
+    let stateProvince = this.props.app.web3.utils.hexToAscii(this.props.item.returnValues.stateProvince)
+    let city = this.props.app.web3.utils.hexToAscii(this.props.item.returnValues.city)
 
-    var location = isoCountryCode + ', ' + stateProvince + ', ' + city
+    let location = isoCountryCode + ', ' + stateProvince + ', ' + city
 
     return (
       <Grid.Column largeScreen={4} computer={5} tablet={8} mobile={8}>
@@ -40,7 +40,7 @@ class ListingItem extends Component {
             src={ 'https://gateway.ipfs.io/ipfs/' + this.state.ipfsHash }
             size='medium'
             verticalAlign='middle'
-            style={{'fontSize':130}} />
+            style={{'fontSize':130}} onClick={ this.handleItemSelect }/>
           <Card.Content>
             <Card.Header>{ this.props.item.returnValues.title }</Card.Header>
             <Card.Meta>{ location }</Card.Meta>
@@ -48,7 +48,7 @@ class ListingItem extends Component {
               <Icon name='ethereum' />
               { this.props.app.web3.utils.fromWei(this.props.item.returnValues.reward, 'ether') } ETH
               <Button basic color='green' floated='right' size='mini' onClick={ this.handleItemSelect }>
-                See more
+                See details
               </Button>
             </Card.Content>
           </Card.Content>

@@ -20,14 +20,13 @@ import Dropzone from 'react-dropzone'
 
 var ipfsClient = require('ipfs-http-client')
 const ipfs = ipfsClient('ipfs.infura.io', '5001', { protocol: 'https' })
-
 var multihash = require('../../utils/multihash')
 var lafConstants = require('../../LAFConstants.js')
 var that
 
 const clearState = {
   title: '',
-  description: '',
+  details: '',
   selectedCountry: null,
   selectedStateProvince: null,
   city: null,
@@ -60,9 +59,9 @@ class AddItem extends Component {
     })
   }
 
-  handleDescriptionFieldChange = e => {
+  handleDetailsFieldChange = e => {
     this.setState({
-      description: e.target.value
+      details: e.target.value
     })
   }
 
@@ -257,7 +256,7 @@ class AddItem extends Component {
     try {
       await this.props.app.registryContract.methods.newLostAsset(
         titleHex,
-        this.state.description,
+        this.state.details,
         countryHex,
         stateProvinceHex,
         cityHex,
@@ -282,15 +281,16 @@ class AddItem extends Component {
     return (
       <div>
         <Container>
+          <Header as='h2'>Submit details about your lost item</Header>
           <Form>
             <Form.Field>
               <label>Title</label>
               <input placeholder='Title of item' value={this.state.title} onChange={this.handleTitleFieldChange}/>
             </Form.Field>
             <Form.Field>
-              <label>Description</label>
-              <TextArea autoHeight rows={1}
-                placeholder='Descrption of item' value={this.state.description} onChange={this.handleDescriptionFieldChange} />
+              <label>Details</label>
+              <TextArea autoHeight rows={2}
+                placeholder='Details about item and where, how when it got lost' value={this.state.details} onChange={this.handleDetailsFieldChange} />
             </Form.Field>
             <Form.Group widths='equal'>
               <Form.Select fluid

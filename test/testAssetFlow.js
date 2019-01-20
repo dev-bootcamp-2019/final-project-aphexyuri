@@ -48,10 +48,13 @@ contract("LAFAssetRegistry (Asset Flows)", accounts => {
         // call newLostAsset
         let { logs } =  await assetRegistryInstance.newLostAsset(
             titleStr,
-            // descriptionStr,
+            descriptionStr,
             web3.utils.asciiToHex(countryIso),
             web3.utils.asciiToHex(stateProvince),
             web3.utils.asciiToHex(city),
+            "0x39a8cb1d77c213889e8a638394c9a5190d1fa703ebb02e23a091a99566dd8ccf",
+            18,
+            32,
             { from: creator, value: reward }
         )
         
@@ -62,25 +65,30 @@ contract("LAFAssetRegistry (Asset Flows)", accounts => {
 
     it('...newLostAsset -> potentialMatch -> matchConfirmed -> assetRecovered', async () => {
         let assetStatus = (await assetRegistryInstance.getAsset(assetId)).assetStatus
-        assert.equal(assetStatus, 0)
+        assert.equal(assetStatus, 1)
 
         // call potentialMatch
-        await assetRegistryInstance.foundLostAsset(assetId, { from: matcher })
+        await assetRegistryInstance.foundLostAsset(
+            assetId,
+            "Details of where what etc",
+            "0x39a8cb1d77c213889e8a638394c9a5190d1fa703ebb02e23a091a99566dd8ccf",
+            18,32,
+            { from: matcher })
 
         assetStatus = (await assetRegistryInstance.getAsset(assetId)).assetStatus
-        assert.equal(assetStatus, 1)
+        assert.equal(assetStatus, 2)
         
         // call matchConfirmed
         await assetRegistryInstance.matchConfirmed(assetId, "", { from: creator })
 
         assetStatus = (await assetRegistryInstance.getAsset(assetId)).assetStatus
-        assert.equal(assetStatus, 2)
+        assert.equal(assetStatus, 3)
 
         // call assetRecovered
         await assetRegistryInstance.assetRecovered(assetId, { from: creator })
 
         assetStatus = (await assetRegistryInstance.getAsset(assetId)).assetStatus
-        assert.equal(assetStatus, 3)
+        assert.equal(assetStatus, 4)
 
         // test assert the account's claimable reward matches the initial asset reward >>> 
         let claimableReward = await assetRegistryInstance.getClaimableRewards({ from: matcher })
@@ -110,39 +118,51 @@ contract("LAFAssetRegistry (Asset Flows)", accounts => {
         )
     })
 
-//     it('...newLostAsset -> potentialMatch -> matchConfirmed -> assetRecoveryFailed', async () => {
-//         // call potentialMatch
-//         await assetRegistryInstance.potentialMatch(assetId, { from: matcher })
+    it('...newLostAsset -> potentialMatch -> matchConfirmed -> assetRecoveryFailed', async () => {
+        // call foundLostAsset
+        await assetRegistryInstance.foundLostAsset(
+            assetId,
+            "Details of finding items",
+            "0x39a8cb1d77c213889e8a638394c9a5190d1fa703ebb02e23a091a99566dd8ccf",
+            18,
+            32,
+            { from: matcher })
        
-//         // call matchConfirmed
-//         await assetRegistryInstance.matchConfirmed(assetId, "", { from: creator })
+        // call matchConfirmed
+        await assetRegistryInstance.matchConfirmed(assetId, "", { from: creator })
 
-//         // call assetRecovered
-//         await assetRegistryInstance.assetRecoveryFailed(assetId, { from: creator })
+        // call assetRecovered
+        await assetRegistryInstance.assetRecoveryFailed(assetId, { from: creator })
 
-//         // TODO assert balances
-//         // TODO assert states
-//         // TODO assert data
-//    })
+        // TODO assert balances
+        // TODO assert states
+        // TODO assert data
+   })
 
-    // it('...newLostAsset -> potentialMatch -> matchInvalid', async () => {
-    //     // call potentialMatch
-    //     await assetRegistryInstance.potentialMatch(assetId, { from: matcher })
+    it('...newLostAsset -> potentialMatch -> matchInvalid', async () => {
+        // call foundLostAsset
+        await assetRegistryInstance.foundLostAsset(
+            assetId,
+            "Details of finding items",
+            "0x39a8cb1d77c213889e8a638394c9a5190d1fa703ebb02e23a091a99566dd8ccf",
+            18,
+            32,
+            { from: matcher })
 
-    //      // call matchInvalid
-    //      await assetRegistryInstance.matchInvalid(assetId, { from: creator })
+         // call matchInvalid
+         await assetRegistryInstance.matchInvalid(assetId, { from: creator })
 
-    //     // TODO assert balances
-    //     // TODO assert states
-    //     // TODO assert data
-    // })
+        // TODO assert balances
+        // TODO assert states
+        // TODO assert data
+    })
 
-    // it('...newLostAsset -> cancelAsset', async () => {
-    //     // call matchInvalid
-    //     await assetRegistryInstance.cancelAsset(assetId, { from: creator })
+    it('...newLostAsset -> cancelAsset', async () => {
+        // call matchInvalid
+        await assetRegistryInstance.cancelAsset(assetId, { from: creator })
 
-    //     // TODO assert balances
-    //     // TODO assert states
-    //     // TODO assert data
-    // })
+        // TODO assert balances
+        // TODO assert states
+        // TODO assert data
+    })
 })
