@@ -13,11 +13,12 @@ import {
   Menu,
   Segment,
   Icon
-} from 'semantic-ui-react';
+} from 'semantic-ui-react'
 
 import Listings from '../listings'
 import AddItem from '../additem'
 import Asset from '../asset'
+import MyLAF from '../mylaf'
 
 import { initWeb3 } from '../../modules/app'
 
@@ -32,6 +33,9 @@ class App extends Component {
     }
     else if(routerPath === '/newlost') {
       this.setState({ activeItem: 'newlost' })
+    }
+    else if(routerPath === '/mylaf') {
+      this.setState({ activeItem: 'mylaf' })
     }
 
     this.props.initWeb3()
@@ -52,6 +56,12 @@ class App extends Component {
               <Menu.Item name='newlost' as={Link} to={'/newlost'} active={this.state.activeItem === 'newlost'} onClick={this.handleMenuItemClick}>
                 I lost something
               </Menu.Item>
+
+              <Menu.Menu position='right'>
+                <Menu.Item name='mylaf' as={Link} to={'/mylaf'} active={this.state.activeItem === 'mylaf'} onClick={this.handleMenuItemClick}>
+                  My LAF
+                </Menu.Item>
+              </Menu.Menu>
             </Menu>
 
             <Segment style={{ padding: '0em 0em' }} vertical loading={ this.props.app.web3 == null }>
@@ -64,6 +74,12 @@ class App extends Component {
               <Route exact path={'/newlost'}
                 render={ (props) => 
                   <AddItem
+                    {...props}/>    
+                }
+              />
+              <Route exact path={'/mylaf'}
+                render={ (props) => 
+                  <MyLAF
                     {...props}/>    
                 }
               />

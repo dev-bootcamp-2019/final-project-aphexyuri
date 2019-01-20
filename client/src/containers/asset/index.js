@@ -215,7 +215,8 @@ class Asset extends Component {
 
               <Grid.Row>
                 <Step.Group widths={4} size='mini'>
-                  <Step active={ asset.assetStatus == AssetStatus.Posted }>
+                  <Step active={ asset.assetStatus == AssetStatus.Posted }
+                    disabled={ asset.assetStatus == AssetStatus.Cancelled }>
                     <Icon name='find'/>
                     <Step.Content>
                       <Step.Title>Lost</Step.Title>
@@ -224,7 +225,7 @@ class Asset extends Component {
                   </Step>
                   <Step
                     active={ asset.assetStatus == AssetStatus.PotentialMatch }
-                    disabled={ asset.assetStatus < AssetStatus.PotentialMatch }>
+                    disabled={ asset.assetStatus < AssetStatus.PotentialMatch || asset.assetStatus == AssetStatus.Cancelled }>
                     <Icon name='question'/>
                     <Step.Content>
                       <Step.Title>Potentially Found</Step.Title>
@@ -233,7 +234,7 @@ class Asset extends Component {
                   </Step>
                   <Step
                     active={ asset.assetStatus == AssetStatus.MatchConfirmed }
-                    disabled={ asset.assetStatus < AssetStatus.MatchConfirmed }>
+                    disabled={ asset.assetStatus < AssetStatus.MatchConfirmed || asset.assetStatus == AssetStatus.Cancelled }>
                     <Icon name='smile outline'/>
                     <Step.Content>
                       <Step.Title>Confirmed Found</Step.Title>
@@ -242,7 +243,7 @@ class Asset extends Component {
                   </Step>
                   <Step
                     active={ asset.assetStatus == AssetStatus.Recovered }
-                    disabled={ asset.assetStatus < AssetStatus.Recovered }>
+                    disabled={ asset.assetStatus < AssetStatus.Recovered || asset.assetStatus == AssetStatus.Cancelled }>
                     <Icon name='check'/>
                     <Step.Content>
                       <Step.Title>Recovered</Step.Title>
