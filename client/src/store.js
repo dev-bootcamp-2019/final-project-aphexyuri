@@ -4,7 +4,13 @@ import thunk from 'redux-thunk'
 import createHistory from 'history/createBrowserHistory'
 import rootReducer from './modules'
 
+import createSagaMiddleware from 'redux-saga'
+
+import myEntriesSaga from './sagas/myLafsSaga'
+
 export const history = createHistory()
+
+const sagaMiddleware = createSagaMiddleware()
 
 const initialState = {}
 const enhancers = []
@@ -23,6 +29,7 @@ if (process.env.NODE_ENV === 'development') {
 
 const composedEnhancers = compose(
   applyMiddleware(...middleware),
+  applyMiddleware(sagaMiddleware),
   ...enhancers
 )
 
@@ -31,3 +38,5 @@ export default createStore(
   initialState,
   composedEnhancers
 )
+
+sagaMiddleware.run(myEntriesSaga)

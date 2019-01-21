@@ -12,27 +12,25 @@ class ListingItem extends Component {
     super(props)
 
     let ipfsHash =  multihash.getMultihashFromBytes32({
-      digest: props.item.returnValues.ipfsDigest,
-      hashFunction: props.item.returnValues.ipfsHashFunction,
-      size: props.item.returnValues.ipfsSize
+      digest: props.item.primaryIpfsDigest,
+      hashFunction: props.item.primaryIpfsHashFunction,
+      size: props.item.primaryIpfsSize
     })
     
     this.state = { ipfsHash:  ipfsHash}
   }
 
   handleItemSelect = (evt) => {
-    this.props.itemSelectHandler(this.props.item.returnValues.assetId)
+    this.props.itemSelectHandler(this.props.item.assetId)
   }
 
-  render () {
-    // console.log('ListingItem.render', this.props.item)
+  render () { 
+    let isoCountryCode = this.props.app.web3.utils.hexToAscii(this.props.item.isoCountryCode)
+    let stateProvince = this.props.app.web3.utils.hexToAscii(this.props.item.stateProvince)
+    let city = this.props.item.city ? this.props.app.web3.utils.hexToAscii(this.props.item.city) : ''
+
+    let location = isoCountryCode + ', ' + stateProvince + (this.props.item.city ? ', ' + city : '')
     
-    let isoCountryCode = this.props.app.web3.utils.hexToAscii(this.props.item.returnValues.isoCountryCode)
-    let stateProvince = this.props.app.web3.utils.hexToAscii(this.props.item.returnValues.stateProvince)
-    let city = this.props.app.web3.utils.hexToAscii(this.props.item.returnValues.city)
-
-    let location = isoCountryCode + ', ' + stateProvince + ', ' + city
-
     return (
       <Grid.Column largeScreen={4} computer={5} tablet={8} mobile={8}>
         <Card>
@@ -42,11 +40,11 @@ class ListingItem extends Component {
             verticalAlign='middle'
             style={{'fontSize':130}} onClick={ this.handleItemSelect }/>
           <Card.Content>
-            <Card.Header>{ this.props.item.returnValues.title }</Card.Header>
+            <Card.Header>{ this.props.item.title }</Card.Header>
             <Card.Meta>{ location }</Card.Meta>
             <Card.Content extra>
               <Icon name='ethereum' />
-              { this.props.app.web3.utils.fromWei(this.props.item.returnValues.reward, 'ether') } ETH
+              { this.props.app.web3.utils.fromWei(this.props.item.reward, 'ether') } ETH
               <Button basic color='green' floated='right' size='mini' onClick={ this.handleItemSelect }>
                 See details
               </Button>

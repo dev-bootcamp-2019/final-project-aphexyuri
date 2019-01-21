@@ -44,6 +44,11 @@ const MyLAF = Loadable({
 class App extends Component {
   state = { activeItem: 'home' }
 
+  // componentDidUpdate() {
+  //   var routerPath = this.context.router.route.location.pathname
+  //   console.log('app componentDidUpdate, routerPath', routerPath)
+  // }
+
   componentDidMount = async () => {
     var routerPath = this.context.router.route.location.pathname
 
@@ -58,6 +63,11 @@ class App extends Component {
     }
 
     this.props.initWeb3()
+  }
+
+  notifyAppOfNavChange = (navTarget) => {
+    // TODO better way to manage nav
+    this.setState({ activeItem: 'home' })
   }
 
   handleMenuItemClick = (e, { name }) => this.setState({ activeItem: name })
@@ -99,7 +109,8 @@ class App extends Component {
               <Route exact path={'/mylaf'}
                 render={ (props) => 
                   <MyLAF
-                    {...props}/>    
+                    {...props }
+                      notifyAppOfNavChange={this.notifyAppOfNavChange}/>    
                 }
               />
               <Route exact path={'/listings/:id'} component={Asset} />

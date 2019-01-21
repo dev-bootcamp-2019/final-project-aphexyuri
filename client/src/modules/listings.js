@@ -1,3 +1,7 @@
+import {
+  SAGA_GET_MY_LAFS
+} from '../sagas/myLafsSaga.js'
+
 export const ASSETS_STORED_EVENTS_RETRIEVED = 'listings/ASSETS_STORED_EVENTS_RETRIEVED'
 export const ASSET_RETRIEVED = 'listing/ASSET_RETRIEVED'
 export const ASSET_METADATA_RETRIEVED = 'listing/ASSET_METADATA_RETRIEVED'
@@ -9,12 +13,15 @@ export const MATCH_CONFIRMED_REQUESTED = 'listings/MATCH_CONFIRMED_REQUESTED'
 export const MATCH_INVALID_REQUESTED = 'listings/MATCH_INVALID_REQUESTED'
 export const ASSET_RECOVERED_REQUESTED = 'listings/ASSET_RECOVERED_REQUESTED'
 export const ASSET_RECOVERY_FAILED_REQUESTED = 'listings/ASSET_RECOVERY_FAILED_REQUESTED'
+export const GET_MY_LAFS = "listings/GET_MY_LAFS"
+export const MY_LAFS_RETRIEVED = "listings/MY_LAFS_RETRIEVED"
 
 const initialState = {
   assetsStoredEvents: null,
   assetsStoredEventsRetrieved: false,
   asset: null,
-  assetMetadata: null
+  assetMetadata: null,
+  myLafAssets: null
 }
 
 export const getAssetStoredEvents = (country, stateProvince, initialAssetType) => {
@@ -186,6 +193,37 @@ export const assetRecoveryFailed = (assetId) => {
   }
 }
 
+export const getMyLAFs = () => {
+  return async (dispatch, getState) => {
+    const state = getState()
+
+    dispatch({
+      type: SAGA_GET_MY_LAFS,
+      app: state.app
+    })
+  }
+
+  // return async (dispatch, getState) => {
+  //   const state = getState()
+
+  //   let result = await state.app.registryContract.methods.getMyLAFs().call()
+
+  //   console.log(result)
+  // }
+
+  // return function action(dispatch, getState) {
+  //   const state = getState()
+
+  //   state.app.registryContract.methods.getMyLAFs().call()
+  //   .then(function(result) {
+  //     console.log('getMyLAFs', result)
+  //     dispatch({
+  //       type: GET_MY_LAFS
+  //     })
+  //   })
+  // }
+}
+
 export default (state = initialState, action) => {
   switch (action.type) {
     case ASSETS_STORED_EVENTS_RETRIEVED:
@@ -244,6 +282,18 @@ export default (state = initialState, action) => {
     case ASSET_RECOVERY_FAILED_REQUESTED:
       return {
         ...state
+      }
+
+    case GET_MY_LAFS:
+      return {
+        ...state
+      }
+
+    case MY_LAFS_RETRIEVED:
+      // console.log(action.myLafAssets)
+      return {
+        ...state,
+        myLafAssets: action.myLafAssets
       }
 
     default:
