@@ -41,7 +41,7 @@ library LAFStorageLib
     string constant KEY_IPFS_HASH_FUNCTION_SECONDARY = "ipfsHashFunctionSecondary";
     string constant KEY_IPFS_SIZE_SECONDARY = "ipfsSizeSecondary";
 
-
+    string constant KEY_MY_LAF_STORAGE = "myLafStorage";
 
     // =======================================================
     // STORAGE MUTATORS
@@ -245,6 +245,12 @@ library LAFStorageLib
         public
     {
         storeString(assetStorageAddress, assetId, KEY_FOUND_DETAILS, value);
+    }
+
+    function storeToMyLAFs(address assetStorageAddress, address userAddress, uint256 value)
+        public
+    {
+        LAFAssetStorage(assetStorageAddress).pushUint256ToAddressUint256Mapping(keccak256(abi.encode(KEY_MY_LAF_STORAGE)), userAddress, value);
     }
 
     // =======================================================
@@ -498,5 +504,13 @@ library LAFStorageLib
         returns (string memory)
     {
         return getStringValue(assetStorageAddress, assetId, KEY_FOUND_DETAILS);
+    }
+
+    function getMyLAFs(address assetStorageAddress, address userAddress)
+        public
+        view
+        returns (uint256[] memory)
+    {
+        return LAFAssetStorage(assetStorageAddress).getUint256ArrayForAddressFromMapping(keccak256(abi.encode(KEY_MY_LAF_STORAGE)), userAddress);
     }
 }

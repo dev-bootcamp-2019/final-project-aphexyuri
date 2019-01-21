@@ -33,7 +33,7 @@ contract LAFAssetStorage is Ownable
 
     // complex types
     mapping(bytes32 => mapping(address => uint256)) public addressUint256MappingStore;
-    mapping(bytes32 => mapping(address => uint256[])) private addressUint256ArrayMappingStore;
+    mapping(bytes32 => mapping(address => uint256[])) public addressUint256ArrayMappingStore;
     
     modifier onlyAllowedSenderOrOwner()
     {
@@ -239,5 +239,21 @@ contract LAFAssetStorage is Ownable
         onlyAllowedSenderOrOwner
     {
         addressUint256ArrayMappingStore[key][addressValue] = uint256ArrayValue;
+    }
+
+    function pushUint256ToAddressUint256Mapping(bytes32 key, address addressValue, uint256 uint256Value)
+        public
+        onlyAllowedSenderOrOwner
+    {
+        uint256[] storage arr = addressUint256ArrayMappingStore[key][addressValue];
+        arr.push(uint256Value);
+    }
+
+    function getUint256ArrayForAddressFromMapping(bytes32 key, address addressValue)
+        public
+        view
+        returns(uint256[] memory)
+    {
+        return addressUint256ArrayMappingStore[key][addressValue];
     }
 }

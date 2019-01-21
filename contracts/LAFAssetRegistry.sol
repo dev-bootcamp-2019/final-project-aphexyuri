@@ -28,9 +28,9 @@ contract LAFAssetRegistry is LAFRegistryBase
         string title,
         InitialAssetType indexed initialAssetType,
         uint256 reward,
-        bytes32 ipfsDigest,
-        uint8 ipfsHashFunction,
-        uint8 ipfsSize);
+        bytes32 primaryIpfsDigest,
+        uint8 primaryIpfsHashFunction,
+        uint8 primaryIpfsSize);
     event AssetCancelled(uint256 assetId);
     event FoundLostAsset(uint256 assetId, bytes8 indexed isoCountryCode, bytes8 indexed stateProvince);
     event MatchConfirmed(uint256 assetId);
@@ -168,6 +168,8 @@ contract LAFAssetRegistry is LAFRegistryBase
         LAFStorageLib.storeAssetIfsDigest(getAssetStorageAddress(), assetId, true, ipfsDigest);
         LAFStorageLib.storeAssetIfsHashFunction(getAssetStorageAddress(), assetId, true, ipfsHashFunction);
         LAFStorageLib.storeAssetIfsSize(getAssetStorageAddress(), assetId, true, ipfsSize);
+
+        LAFStorageLib.storeToMyLAFs(getAssetStorageAddress(), msg.sender, assetId);
         
         emit AssetStored(
             assetId,
@@ -247,6 +249,14 @@ contract LAFAssetRegistry is LAFRegistryBase
     {
         return LAFStorageLib.getClaimableReward(getAssetStorageAddress(), msg.sender);
     }
+
+    function getMyLAFIndicies()
+        public
+        view
+        returns(uint256[] memory)
+    {
+        return LAFStorageLib.getMyLAFs(getAssetStorageAddress(), msg.sender);
+    }
     
     function newLostAsset(
         string memory assetTitle,
@@ -289,6 +299,8 @@ contract LAFAssetRegistry is LAFRegistryBase
         LAFStorageLib.storeAssetIfsDigest(getAssetStorageAddress(), assetId, false, ipfsDigest);
         LAFStorageLib.storeAssetIfsHashFunction(getAssetStorageAddress(), assetId, false, ipfsHashFunction);
         LAFStorageLib.storeAssetIfsSize(getAssetStorageAddress(), assetId, false, ipfsSize);
+
+        LAFStorageLib.storeToMyLAFs(getAssetStorageAddress(), msg.sender, assetId);
         
         bytes8 isoCountryCode = LAFStorageLib.getAssetIsoCountryCode(getAssetStorageAddress(), assetId);
         bytes8 stateProvince = LAFStorageLib.getAssetStateProvince(getAssetStorageAddress(), assetId);
