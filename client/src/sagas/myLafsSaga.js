@@ -8,7 +8,7 @@ export const SAGA_GET_MY_LAFS = 'saga/SAGA_GET_MY_ENTRIES'
 
 export function getIndicies(app) {
   return new Promise((resolve) => {
-    app.registryContract.methods.getMyLAFIndicies().call()
+    app.registryContract.methods.getMyLAFIndicies().call({ from: app.accounts[0] })
     .then((result) => {
       resolve(
         result
@@ -19,7 +19,7 @@ export function getIndicies(app) {
 
 export function getAsset(app, assetId) {
   return new Promise((resolve) => {
-    app.registryContract.methods.getAsset(assetId).call()
+    app.registryContract.methods.getAsset(assetId).call({ from: app.accounts[0] })
     .then((result) => {
       resolve(
         result

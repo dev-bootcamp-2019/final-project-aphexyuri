@@ -9,15 +9,18 @@ import {
   Segment,
   Container,
   Label,
-  Grid
+  Grid,
+  Button,
+  Header,
+  Icon
 } from 'semantic-ui-react'
 
 import Loadable from 'react-loadable';
 
 import {
   getMyLAFs,
-  getAsset,
-  getAssetMetadata
+  getClaimableRewards,
+  withdrawRewards
 } from '../../modules/listings'
 
 const Loading = () => <Segment style={{ padding: '4em 0em' }} vertical loading/>;
@@ -46,13 +49,12 @@ class MyLAF extends Component {
   componentDidUpdate = async () => {
     if(loadFromUrl) {
       this.props.getMyLAFs()
+      this.props.getClaimableRewards()
       loadFromUrl = false
     }
   }
 
   handleItemSelect = (assetId) => {
-    this.props.getAsset(assetId)
-    this.props.getAssetMetadata(assetId)
     this.props.notifyAppOfNavChange('listings')
     this.props.history.push('listings/' + assetId)
   }
@@ -70,20 +72,37 @@ class MyLAF extends Component {
   render () {
     if(this.props.app.accounts) {
       // console.log(this.props.app.accounts[0])
+
       return (
         <div>
           <Container text textAlign='center' style={{ paddingTop: '2em', paddingBottom: '1em'}}>
             <Blockies
               seed={this.props.app.accounts[0]} 
               size={10}
-              scale={10}/>
+              scale={15}/>
           </Container>
 
           <Container text textAlign='center'>
-            <Label circular size='large'>
+            <Label circular size='huge'>
               { this.props.app.accounts[0] }
             </Label>
           </Container>
+
+          {
+            this.props.listings.myClaimableRewards > 0 ?
+              <Container style={{ paddingTop: '2em'}}>
+                <Segment placeholder inverted secondary color='red'>
+                  <Header icon>
+                    <Icon name='ethereum'/>
+                    You have {this.props.app.web3.utils.fromWei(this.props.listings.myClaimableRewards, 'ether')} ETH claimable rewards!
+                  </Header>
+                  <Segment.Inline>
+                    <Button positive onClick={ () => { this.props.withdrawRewards() }}>Withdraw Now</Button>
+                  </Segment.Inline>
+                </Segment>
+              </Container>
+            : null
+          }
 
           {
             this.props.listings.myLafAssets ?
@@ -94,8 +113,6 @@ class MyLAF extends Component {
               </Container>
             : null
           }
-
-          
         </div>
       )
     }
@@ -116,8 +133,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   getMyLAFs,
-  getAsset,
-  getAssetMetadata
+  getClaimableRewards,
+  withdrawRewards
 }, dispatch)
 
 export default connect(

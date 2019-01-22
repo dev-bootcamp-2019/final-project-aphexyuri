@@ -19,6 +19,11 @@ import Loadable from 'react-loadable';
 
 import { initWeb3 } from '../../modules/app'
 
+import {
+  getMyLAFs,
+  getClaimableRewards
+} from '../../modules/listings'
+
 const Loading = () => <Segment style={{ padding: '4em 0em' }} vertical loading/>;
 
 const Listings = Loadable({
@@ -70,14 +75,21 @@ class App extends Component {
     this.setState({ activeItem: 'home' })
   }
 
-  handleMenuItemClick = (e, { name }) => this.setState({ activeItem: name })
+  handleMenuItemClick = (e, { name }) => {
+    this.setState({ activeItem: name })
+
+    if(name === 'mylaf') {
+      this.props.getMyLAFs()
+      this.props.getClaimableRewards()
+    }
+  }
 
   render() {
     return (
       <div>
         <Router>
           <div>
-            <Menu pointing style={{borderWidth: '0px'}} >
+            <Menu fixed='top' inverted pointing style={{borderWidth: '0px'}} >
               <Menu.Item name='home' as={Link} to={'/'} active={this.state.activeItem === 'home'}  onClick={this.handleMenuItemClick}>
                 <Icon name='home' size='large'/>
               </Menu.Item>
@@ -86,14 +98,14 @@ class App extends Component {
                 I lost something
               </Menu.Item>
 
-              <Menu.Menu position='right'>
+              <Menu.Menu position='right' style={{paddingBottom: '0em'}}>
                 <Menu.Item name='mylaf' as={Link} to={'/mylaf'} active={this.state.activeItem === 'mylaf'} onClick={this.handleMenuItemClick}>
                   My LAF
                 </Menu.Item>
               </Menu.Menu>
             </Menu>
 
-            <Segment style={{ padding: '0em 0em' }} vertical loading={ this.props.app.web3 == null }>
+            <Segment style={{ padding: '0em 0em', paddingTop: '5em' }} vertical loading={ this.props.app.web3 == null }>
               <Route exact path='/'
                 render={ (props) =>
                   <Listings
@@ -132,7 +144,9 @@ const mapStateToProps = state => ({
 })
   
 const mapDispatchToProps = dispatch => bindActionCreators({
-  initWeb3
+  initWeb3,
+  getMyLAFs,
+  getClaimableRewards
 }, dispatch)
   
   

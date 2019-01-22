@@ -15,13 +15,16 @@ export const ASSET_RECOVERED_REQUESTED = 'listings/ASSET_RECOVERED_REQUESTED'
 export const ASSET_RECOVERY_FAILED_REQUESTED = 'listings/ASSET_RECOVERY_FAILED_REQUESTED'
 export const GET_MY_LAFS = "listings/GET_MY_LAFS"
 export const MY_LAFS_RETRIEVED = "listings/MY_LAFS_RETRIEVED"
+export const RETRIEVED_MY_CLAIMABLE_REWARDS = 'listings/RETRIEVED_MY_CLAIMABLE_REWARDS'
+export const REWARDS_WITHDRAWN = 'listings/REWARDS_WITHDRAWN'
 
 const initialState = {
   assetsStoredEvents: null,
   assetsStoredEventsRetrieved: false,
   asset: null,
   assetMetadata: null,
-  myLafAssets: null
+  myLafAssets: null,
+  myClaimableRewards: null
 }
 
 export const getAssetStoredEvents = (country, stateProvince, initialAssetType) => {
@@ -202,26 +205,33 @@ export const getMyLAFs = () => {
       app: state.app
     })
   }
+}
 
-  // return async (dispatch, getState) => {
-  //   const state = getState()
+export const getClaimableRewards = () => {
+  return async (dispatch, getState) => {
+    const state = getState()
 
-  //   let result = await state.app.registryContract.methods.getMyLAFs().call()
+    state.app.registryContract.methods.getClaimableRewards().call({ from: state.app.accounts[0] })
+    .then(function(result) {
+      dispatch({
+        type: RETRIEVED_MY_CLAIMABLE_REWARDS,
+        myClaimableRewards: result
+      })
+    })
+  }
+}
 
-  //   console.log(result)
-  // }
+export const withdrawRewards = () => {
+  return async (dispatch, getState) => {
+    const state = getState()
 
-  // return function action(dispatch, getState) {
-  //   const state = getState()
-
-  //   state.app.registryContract.methods.getMyLAFs().call()
-  //   .then(function(result) {
-  //     console.log('getMyLAFs', result)
-  //     dispatch({
-  //       type: GET_MY_LAFS
-  //     })
-  //   })
-  // }
+    state.app.registryContract.methods.withdrawRewards().send({ from: state.app.accounts[0] })
+    .then(function(result) {
+      dispatch({
+        type: REWARDS_WITHDRAWN
+      })
+    })
+  }
 }
 
 export default (state = initialState, action) => {
@@ -294,6 +304,18 @@ export default (state = initialState, action) => {
       return {
         ...state,
         myLafAssets: action.myLafAssets
+      }
+
+    case RETRIEVED_MY_CLAIMABLE_REWARDS:
+      return {
+        ...state,
+        myClaimableRewards: action.myClaimableRewards
+      }
+    
+    case REWARDS_WITHDRAWN:
+      return {
+        ...state,
+        myClaimableRewards: null
       }
 
     default:
