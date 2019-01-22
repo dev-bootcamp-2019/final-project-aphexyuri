@@ -37,6 +37,7 @@ contract LAFAssetRegistry is LAFRegistryBase
     event MatchInvalid(uint256 assetID);
     event AssetRecovered(uint256 assetId, uint256 reward);
     event RecoveryFailed(uint256 assetId);
+    event Withdrawl(uint256 contractBalance, address payee);
     
     // =======================================================
     // STRUCTS
@@ -397,7 +398,12 @@ contract LAFAssetRegistry is LAFRegistryBase
         storageSet
     {
         uint256 rewardsBalance = LAFStorageLib.getClaimableReward(getAssetStorageAddress(), msg.sender);
+
+        require(address(this).balance >= rewardsBalance);
+
         LAFStorageLib.storeClaimableReward(getAssetStorageAddress(), msg.sender, 0);
         msg.sender.transfer(rewardsBalance);
+
+        emit Withdrawl(address(this).balance, msg.sender);
     }
 }

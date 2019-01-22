@@ -9,7 +9,6 @@ library LAFStorageLib
     struct Data
     {
         address assetStorageAddress;
-        address payable rewardsBankAddress;
     }
 
     // =======================================================
