@@ -13,13 +13,20 @@ import {
   Grid
 } from 'semantic-ui-react'
 
-import ListingItem from './listingItem.js'
+import Loadable from 'react-loadable';
 
 import {
   getAssetStoredEvents,
   getAsset,
   getAssetMetadata
 } from '../../modules/listings'
+
+const Loading = () => <Segment style={{ padding: '4em 0em' }} vertical loading/>;
+
+const ListingItem = Loadable({
+  loader: () => import('./listingItem'),
+  loading: Loading
+})
 
 var lafConstants = require('../../LAFConstants.js')
 
@@ -45,7 +52,7 @@ class Listings extends Component {
     return (
       <ListingItem
         key={item.id}
-        item={item}
+        item={item.returnValues}
         itemSelectHandler={this.handleItemSelect}/>
     )
   }
@@ -132,11 +139,9 @@ class Listings extends Component {
           <Container textAlign='left' style={{ paddingTop: '2em', paddingBottom: '1em'}}>
             {
               this.props.assetStoredEvents ?
-                // <Card.Group>
                 <Grid>
                   { this.props.assetStoredEvents.map(this.renderEntry) }
                 </Grid>
-                // </Card.Group>
               : null
             }
           </Container>

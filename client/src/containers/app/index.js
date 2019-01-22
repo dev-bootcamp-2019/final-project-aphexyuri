@@ -13,16 +13,46 @@ import {
   Menu,
   Segment,
   Icon
-} from 'semantic-ui-react';
+} from 'semantic-ui-react'
 
-import Listings from '../listings'
-import AddItem from '../additem'
-import Asset from '../asset'
+import Loadable from 'react-loadable';
 
 import { initWeb3 } from '../../modules/app'
 
+import {
+  getMyLAFs,
+  getClaimableRewards
+} from '../../modules/listings'
+
+const Loading = () => <Segment style={{ padding: '4em 0em' }} vertical loading/>;
+
+const Listings = Loadable({
+  loader: () => import('../listings'),
+  loading: Loading
+})
+
+const AddItem = Loadable({
+  loader: () => import('../additem'),
+  loading: Loading
+})
+
+const Asset = Loadable({
+  loader: () => import('../asset'),
+  loading: Loading
+})
+
+const MyLAF = Loadable({
+  loader: () => import('../mylaf'),
+  loading: Loading
+})
+
 class App extends Component {
   state = { activeItem: 'home' }
+
+  // componentDidUpdate() {
+  //   var routerPath = this.context.router.route.location.pathname
+  //   console.log('app componentDidUpdate, routerPath', routerPath)
+  // }
 
   componentDidMount = async () => {
     var routerPath = this.context.router.route.location.pathname
@@ -33,18 +63,33 @@ class App extends Component {
     else if(routerPath === '/newlost') {
       this.setState({ activeItem: 'newlost' })
     }
+    else if(routerPath === '/mylaf') {
+      this.setState({ activeItem: 'mylaf' })
+    }
 
     this.props.initWeb3()
   }
 
-  handleMenuItemClick = (e, { name }) => this.setState({ activeItem: name })
+  notifyAppOfNavChange = (navTarget) => {
+    // TODO better way to manage nav
+    this.setState({ activeItem: 'home' })
+  }
+
+  handleMenuItemClick = (e, { name }) => {
+    this.setState({ activeItem: name })
+
+    if(name === 'mylaf') {
+      this.props.getMyLAFs()
+      this.props.getClaimableRewards()
+    }
+  }
 
   render() {
     return (
       <div>
         <Router>
           <div>
-            <Menu pointing style={{borderWidth: '0px'}} >
+            <Menu fixed='top' inverted pointing style={{borderWidth: '0px'}} >
               <Menu.Item name='home' as={Link} to={'/'} active={this.state.activeItem === 'home'}  onClick={this.handleMenuItemClick}>
                 <Icon name='home' size='large'/>
               </Menu.Item>
@@ -52,9 +97,15 @@ class App extends Component {
               <Menu.Item name='newlost' as={Link} to={'/newlost'} active={this.state.activeItem === 'newlost'} onClick={this.handleMenuItemClick}>
                 I lost something
               </Menu.Item>
+
+              <Menu.Menu position='right' style={{paddingBottom: '0em'}}>
+                <Menu.Item name='mylaf' as={Link} to={'/mylaf'} active={this.state.activeItem === 'mylaf'} onClick={this.handleMenuItemClick}>
+                  My LAF
+                </Menu.Item>
+              </Menu.Menu>
             </Menu>
 
-            <Segment style={{ padding: '0em 0em' }} vertical loading={ this.props.app.web3 == null }>
+            <Segment style={{ padding: '0em 0em', paddingTop: '5em' }} vertical loading={ this.props.app.web3 == null }>
               <Route exact path='/'
                 render={ (props) =>
                   <Listings
@@ -65,6 +116,13 @@ class App extends Component {
                 render={ (props) => 
                   <AddItem
                     {...props}/>    
+                }
+              />
+              <Route exact path={'/mylaf'}
+                render={ (props) => 
+                  <MyLAF
+                    {...props }
+                      notifyAppOfNavChange={this.notifyAppOfNavChange}/>    
                 }
               />
               <Route exact path={'/listings/:id'} component={Asset} />
@@ -86,7 +144,9 @@ const mapStateToProps = state => ({
 })
   
 const mapDispatchToProps = dispatch => bindActionCreators({
-  initWeb3
+  initWeb3,
+  getMyLAFs,
+  getClaimableRewards
 }, dispatch)
   
   

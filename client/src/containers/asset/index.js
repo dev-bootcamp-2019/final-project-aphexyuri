@@ -13,9 +13,11 @@ import {
   Grid,
   Step,
   Icon,
-  Button,
+  Segment,
   Message
 } from 'semantic-ui-react'
+
+import Loadable from 'react-loadable';
 
 import {
   getAsset,
@@ -23,11 +25,20 @@ import {
   clearAsset
 } from '../../modules/listings'
 
-import CreatorUI from './creatorUI.js'
-import FoundAssetUI from './foundAssetUI.js'
-
 import { AssetStatus, longLocationString } from '../../utils/app.js'
 import { getMultihashFromBytes32 } from '../../utils/multihash'
+
+const Loading = () => <Segment style={{ padding: '4em 0em' }} vertical loading/>;
+
+const CreatorUI = Loadable({
+  loader: () => import('./creatorUI'),
+  loading: Loading
+})
+
+const FoundAssetUI = Loadable({
+  loader: () => import('./foundAssetUI'),
+  loading: Loading
+})
 
 var loadFromUrl
 
@@ -60,7 +71,7 @@ class Asset extends Component {
   renderInteractionsUI = () => {
     let { asset, assetMetadata } = this.props.listings
 
-    console.log('asset', asset)
+    // console.log('asset', asset)
     // console.log('assetMetadata', assetMetadata)
 
     if(asset.assetStatus == AssetStatus.Cancelled) {
@@ -75,14 +86,14 @@ class Asset extends Component {
     else {
       if(asset.creator === this.props.app.accounts[0]) {
         // creator is viewing
-        console.log('viewing as creator, assetId: ', this.state.assetId)
+        // console.log('viewing as creator, assetId: ', this.state.assetId)
         return (
           <CreatorUI assetId={ this.state.assetId } />
         )
       }
       else {
         // non-creator is viewing
-        console.log('viewing as non-creator, assetId: ', this.state.assetId)
+        // console.log('viewing as non-creator, assetId: ', this.state.assetId)
 
         if(asset.assetStatus == AssetStatus.Cancelled) {
           return (
@@ -159,7 +170,9 @@ class Asset extends Component {
 
     if(!this.props.listings.asset || !this.props.listings.assetMetadata) {
       return (
-        <div>Waiting for asset data...</div>
+        <Container style={{ paddingTop: '2em', paddingBottom: '1em'}}>
+          Waiting for asset data...
+        </Container>
       )
     }
     else {
@@ -215,7 +228,8 @@ class Asset extends Component {
 
               <Grid.Row>
                 <Step.Group widths={4} size='mini'>
-                  <Step active={ asset.assetStatus == AssetStatus.Posted }>
+                  <Step active={ asset.assetStatus == AssetStatus.Posted }
+                    disabled={ asset.assetStatus == AssetStatus.Cancelled }>
                     <Icon name='find'/>
                     <Step.Content>
                       <Step.Title>Lost</Step.Title>
@@ -224,7 +238,7 @@ class Asset extends Component {
                   </Step>
                   <Step
                     active={ asset.assetStatus == AssetStatus.PotentialMatch }
-                    disabled={ asset.assetStatus < AssetStatus.PotentialMatch }>
+                    disabled={ asset.assetStatus < AssetStatus.PotentialMatch || asset.assetStatus == AssetStatus.Cancelled }>
                     <Icon name='question'/>
                     <Step.Content>
                       <Step.Title>Potentially Found</Step.Title>
@@ -233,7 +247,7 @@ class Asset extends Component {
                   </Step>
                   <Step
                     active={ asset.assetStatus == AssetStatus.MatchConfirmed }
-                    disabled={ asset.assetStatus < AssetStatus.MatchConfirmed }>
+                    disabled={ asset.assetStatus < AssetStatus.MatchConfirmed || asset.assetStatus == AssetStatus.Cancelled }>
                     <Icon name='smile outline'/>
                     <Step.Content>
                       <Step.Title>Confirmed Found</Step.Title>
@@ -242,7 +256,7 @@ class Asset extends Component {
                   </Step>
                   <Step
                     active={ asset.assetStatus == AssetStatus.Recovered }
-                    disabled={ asset.assetStatus < AssetStatus.Recovered }>
+                    disabled={ asset.assetStatus < AssetStatus.Recovered || asset.assetStatus == AssetStatus.Cancelled }>
                     <Icon name='check'/>
                     <Step.Content>
                       <Step.Title>Recovered</Step.Title>

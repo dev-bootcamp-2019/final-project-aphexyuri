@@ -1,3 +1,7 @@
+import {
+  SAGA_GET_MY_LAFS
+} from '../sagas/myLafsSaga.js'
+
 export const ASSETS_STORED_EVENTS_RETRIEVED = 'listings/ASSETS_STORED_EVENTS_RETRIEVED'
 export const ASSET_RETRIEVED = 'listing/ASSET_RETRIEVED'
 export const ASSET_METADATA_RETRIEVED = 'listing/ASSET_METADATA_RETRIEVED'
@@ -8,12 +12,19 @@ export const FOUND_LOST_ASSET_REQUESTED = 'listings/FOUND_LOST_ASSET_REQUESTED'
 export const MATCH_CONFIRMED_REQUESTED = 'listings/MATCH_CONFIRMED_REQUESTED'
 export const MATCH_INVALID_REQUESTED = 'listings/MATCH_INVALID_REQUESTED'
 export const ASSET_RECOVERED_REQUESTED = 'listings/ASSET_RECOVERED_REQUESTED'
+export const ASSET_RECOVERY_FAILED_REQUESTED = 'listings/ASSET_RECOVERY_FAILED_REQUESTED'
+export const GET_MY_LAFS = "listings/GET_MY_LAFS"
+export const MY_LAFS_RETRIEVED = "listings/MY_LAFS_RETRIEVED"
+export const RETRIEVED_MY_CLAIMABLE_REWARDS = 'listings/RETRIEVED_MY_CLAIMABLE_REWARDS'
+export const REWARDS_WITHDRAWN = 'listings/REWARDS_WITHDRAWN'
 
 const initialState = {
   assetsStoredEvents: null,
   assetsStoredEventsRetrieved: false,
   asset: null,
-  assetMetadata: null
+  assetMetadata: null,
+  myLafAssets: null,
+  myClaimableRewards: null
 }
 
 export const getAssetStoredEvents = (country, stateProvince, initialAssetType) => {
@@ -170,6 +181,59 @@ export const assetRecovered = (assetId) => {
   }
 }
 
+export const assetRecoveryFailed = (assetId) => {
+  return function action(dispatch, getState) {
+    const state = getState()
+
+    state.app.registryContract.methods.assetRecoveryFailed(assetId).send({ from: state.app.accounts[0] })
+    .then(function(result) {
+      console.log('assetRecoveryFailed', result)
+      dispatch({
+        type: ASSET_RECOVERY_FAILED_REQUESTED,
+        assetId: assetId
+      })
+    })
+  }
+}
+
+export const getMyLAFs = () => {
+  return async (dispatch, getState) => {
+    const state = getState()
+
+    dispatch({
+      type: SAGA_GET_MY_LAFS,
+      app: state.app
+    })
+  }
+}
+
+export const getClaimableRewards = () => {
+  return async (dispatch, getState) => {
+    const state = getState()
+
+    state.app.registryContract.methods.getClaimableRewards().call({ from: state.app.accounts[0] })
+    .then(function(result) {
+      dispatch({
+        type: RETRIEVED_MY_CLAIMABLE_REWARDS,
+        myClaimableRewards: result
+      })
+    })
+  }
+}
+
+export const withdrawRewards = () => {
+  return async (dispatch, getState) => {
+    const state = getState()
+
+    state.app.registryContract.methods.withdrawRewards().send({ from: state.app.accounts[0] })
+    .then(function(result) {
+      dispatch({
+        type: REWARDS_WITHDRAWN
+      })
+    })
+  }
+}
+
 export default (state = initialState, action) => {
   switch (action.type) {
     case ASSETS_STORED_EVENTS_RETRIEVED:
@@ -223,6 +287,35 @@ export default (state = initialState, action) => {
     case ASSET_RECOVERED_REQUESTED:
       return {
         ...state
+      }
+
+    case ASSET_RECOVERY_FAILED_REQUESTED:
+      return {
+        ...state
+      }
+
+    case GET_MY_LAFS:
+      return {
+        ...state
+      }
+
+    case MY_LAFS_RETRIEVED:
+      // console.log(action.myLafAssets)
+      return {
+        ...state,
+        myLafAssets: action.myLafAssets
+      }
+
+    case RETRIEVED_MY_CLAIMABLE_REWARDS:
+      return {
+        ...state,
+        myClaimableRewards: action.myClaimableRewards
+      }
+    
+    case REWARDS_WITHDRAWN:
+      return {
+        ...state,
+        myClaimableRewards: null
       }
 
     default:

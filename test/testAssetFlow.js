@@ -63,7 +63,7 @@ contract("LAFAssetRegistry (Asset Flows)", accounts => {
         // console.log(assetId.toString())  
     })
 
-    it('...newLostAsset -> potentialMatch -> matchConfirmed -> assetRecovered', async () => {
+    it('...newLostAsset -> potentialMatch -> matchConfirmed -> assetRecovered -> withdrawl', async () => {
         let assetStatus = (await assetRegistryInstance.getAsset(assetId)).assetStatus
         assert.equal(assetStatus, 1)
 
@@ -93,21 +93,25 @@ contract("LAFAssetRegistry (Asset Flows)", accounts => {
         // test assert the account's claimable reward matches the initial asset reward >>> 
         let claimableReward = await assetRegistryInstance.getClaimableRewards({ from: matcher })
         // console.log('claimableReward', claimableReward.toString())
+
         assert.equal(claimableReward, reward, 'Claimable reward for mather shoud be initial reward amount')
         // <<<
 
         // test withdrawl >>>
         let matcherBalanceBeforeWithdrawl = await web3.eth.getBalance(matcher)
+        // console.log('matcherBalanceBeforeWithdrawl', matcherBalanceBeforeWithdrawl)
 
         // withdraw reward as matcher
         await assetRegistryInstance.withdrawRewards({ from: matcher })
 
         claimableReward = await assetRegistryInstance.getClaimableRewards({ from: matcher })
+        // console.log('claimableReward', claimableReward.toString())
 
         // assert claimable reward has been reset to 0
         assert.equal(claimableReward, 0)
 
         let matcherBalanceAfterWithdrawl = await web3.eth.getBalance(matcher)
+        // console.log('matcherBalanceAfterWithdrawl', matcherBalanceAfterWithdrawl)
         let targetBalance = web3.utils.toBN(matcherBalanceBeforeWithdrawl).add(web3.utils.toBN(reward))
 
         // assert matcher's account has received reward after withdrawl
