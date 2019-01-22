@@ -1,4 +1,5 @@
 # Lost and Found (LAF)
+For consideration for **ConsenSys Academy’s 2018 - 2019 Developer Program Final Project**
 
 ### What is LAF?
 A Solidity and React dApp to...
@@ -17,3 +18,16 @@ At time of writing, LAF only supports a **lost -> found -> return to owner** wor
 3. Still in the root directory, run `truffle migrate --reset` to deploy contracts
 4. Copy `build/contracts/LAFAssetRegistry.json` to the `client/src/contracts` directory
 5. From the `client` directory, run `npm run start` to start the local webserver. UI can then be accessed at [http://localhost:3000](http://localhost:3000)
+
+---
+
+### Key project notes
+
+- Solidity 0.5.0 chose for up to date platform & language familiarity
+- Use of OpenZeppelin's contracts (Ownable, Pausable, SafeMath) - tried, tested & secure
+
+
+
+### Tools & Resources
+IPFS multihash - https://github.com/saurfang/ipfs-multihash-on-solidity
+OpenZeppelin
