@@ -27,7 +27,10 @@ At time of writing, LAF only supports a **lost -> found -> return to owner** wor
 - Use of OpenZeppelin's contracts (Ownable, Pausable, SafeMath) - tried, tested & secure
 
 
-
 ### Tools & Resources
 - IPFS multihash - https://github.com/saurfang/ipfs-multihash-on-solidity
 - OpenZeppelin
+
+---
+
+Mirror repo cmds: `git fetch -p origin` -> `git push --mirror`
