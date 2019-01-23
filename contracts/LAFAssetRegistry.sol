@@ -4,17 +4,6 @@ pragma solidity ^0.5.0;
 import "./LAFRegistryBase.sol";
 import "./LAFAssetStorage.sol";
 
-/**
- * SETUP:
- * deploy LAFAssetStorage - once only
- * deploy LAFAssetRegistry
- * call setAssetStorageAddress on LAFAssetRegistry with address or storage contract
- * call unpause on LAFAssetRegistry
- * call addAllowedSender on LAFAssetStorage with address of registry contract
- *
- * not suire if intial assetCount needs to be set as an attempt to retreive unset from mapping might result in a zero response
- */
-
 contract LAFAssetRegistry is LAFRegistryBase
 {
     // =======================================================
@@ -42,12 +31,14 @@ contract LAFAssetRegistry is LAFRegistryBase
     // =======================================================
     // STRUCTS
     // =======================================================
+    /// @dev Asset can be added to the system in either a Lost of foudn state
     enum InitialAssetType
     {
         Lost,
         Found
     }
     
+    /// @dev Possible states/statusses of asset
     enum AssetStatus
     {
         None,
@@ -61,48 +52,56 @@ contract LAFAssetRegistry is LAFRegistryBase
     // =======================================================
     // MODIFIERS
     // =======================================================
+    /// @dev ensures msg.sender is either the contract owner or creator of asset with provided id
     modifier onlyContractOwnerOrAssetCreator(uint256 assetId)
     {
         require(msg.sender == owner() || msg.sender == LAFStorageLib.getAssetCreator(getAssetStorageAddress(), assetId));
         _;
     }
     
+    /// @dev ensures msg.sender is the creator of asset with provided ID
     modifier onlyAssetCreator(uint256 assetId)
     {
         require(msg.sender == LAFStorageLib.getAssetCreator(getAssetStorageAddress(), assetId));
         _;
     }
 
+    /// @dev ensures msg.sender is the creator of asset with provided ID
     modifier notAssetCreator(uint256 assetId)
     {
         require(msg.sender != LAFStorageLib.getAssetCreator(getAssetStorageAddress(), assetId));
         _;
     }
 
+    /// @dev ensures msg.sender is the 2nd party on asset, a.k.a. asset matcher
     modifier onlyAssetMatcher(uint256 assetId)
     {
         require(msg.sender == LAFStorageLib.getAssetMatcher(getAssetStorageAddress(), assetId));
         _;
     }
     
+    /// @dev ensures asset with provided ID has Posted status
     modifier onlyAssetStatusPosted(uint256 assetId)
     {
         require(AssetStatus(LAFStorageLib.getAssetStatus(getAssetStorageAddress(), assetId)) == AssetStatus.Posted);
         _;
     }
     
+    /// @dev ensures asset with provided ID has PotentialMatch status
     modifier onlyAssetStatusPotentialMatch(uint256 assetId)
     {
         require(AssetStatus(LAFStorageLib.getAssetStatus(getAssetStorageAddress(), assetId)) == AssetStatus.PotentialMatch);
         _;
     }
     
+    /// @dev ensures asset with provided ID has MatchConfirmed status
     modifier onlyAssetStatusMatchConfirmed(uint256 assetId)
     {
         require(AssetStatus(LAFStorageLib.getAssetStatus(getAssetStorageAddress(), assetId)) == AssetStatus.MatchConfirmed);
         _;
     }
 
+    /// @dev ensures asset with provided ID has either Posted or PotentialMatch statuses
     modifier onlyAssetStatusPostedOrPotentialMatch(uint256 assetId)
     {
         AssetStatus status = AssetStatus(LAFStorageLib.getAssetStatus(getAssetStorageAddress(), assetId));
@@ -110,6 +109,7 @@ contract LAFAssetRegistry is LAFRegistryBase
         _;
     }
 
+    /// @dev ensures asset with provided ID has Recovered status
     modifier onlyAssetRecovered(uint256 assetId)
     {
         AssetStatus status = AssetStatus(LAFStorageLib.getAssetStatus(getAssetStorageAddress(), assetId));
@@ -117,6 +117,7 @@ contract LAFAssetRegistry is LAFRegistryBase
         _;
     }
 
+    /// @dev ensures asset with provided ID has initia type of Lost
     modifier onlyAssetIntialTypeLost(uint256 assetId)
     {
         InitialAssetType initialAssetType = InitialAssetType(LAFStorageLib.getAssetInitialType(getAssetStorageAddress(), assetId));
@@ -130,10 +131,13 @@ contract LAFAssetRegistry is LAFRegistryBase
     /// @notice Internal method for creating a new asset
     /// @param initialAssetType Initial asset type enum
     /// @param assetTitle Title of asset
+    /// @param description Details & description
     /// @param isoCountryCode Title of asset
     /// @param stateProvince State/Province of asset
     /// @param city City of asset
-    // @param description Description of asset
+    /// @param ipfsDigest IPFS Mutihash-digest
+    /// @param ipfsHashFunction IPFS Mutihash-hash function
+    /// @param ipfsSize IPFS Mutihash-size 
     function newAsset(
         InitialAssetType initialAssetType,
         string memory assetTitle,
