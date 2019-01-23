@@ -48,6 +48,10 @@ contract("LAFAssetRegistry", accounts => {
         assert.equal(storageAddress, assetStorageInstance.address)
     })
 
+    it("...new registry is paused", async () => {
+        assert.ok(await assetRegistryInstance.paused())
+    })
+
     it("...enable registry & verify", async () => {
         await assetRegistryInstance.unpause( { from: accounts[0] } )
         assert.ok(!await assetRegistryInstance.paused())
@@ -86,7 +90,7 @@ contract("LAFAssetRegistry", accounts => {
         // console.log(retrievedAsset)
         
         assert.equal(assetId, 0)
-        assert.equal(retrievedAsset.title, titleStr)
+        assert.equal(retrievedAsset.assetTitle, titleStr)
         assert.equal(web3.utils.hexToUtf8(retrievedAsset.isoCountryCode), countryIso)
         assert.equal(web3.utils.hexToUtf8(retrievedAsset.stateProvince), stateProvince)
         // assert.equal(web3.utils.hexToUtf8(retrievedAsset.city), city)
