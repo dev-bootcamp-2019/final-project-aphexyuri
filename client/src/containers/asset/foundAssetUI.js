@@ -22,8 +22,6 @@ import {
   foundLostAsset
 } from '../../modules/listings'
 
-import { AssetStatus } from '../../utils/app';
-
 var ipfsClient = require('ipfs-http-client')
 const ipfs = ipfsClient('ipfs.infura.io', '5001', { protocol: 'https' })
 var multihash = require('../../utils/multihash')
@@ -175,7 +173,6 @@ class MatcherUI extends Component {
   }
 
   render () {
-    let { asset, assetMetadata } = this.props.listings
     return (
       <Container textAlign='right' style={{ paddingTop: '1em'}}>
         <Message attached warning
@@ -192,7 +189,7 @@ class MatcherUI extends Component {
           { this.renderDropZone() }
 
           {
-            this.state.details != '' && this.state.ipfsDigest ?
+            this.state.details !== '' && this.state.ipfsDigest ?
               <Button fluid positive type='submit' onClick={this.handlePostItemClicked}>Submit</Button>
             : null
           }

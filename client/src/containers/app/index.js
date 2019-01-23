@@ -12,7 +12,9 @@ import {
 import {
   Menu,
   Segment,
-  Icon
+  Icon,
+  Popup,
+  Grid
 } from 'semantic-ui-react'
 
 import Loadable from 'react-loadable';
@@ -85,6 +87,12 @@ class App extends Component {
   }
 
   render() {
+    let accountPopupText = 'Waiting for active account'
+    let shortAccount = ''
+    if(this.props.app.accounts && this.props.app.accounts[0]) {
+      accountPopupText = this.props.app.accounts[0]
+      shortAccount = accountPopupText.substr(0, 5) + '...' + accountPopupText.substr(accountPopupText.length - 3, accountPopupText.length - 1)
+    }
     return (
       <div>
         <Router>
@@ -95,13 +103,33 @@ class App extends Component {
               </Menu.Item>
           
               <Menu.Item name='newlost' as={Link} to={'/newlost'} active={this.state.activeItem === 'newlost'} onClick={this.handleMenuItemClick}>
-                I lost something
+                I Lost Something
               </Menu.Item>
 
-              <Menu.Menu position='right' style={{paddingBottom: '0em'}}>
-                <Menu.Item name='mylaf' as={Link} to={'/mylaf'} active={this.state.activeItem === 'mylaf'} onClick={this.handleMenuItemClick}>
-                  My LAF
-                </Menu.Item>
+              <Menu.Menu position='right'>
+                <Popup
+                  trigger={
+                    <Menu.Item name='mylaf' as={Link} to={'/mylaf'} active={this.state.activeItem === 'mylaf'} onClick={this.handleMenuItemClick}>
+                      <Grid style={{ paddingTop: '0em', paddingBottom: '0em' }} textAlign='center'>
+                        <Grid.Row style={{ paddingTop: '0em', paddingBottom: '0em' }} textAlign='center'>
+                          My LAF
+                        </Grid.Row>
+
+                        {
+                          shortAccount !== '' ?
+                            <Grid.Row style={{ paddingTop: '0em', paddingBottom: '0em' }} textAlign='center'>
+                              <span style={{ fontSize: '11px'}}> { shortAccount }</span>
+                            </Grid.Row>
+                          : null
+                        }
+                        
+                      </Grid>
+                    </Menu.Item>
+                  }
+                  content={ accountPopupText }
+                  position='bottom right'
+                  inverted
+                />
               </Menu.Menu>
             </Menu>
 

@@ -99,7 +99,7 @@ class Listings extends Component {
     return (
       <div>
         <Container>
-          <Header as='h2'>Find Lost & Found Stuff near you</Header>
+          <Header as='h2'>Find Lost Stuff near you</Header>
           <Segment basic textAlign='center'>
             <Form style={{ paddingBottom: '0.5em' }}>
               <Form.Group widths='equal'>
@@ -125,7 +125,7 @@ class Listings extends Component {
                 onClick={this.handleFindItemsClicked}
                 disabled={!this.state.selectedCountry} >
                 <Icon name='search' />
-                Gind by Geo
+                Find by Geo
               </Button>
             </Form>
               
