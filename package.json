@@ -10,7 +10,8 @@
     "ganache-cli": "^6.2.5",
     "openzeppelin-solidity": "^2.1.0-rc.2",
     "truffle": "^5.0.1",
-    "truffle-assertions": "^0.7.2"
+    "truffle-assertions": "^0.7.2",
+    "truffle-hdwallet-provider": "^1.0.2"
   },
   "devDependencies": {},
   "scripts": {
