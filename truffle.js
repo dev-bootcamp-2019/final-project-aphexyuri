@@ -23,16 +23,19 @@ module.exports = {
 			// host: "localhost",
 			// port:  8545,
 			provider: function() {
-        return new HDWalletProvider(process.env.MNEMONIC, "https://ropsten.infura.io/" + process.env.INFURA_ROPSTEN_API_KEY)
+        return new HDWalletProvider(process.env.MNEMONIC, "https://ropsten.infura.io/" + process.env.INFURA_ROPSTEN_ACCESS_TOKEN)
       },
 			network_id: 3,
-			gas:   4000000
+			gas: 5000000
 		},
 		rinkeby: {
-      host: "localhost",
-      port: 8545,
+      // host: "localhost",
+			// port: 8545,
+			provider: function() {
+        return new HDWalletProvider(process.env.MNEMONIC, "https://rinkeby.infura.io/" + process.env.INFURA_ROPSTEN_ACCESS_TOKEN)
+      },
       network_id: 4,
-			gas: 4612388
+			gas: 5000000
 		}
 	}
 };
