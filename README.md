@@ -11,7 +11,7 @@ At time of writing, LAF only supports a **lost -> found -> return to owner** wor
 ---
 
 ### Running LAF
-(On top of a Ganache local chain)
+(On top of a local Ganache chain running on port 8545)
 
 1. Clone this repo
 2. In the root directory, run `ganache-cli` to start your local ganache chain
@@ -29,5 +29,5 @@ At time of writing, LAF only supports a **lost -> found -> return to owner** wor
 
 
 ### Tools & Resources
-IPFS multihash - https://github.com/saurfang/ipfs-multihash-on-solidity
-OpenZeppelin
+- IPFS multihash - https://github.com/saurfang/ipfs-multihash-on-solidity
+- OpenZeppelin

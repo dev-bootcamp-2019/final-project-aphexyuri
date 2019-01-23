@@ -11,6 +11,9 @@ Interactions between these layers occurs as follows:
 
 **Registry <-> Library <-> Storage**
 
+### Circuit breaker
+Public facing contract extends OpenZeppelin's Pausable providing contract pause/unpause functionality.
+
 
 ### Upgradability
 Various approaches to upgradability were considered, but ultimately decided on separation of storage and logic layers. Storage is maintained in a generic yet flexible key-value storage contract (`LAFAssetStorage`), based on mappings of base data types. Write operations to the storage is restricted to a whitelist of `allowedSenders`.
