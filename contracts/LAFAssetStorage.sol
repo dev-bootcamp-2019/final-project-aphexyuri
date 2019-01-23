@@ -3,6 +3,7 @@ pragma solidity ^0.5.0;
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 // import "./Ownable.sol"; // remix import
 
+/// @title LAF Strage contract
 contract LAFAssetStorage is Ownable
 {
     mapping (address => bool) allowedSenders;
@@ -35,6 +36,7 @@ contract LAFAssetStorage is Ownable
     mapping(bytes32 => mapping(address => uint256)) public addressUint256MappingStore;
     mapping(bytes32 => mapping(address => uint256[])) public addressUint256ArrayMappingStore;
     
+    /// @dev ensures msg.sender is whitelisted
     modifier onlyAllowedSenderOrOwner()
     {
         require(allowedSenders[msg.sender] || msg.sender == owner());
@@ -44,6 +46,9 @@ contract LAFAssetStorage is Ownable
     // =======================================================
     // ADMIN
     // =======================================================
+    /// @dev Add an allowed sender
+    /// @notice Wil add to whitelist - should be regsitry contract address 
+    /// @param newSender Address of sender to add
     function addAllowedSender(address newSender)
         public
         onlyOwner
@@ -52,6 +57,8 @@ contract LAFAssetStorage is Ownable
         allowedSenders[newSender] = true;
     }
 
+    /// @dev Removes and allowed sender
+    /// @param oldSender Address of sender to remove
     function removeAllowedSender(address oldSender)
         public
         onlyOwner
@@ -72,6 +79,8 @@ contract LAFAssetStorage is Ownable
         return allowedSenders[sender];
     }
 
+    /// @dev Address to bytes32 converter
+    /// @notice Unused
     function addressToBytes32(address addressToConvert)
         public
         pure

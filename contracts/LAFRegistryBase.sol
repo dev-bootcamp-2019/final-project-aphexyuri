@@ -15,14 +15,16 @@ contract LAFRegistryBase is Ownable, Pausable
 {
     using SafeMath for uint;
     using LAFStorageLib for LAFStorageLib.Data;
-
+    
     LAFStorageLib.Data storageData;
 
+    /// @dev version of service - set from registry
     uint8 public version;
 
     // =======================================================
     // MODIFIERS
     // =======================================================
+    /// @dev ensures storage contract address is set
     modifier storageSet()
     {
         require(storageData.assetStorageAddress != address(0));
@@ -42,6 +44,8 @@ contract LAFRegistryBase is Ownable, Pausable
     // =======================================================
     // ADMIN
     // =======================================================
+    /// @dev Sets the address of the storage contract
+    /// @param newStorageAddress address ofcontract
     function setAssetStorageAddress(address newStorageAddress)
         public
         onlyOwner
@@ -65,6 +69,8 @@ contract LAFRegistryBase is Ownable, Pausable
     // =======================================================
     // PUBLIC API
     // =======================================================
+    /// @dev Retrives the storage contract address
+    /// @return address of storage contract
     function getAssetStorageAddress()
         public
         view
