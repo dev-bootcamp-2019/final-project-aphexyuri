@@ -15,9 +15,14 @@ At time of writing, LAF only supports a **lost -> found -> return to owner** wor
 
 1. Clone this repo
 2. In the root directory, run `ganache-cli` to start your local ganache chain
-3. Still in the root directory, run `truffle migrate --reset` to deploy contracts
-4. Copy `build/contracts/LAFAssetRegistry.json` to the `client/src/contracts` directory
-5. From the `client` directory, run `npm run start` to start the local webserver. UI can then be accessed at [http://localhost:3000](http://localhost:3000)
+3. Still in the root directory, run `truffle migrate` to deploy contracts
+4. From the `client` directory, run `npm run start` to start the local webserver. UI can then be accessed at [http://localhost:3000](http://localhost:3000)
+
+
+### You'll need some test ETH
+Ropsten:
+- https://faucet.metamask.io/
+- https://faucet.ropsten.be/
 
 ---
 
