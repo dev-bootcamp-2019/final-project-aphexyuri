@@ -6,7 +6,7 @@ A Solidity and React dApp to...
 - Post lost items
 - Find lost items near you & claim your ETH rewards
 
-The dApp's basic flow (for an item)
+**The dApp's basic flow (for an item)**
 
 ![LAF Flow](docs/LAF_flow.jpg?raw=true)
 
@@ -15,6 +15,8 @@ The dApp's basic flow (for an item)
 3. Account A confirms or denies based on proof submitted. Confirming will change the item status to Confirmed Found - denying will revert to Lost status
 4. The exchange is made based on details submitted in #3. Possible off-chain integration, or chat functionality such as using Whisper would likely have to be implemented here to avoid storing sensitive info on-chain
 5. Account A confirms or denies the item has been recovered. Setting it to recovered will make reward ETH available to Account B for withdrawl
+
+**IMPORTANT:** To test this flow you will need to use two separate accounts with a sufficient ETH balance for rewards and gas fees.
 
 At time of writing, LAF only supports a **lost -> found -> return to owner** workflow. Most of the contract was written to *also* support a **found -> return to owner** workflow, but due to time constraints this has not been included/tested in the project.
 
