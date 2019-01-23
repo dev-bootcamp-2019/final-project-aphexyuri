@@ -94,7 +94,7 @@ contract("LAFAssetRegistry (Asset Flows)", accounts => {
         let claimableReward = await assetRegistryInstance.getClaimableRewards({ from: matcher })
         // console.log('claimableReward', claimableReward.toString())
 
-        assert.equal(claimableReward, reward, 'Claimable reward for mather shoud be initial reward amount')
+        assert.equal(claimableReward, reward, 'Claimable reward for matcher shoud be initial reward amount')
         // <<<
 
         // test withdrawl >>>
