@@ -4,6 +4,7 @@ pragma solidity ^0.5.0;
 import "./LAFRegistryBase.sol";
 import "./LAFAssetStorage.sol";
 
+/// @title Registry contract
 contract LAFAssetRegistry is LAFRegistryBase
 {
     // =======================================================
@@ -47,6 +48,12 @@ contract LAFAssetRegistry is LAFRegistryBase
         MatchConfirmed,
         Recovered,
         Cancelled
+    }
+
+    constructor()
+        public
+    {
+        version = 1;
     }
 
     // =======================================================
@@ -128,16 +135,17 @@ contract LAFAssetRegistry is LAFRegistryBase
     // =======================================================
     // INTERNAL / PRIVATE API
     // =======================================================
-    /// @notice Internal method for creating a new asset
+    /// @notice Internal method
+    /// @dev Creates a new asset
     /// @param initialAssetType Initial asset type enum
     /// @param assetTitle Title of asset
     /// @param description Details & description
     /// @param isoCountryCode Title of asset
     /// @param stateProvince State/Province of asset
     /// @param city City of asset
-    /// @param ipfsDigest IPFS Mutihash-digest
-    /// @param ipfsHashFunction IPFS Mutihash-hash function
-    /// @param ipfsSize IPFS Mutihash-size 
+    /// @param primaryIpfsDigest IPFS Mutihash-digest
+    /// @param primaryIpfsHashFunction IPFS Mutihash-hash function
+    /// @param primaryIpfsSize IPFS Mutihash-size
     function newAsset(
         InitialAssetType initialAssetType,
         string memory assetTitle,
@@ -145,9 +153,9 @@ contract LAFAssetRegistry is LAFRegistryBase
         bytes8 isoCountryCode,
         bytes8 stateProvince,
         bytes32 city,
-        bytes32 ipfsDigest,
-        uint8 ipfsHashFunction,
-        uint8 ipfsSize
+        bytes32 primaryIpfsDigest,
+        uint8 primaryIpfsHashFunction,
+        uint8 primaryIpfsSize
     )
         private
         whenNotPaused
@@ -170,9 +178,9 @@ contract LAFAssetRegistry is LAFRegistryBase
         LAFStorageLib.storeAssetInitialType(getAssetStorageAddress(), assetId, uint8(initialAssetType));
         LAFStorageLib.storeAssetStatus(getAssetStorageAddress(), assetId, uint8(AssetStatus.Posted));
 
-        LAFStorageLib.storeAssetIfsDigest(getAssetStorageAddress(), assetId, true, ipfsDigest);
-        LAFStorageLib.storeAssetIfsHashFunction(getAssetStorageAddress(), assetId, true, ipfsHashFunction);
-        LAFStorageLib.storeAssetIfsSize(getAssetStorageAddress(), assetId, true, ipfsSize);
+        LAFStorageLib.storeAssetIfsDigest(getAssetStorageAddress(), assetId, true, primaryIpfsDigest);
+        LAFStorageLib.storeAssetIfsHashFunction(getAssetStorageAddress(), assetId, true, primaryIpfsHashFunction);
+        LAFStorageLib.storeAssetIfsSize(getAssetStorageAddress(), assetId, true, primaryIpfsSize);
 
         LAFStorageLib.storeToMyLAFs(getAssetStorageAddress(), msg.sender, assetId);
         
@@ -184,31 +192,43 @@ contract LAFAssetRegistry is LAFRegistryBase
             assetTitle,
             initialAssetType,
             msg.value,
-            ipfsDigest,
-            ipfsHashFunction,
-            ipfsSize);
+            primaryIpfsDigest,
+            primaryIpfsHashFunction,
+            primaryIpfsSize);
     }
     
     // =======================================================
     // PUBLIC API
     // =======================================================
+    /// @dev Retrieves main asset details
+    /// @param assetId ID of the asset
+    /// @return assetTitle Title of asset
+    /// @return initialAssetType Initial asset type enum
+    /// @return assetStatus Initial asset status
+    /// @return isoCountryCode Title of asset
+    /// @return stateProvince State/Province of asset
+    /// @return creator Address of creator
+    /// @return reward Reward offered for recovery
+    /// @return primaryIpfsDigest IPFS Mutihash-digest (original posting)
+    /// @return primaryIpfsHashFunction IPFS Mutihash-hash function (original posting)
+    /// @return primaryIpfsSize IPFS Mutihash-size (original posting)
     function getAsset(uint256 assetId)
         public
         view
         returns(
-            string memory title,
-            bytes8 isoCountryCode,
-            bytes8 stateProvince,
-            uint256 reward,
+            string memory assetTitle,
             InitialAssetType initialAssetType,
             AssetStatus assetStatus,
+            bytes8 isoCountryCode,
+            bytes8 stateProvince,
             address creator,
+            uint256 reward,
             bytes32 primaryIpfsDigest,
             uint8 primaryIpfsHashFunction,
             uint8 primaryIpfsSize
         )
     {
-        title = LAFStorageLib.getAssetTitle(getAssetStorageAddress(), assetId);
+        assetTitle = LAFStorageLib.getAssetTitle(getAssetStorageAddress(), assetId);
         isoCountryCode = LAFStorageLib.getAssetIsoCountryCode(getAssetStorageAddress(), assetId);
         stateProvince = LAFStorageLib.getAssetStateProvince(getAssetStorageAddress(), assetId);
         reward = LAFStorageLib.getAssetReward(getAssetStorageAddress(), assetId);
@@ -222,6 +242,16 @@ contract LAFAssetRegistry is LAFRegistryBase
         primaryIpfsSize = LAFStorageLib.getAssetIpfsSize(getAssetStorageAddress(), assetId, true);
     }
 
+    /// @dev Retrieves asset meta/additional data
+    /// @param assetId ID of the asset
+    /// @return description Details & description
+    /// @return city City of asset
+    /// @return matcher Address of 2nd party
+    /// @return foundDetails Details provided by 2nd party
+    /// @return exchangeDetails Exchange details provide by creator
+    /// @return secondaryIpfsDigest IPFS Mutihash-digest (2nd party posting)
+    /// @return secondaryIpfsHashFunction PFS Mutihash-hash function (2nd party posting)
+    /// @return secondaryIpfsSize IPFS Mutihash-size (2nd party posting)
     function getAssetMetadata(uint256 assetId)
         public
         view
@@ -247,6 +277,8 @@ contract LAFAssetRegistry is LAFRegistryBase
         secondaryIpfsSize = LAFStorageLib.getAssetIpfsSize(getAssetStorageAddress(), assetId, false);
     }
 
+    /// @dev Retrieves the claimable rewards for msg.sender
+    /// @return Claimable rewards in wei
     function getClaimableRewards()
         public
         view
@@ -255,6 +287,8 @@ contract LAFAssetRegistry is LAFRegistryBase
         return LAFStorageLib.getClaimableReward(getAssetStorageAddress(), msg.sender);
     }
 
+    /// @dev Retrieves uint array of all indicies msg.sender has interacted with
+    /// @return An array of asset IDs
     function getMyLAFIndicies()
         public
         view
@@ -263,15 +297,24 @@ contract LAFAssetRegistry is LAFRegistryBase
         return LAFStorageLib.getMyLAFs(getAssetStorageAddress(), msg.sender);
     }
     
+    /// @dev Creates a new lost asset
+    /// @param assetTitle Title of asset
+    /// @param description Details & description
+    /// @param isoCountryCode Title of asset
+    /// @param stateProvince State/Province of asset
+    /// @param city City of asset
+    /// @param primaryIpfsDigest IPFS Mutihash-digest (original posting)
+    /// @param primaryIpfsHashFunction IPFS Mutihash-hash function (original posting)
+    /// @param primaryIpfsSize IPFS Mutihash-size (original posting)
     function newLostAsset(
         string memory assetTitle,
         string memory description,
         bytes8 isoCountryCode,
         bytes8 stateProvince,
         bytes32 city,
-        bytes32 ipfsDigest,
-        uint8 ipfsHashFunction,
-        uint8 ipfsSize
+        bytes32 primaryIpfsDigest,
+        uint8 primaryIpfsHashFunction,
+        uint8 primaryIpfsSize
     )
         public
         payable
@@ -284,12 +327,18 @@ contract LAFAssetRegistry is LAFRegistryBase
             isoCountryCode,
             stateProvince,
             city,
-            ipfsDigest,
-            ipfsHashFunction,
-            ipfsSize);
+            primaryIpfsDigest,
+            primaryIpfsHashFunction,
+            primaryIpfsSize);
     }
 
-    function foundLostAsset(uint256 assetId, string memory details, bytes32 ipfsDigest, uint8 ipfsHashFunction, uint8 ipfsSize)
+    /// @dev Lost asset has potentially been found
+    /// @param assetId ID of the asset
+    /// @param details Details & description
+    /// @param secondaryIpfsDigest IPFS Mutihash-digest (2nd party posting)
+    /// @param secondaryIpfsHashFunction IPFS Mutihash-hash function (2nd party posting)
+    /// @param secondaryIpfsSize IPFS Mutihash-size (2nd party posting)
+    function foundLostAsset(uint256 assetId, string memory details, bytes32 secondaryIpfsDigest, uint8 secondaryIpfsHashFunction, uint8 secondaryIpfsSize)
         public
         whenNotPaused
         storageSet
@@ -301,9 +350,9 @@ contract LAFAssetRegistry is LAFRegistryBase
         LAFStorageLib.storeAssetMatcher(getAssetStorageAddress(), assetId, msg.sender);
         LAFStorageLib.storeAssetFoundDetails(getAssetStorageAddress(), assetId, details);
 
-        LAFStorageLib.storeAssetIfsDigest(getAssetStorageAddress(), assetId, false, ipfsDigest);
-        LAFStorageLib.storeAssetIfsHashFunction(getAssetStorageAddress(), assetId, false, ipfsHashFunction);
-        LAFStorageLib.storeAssetIfsSize(getAssetStorageAddress(), assetId, false, ipfsSize);
+        LAFStorageLib.storeAssetIfsDigest(getAssetStorageAddress(), assetId, false, secondaryIpfsDigest);
+        LAFStorageLib.storeAssetIfsHashFunction(getAssetStorageAddress(), assetId, false, secondaryIpfsHashFunction);
+        LAFStorageLib.storeAssetIfsSize(getAssetStorageAddress(), assetId, false, secondaryIpfsSize);
 
         LAFStorageLib.storeToMyLAFs(getAssetStorageAddress(), msg.sender, assetId);
         
@@ -313,7 +362,9 @@ contract LAFAssetRegistry is LAFRegistryBase
         emit FoundLostAsset(assetId, isoCountryCode, stateProvince);
     }
     
-    // exchangeDetails = date, time, [public] place
+    /// @dev Method for creator to verify assst has been foundy 2nd party
+    /// @param assetId ID of the asset
+    /// @param exchangeDetails Date, time, [public] place/location where asset should be taken
     function matchConfirmed(uint256 assetId, string memory exchangeDetails)
         public
         whenNotPaused
@@ -331,6 +382,8 @@ contract LAFAssetRegistry is LAFRegistryBase
         emit MatchConfirmed(assetId);
     }
     
+    /// @dev Method for creator to reject 2nd party's claim that the asset has been found
+    /// @param assetId ID of the asset
     function matchInvalid(uint256 assetId)
         public
         whenNotPaused
@@ -344,6 +397,9 @@ contract LAFAssetRegistry is LAFRegistryBase
         emit MatchInvalid(assetId);
     }
     
+    /// @dev Method for creator to verify after asset has been recovered
+    /// @notice This will make reward available for withdrawl by matcher/(2nd party)
+    /// @param assetId ID of the asset
     function assetRecovered(uint256 assetId)
         public
         whenNotPaused
@@ -363,6 +419,9 @@ contract LAFAssetRegistry is LAFRegistryBase
         emit AssetRecovered(assetId, assetRewardAmount);
     }
     
+    /// @dev Method for creator when asset recovery failed
+    /// @notice This will revert asset to Posted status
+    /// @param assetId ID of the asset
     function assetRecoveryFailed(uint256 assetId)
         public
         whenNotPaused
@@ -377,6 +436,8 @@ contract LAFAssetRegistry is LAFRegistryBase
         emit RecoveryFailed(assetId);
     }
     
+    /// @dev Method for creator to cancel an asset
+    /// @param assetId ID of the asset
     function cancelAsset(uint256 assetId)
         public
         whenNotPaused
@@ -396,6 +457,7 @@ contract LAFAssetRegistry is LAFRegistryBase
         emit AssetCancelled(assetId);
     }
 
+    /// @dev Method for msg.sender to withdraw ETH(wei) claimable rewards
     function withdrawRewards()
         public
         whenNotPaused

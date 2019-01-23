@@ -6,7 +6,7 @@ A Solidity and React dApp to...
 - Post lost items & offer an ETH reward.
 - Find lost items near you & claim your ETH rewards.
 
-At time of writing, LAF only supports a **lost -> found -> return to owner** workflow. Most of the contract was written to *also* support a **found -> return to owner** workflow, but due to time constraints this has not ben included in the project.
+At time of writing, LAF only supports a **lost -> found -> return to owner** workflow. Most of the contract was written to *also* support a **found -> return to owner** workflow, but due to time constraints this has not been included/tested in the project.
 
 ---
 
