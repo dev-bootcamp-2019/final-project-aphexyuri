@@ -20,10 +20,6 @@ contract("LAFAssetRegistry (Asset Flows)", accounts => {
 
     // deploy new instances of the contract(s); create a new asset
     beforeEach(async function () {
-        // console.log('contractsOwner:', await getAddressEtherBalanceFloat(contractsOwner))
-        // console.log('creator:', await getAddressEtherBalanceFloat(creator))
-        // console.log('accounts:', await getAddressEtherBalanceFloat(matcher))
-
         // 1st time system setup...
 
         // 1. deploy new contract intstances

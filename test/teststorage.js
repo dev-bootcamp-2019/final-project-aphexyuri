@@ -8,9 +8,6 @@ contract('LAFAssetStorage', accounts => {
 
     before(async function () {
         assetStorageInstance = await LAFAssetStorage.new({ from: accounts[0] })
-
-        // console.log('accounts[0]', accounts[0])
-        // console.log('accounts[1]', accounts[1])
     })
 
     // test for owner
