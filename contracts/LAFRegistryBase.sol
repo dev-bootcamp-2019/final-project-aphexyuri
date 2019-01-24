@@ -32,7 +32,7 @@ contract LAFRegistryBase is Ownable, Pausable
     }
 
     // =======================================================
-    // CONSTRUCTOR
+    // CONSTRUCTOR & FALLBACK
     // =======================================================
     constructor()
         public
@@ -40,6 +40,8 @@ contract LAFRegistryBase is Ownable, Pausable
         // start in paused state
         pause();
     }
+
+    function() external { revert(); }
 
     // =======================================================
     // ADMIN
