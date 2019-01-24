@@ -1,5 +1,4 @@
 pragma solidity ^0.5.0;
-// pragma experimental ABIEncoderV2; //possible use: returning structs (indexed event params problem)
 
 import "./LAFRegistryBase.sol";
 import "./LAFAssetStorage.sol";
