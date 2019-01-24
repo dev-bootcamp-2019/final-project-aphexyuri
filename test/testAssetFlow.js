@@ -5,6 +5,8 @@ getAddressEtherBalanceFloat = async (address) => {
     return parseFloat(web3.utils.fromWei(await web3.eth.getBalance(address), 'ether'))
 }
 
+// Tests are mainly of a functional nature, testing corefunctionality of creating an asset and taking it through its various statuses
+
 contract("LAFAssetRegistry (Asset Flows)", accounts => {
     var contractsOwner = accounts[0]
     var creator = accounts[1]
@@ -16,6 +18,7 @@ contract("LAFAssetRegistry (Asset Flows)", accounts => {
 
     var reward
 
+    // deploy new instances of the contract(s); create a new asset
     beforeEach(async function () {
         // console.log('contractsOwner:', await getAddressEtherBalanceFloat(contractsOwner))
         // console.log('creator:', await getAddressEtherBalanceFloat(creator))
@@ -58,11 +61,11 @@ contract("LAFAssetRegistry (Asset Flows)", accounts => {
             { from: creator, value: reward }
         )
         
-        // let { assetId}
         assetId = logs.find(x => x.event === 'AssetStored').args.assetId;
-        // console.log(assetId.toString())  
     })
 
+    // ideal asset flow round-trip
+    // assert withdrawl amounts
     it('...newLostAsset -> potentialMatch -> matchConfirmed -> assetRecovered -> withdrawl', async () => {
         let assetStatus = (await assetRegistryInstance.getAsset(assetId)).assetStatus
         assert.equal(assetStatus, 1)
@@ -92,36 +95,34 @@ contract("LAFAssetRegistry (Asset Flows)", accounts => {
 
         // test assert the account's claimable reward matches the initial asset reward >>> 
         let claimableReward = await assetRegistryInstance.getClaimableRewards({ from: matcher })
-        // console.log('claimableReward', claimableReward.toString())
 
         assert.equal(claimableReward, reward, 'Claimable reward for matcher shoud be initial reward amount')
         // <<<
 
         // test withdrawl >>>
         let matcherBalanceBeforeWithdrawl = await web3.eth.getBalance(matcher)
-        // console.log('matcherBalanceBeforeWithdrawl', matcherBalanceBeforeWithdrawl)
 
         // withdraw reward as matcher
         await assetRegistryInstance.withdrawRewards({ from: matcher })
 
         claimableReward = await assetRegistryInstance.getClaimableRewards({ from: matcher })
-        // console.log('claimableReward', claimableReward.toString())
 
         // assert claimable reward has been reset to 0
         assert.equal(claimableReward, 0)
 
         let matcherBalanceAfterWithdrawl = await web3.eth.getBalance(matcher)
-        // console.log('matcherBalanceAfterWithdrawl', matcherBalanceAfterWithdrawl)
         let targetBalance = web3.utils.toBN(matcherBalanceBeforeWithdrawl).add(web3.utils.toBN(reward))
 
         // assert matcher's account has received reward after withdrawl
-        // @dev NB note - this does not account for gas and will fail
+        // @dev NB note - this does not account for gas and will fail occasionally
         assert.equal(
             parseFloat(web3.utils.fromWei(matcherBalanceAfterWithdrawl, 'ether')).toFixed(1),
             parseFloat(web3.utils.fromWei(targetBalance, 'ether')).toFixed(1)
         )
     })
 
+    // asset recovery failure flow
+    // assert asset status reset
     it('...newLostAsset -> potentialMatch -> matchConfirmed -> assetRecoveryFailed', async () => {
         // call foundLostAsset
         await assetRegistryInstance.foundLostAsset(
@@ -138,11 +139,12 @@ contract("LAFAssetRegistry (Asset Flows)", accounts => {
         // call assetRecovered
         await assetRegistryInstance.assetRecoveryFailed(assetId, { from: creator })
 
-        // TODO assert balances
-        // TODO assert states
-        // TODO assert data
-   })
+        let assetStatus = (await assetRegistryInstance.getAsset(assetId)).assetStatus
+        assert.equal(assetStatus, 1)
+    })
 
+    // match invalid flow
+    // assert asset status reset
     it('...newLostAsset -> potentialMatch -> matchInvalid', async () => {
         // call foundLostAsset
         await assetRegistryInstance.foundLostAsset(
@@ -156,17 +158,36 @@ contract("LAFAssetRegistry (Asset Flows)", accounts => {
          // call matchInvalid
          await assetRegistryInstance.matchInvalid(assetId, { from: creator })
 
-        // TODO assert balances
-        // TODO assert states
-        // TODO assert data
+         let assetStatus = (await assetRegistryInstance.getAsset(assetId)).assetStatus
+         assert.equal(assetStatus, 1)
     })
 
+    // cancel asset flow
+    // assert refund to creator & asset cancel state
     it('...newLostAsset -> cancelAsset', async () => {
-        // call matchInvalid
+        let creatorBalanceBefore = await web3.eth.getBalance(creator)
+
+        let registryBalanceBefore = await web3.eth.getBalance(assetRegistryInstance.address)
+        assert.equal(registryBalanceBefore, reward)
+
+        // call cancelAsset
         await assetRegistryInstance.cancelAsset(assetId, { from: creator })
 
-        // TODO assert balances
-        // TODO assert states
-        // TODO assert data
+        let assetStatus = (await assetRegistryInstance.getAsset(assetId)).assetStatus
+        assert.equal(assetStatus, 5)
+
+        let creatorBalanceAfter = await web3.eth.getBalance(creator)
+
+        let registryBalanceAfter = await web3.eth.getBalance(assetRegistryInstance.address)
+        assert.equal(registryBalanceAfter, 0)
+
+        let targetBalance = web3.utils.toBN(creatorBalanceBefore).add(web3.utils.toBN(reward))
+
+        // assert cretor's account has received refund
+        // @dev NB note - this does not account for gas and will fail occasionally
+        assert.equal(
+            parseFloat(web3.utils.fromWei(creatorBalanceAfter, 'ether')).toFixed(1),
+            parseFloat(web3.utils.fromWei(targetBalance, 'ether')).toFixed(1)
+        )
     })
 })
