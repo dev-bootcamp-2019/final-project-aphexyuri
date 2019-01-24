@@ -25,6 +25,9 @@ contract("LAFAssetRegistry", accounts => {
     var assetRegistryInstance
     var assetStorageInstance
 
+    var creator = accounts[1]
+    var matcher = accounts[2]
+
     let reward = "1.2345"
 
     before(async function () {
@@ -87,7 +90,7 @@ contract("LAFAssetRegistry", accounts => {
             "0x39a8cb1d77c213889e8a638394c9a5190d1fa703ebb02e23a091a99566dd8ccf",
             18,
             32,
-            { from: accounts[1], value: rewardStr }
+            { from: creator, value: rewardStr }
         )
         
         // get assetId from added item's logs
@@ -110,7 +113,7 @@ contract("LAFAssetRegistry", accounts => {
     // verify state modifier restriction in matchConfirmed call
     it("...calling matchConfirmed on asset with status AssetStatus.Posted fails", async () => {
         await truffleAssert.fails(
-            assetRegistryInstance.matchConfirmed(0, "Starbuck on corner of 43rd and 6th. April 1, 2019", { from: accounts[1] }),
+            assetRegistryInstance.matchConfirmed(0, "Starbuck on corner of 43rd and 6th. April 1, 2019", { from: creator }),
             truffleAssert.ErrorType.REVERT
         )
     })
@@ -118,7 +121,7 @@ contract("LAFAssetRegistry", accounts => {
     // verify state modifier restriction in matchInvalid call
     it("...calling matchInvalid on asset with status AssetStatus.Posted fails", async () => {
         await truffleAssert.fails(
-            assetRegistryInstance.matchInvalid(0, { from: accounts[1] }),
+            assetRegistryInstance.matchInvalid(0, { from: creator }),
             truffleAssert.ErrorType.REVERT
         )
     })
@@ -132,7 +135,7 @@ contract("LAFAssetRegistry", accounts => {
             "0x39a8cb1d77c213889e8a638394c9a5190d1fa703ebb02e23a091a99566dd8ccf",
             18,
             32,
-            { from: accounts[2]} )
+            { from: matcher} )
 
         await truffleAssert.fails(
             assetRegistryInstance.matchConfirmed(0, "Starbucks on corner on Noth and South April 1, 2019", { from: accounts[9] }),
@@ -168,7 +171,7 @@ contract("LAFAssetRegistry", accounts => {
         let ass3claimableRewards = await assetRegistryInstance.getClaimableRewards({ from: accounts[3] })
         assert.equal(ass3claimableRewards, 0)
 
-        let claimableRewards = await assetRegistryInstance.getClaimableRewards({ from: accounts[2] })
+        let claimableRewards = await assetRegistryInstance.getClaimableRewards({ from: matcher })
         assert.equal(web3.utils.fromWei(claimableRewards, 'ether').toString(), reward)
     })
 
