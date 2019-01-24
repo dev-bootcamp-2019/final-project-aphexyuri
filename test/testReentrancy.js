@@ -64,37 +64,39 @@ contract("LAFAssetRegistry (Withdrawl reentrancy)", accounts => {
     // 7. call matchConfirmed
     await assetRegistryInstance.matchConfirmed(assetId, "", { from: creator })
 
-    // 8. call assetRecovered
+    // 8. call assetRecovere\]
+
     await assetRegistryInstance.assetRecovered(assetId, { from: creator })
   })
 
   it('...matcher claimableRewards = initial reward', async () => {
     let claimableRewards = await assetRegistryInstance.getClaimableRewards({ from: matcher })
-    console.log('claimableRewards', claimableRewards)
+    // console.log('claimableRewards', claimableRewards)
     assert.equal(claimableRewards, reward)
   })
 
 
   it('...attempt 3x withdrawls', async () => {
     let contractBalanceBefore = await web3.eth.getBalance(assetRegistryInstance.address)
-    console.log('contractBalanceBefore', contractBalanceBefore)
+    // console.log('contractBalanceBefore', contractBalanceBefore)
 
     let matcherBalanceBefore = await web3.eth.getBalance(matcher)
-    console.log('matcherBalanceBefore', matcherBalanceBefore)
+    // console.log('matcherBalanceBefore', matcherBalanceBefore)
 
     for(let i = 0; i < 3; i++) {
-      console.log('withdraw now...')
+      // console.log('withdraw now...')
       assetRegistryInstance.withdrawRewards( {from: matcher} )
     }
 
-    console.log('waiting 30 seconds...')
-    await delay(30000);
+    // times assumed based on 5 second block time for ganache cli
+    // console.log('waiting 20 seconds...')
+    await delay(20000);
 
     let contractBalanceAfter = await web3.eth.getBalance(assetRegistryInstance.address)
-    console.log('contractBalanceAfter', contractBalanceAfter)
+    // console.log('contractBalanceAfter', contractBalanceAfter)
 
     let matcherBalanceAfter = await web3.eth.getBalance(matcher)
-    console.log('matcherBalanceAfter', matcherBalanceAfter)
+    // console.log('matcherBalanceAfter', matcherBalanceAfter)
   })
 })
 
