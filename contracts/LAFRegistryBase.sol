@@ -27,7 +27,7 @@ contract LAFRegistryBase is Ownable, Pausable
     /// @dev ensures storage contract address is set
     modifier storageSet()
     {
-        require(storageData.assetStorageAddress != address(0));
+        require(storageData.itemStorageAddress != address(0));
         _;
     }
 
@@ -48,12 +48,12 @@ contract LAFRegistryBase is Ownable, Pausable
     // =======================================================
     /// @dev Sets the address of the storage contract
     /// @param newStorageAddress address ofcontract
-    function setAssetStorageAddress(address newStorageAddress)
+    function setItemStorageAddress(address newStorageAddress)
         public
         onlyOwner
     {
-        // set the address of asset storage contract
-        storageData.assetStorageAddress = newStorageAddress;
+        // set the address of item storage contract
+        storageData.itemStorageAddress = newStorageAddress;
     }
 
     /// @notice Will updated storage and transfer funds to new registry - use with caution. Old registry must be paused first
@@ -73,11 +73,11 @@ contract LAFRegistryBase is Ownable, Pausable
     // =======================================================
     /// @dev Retrives the storage contract address
     /// @return address of storage contract
-    function getAssetStorageAddress()
+    function getItemStorageAddress()
         public
         view
         returns(address)
     {
-        return storageData.assetStorageAddress;
+        return storageData.itemStorageAddress;
     }
 }

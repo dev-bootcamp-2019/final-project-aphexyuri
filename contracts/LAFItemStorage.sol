@@ -4,7 +4,7 @@ import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 // import "./Ownable.sol"; // remix import
 
 /// @title LAF Strage contract
-contract LAFAssetStorage is Ownable
+contract LAFItemStorage is Ownable
 {
     mapping (address => bool) allowedSenders;
 
