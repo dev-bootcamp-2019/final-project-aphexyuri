@@ -61,49 +61,56 @@ contract LAFItemRegistry is LAFRegistryBase
     /// @dev ensures msg.sender is either the contract owner or creator of item with provided id
     modifier onlyContractOwnerOrItemCreator(uint256 itemId)
     {
-        require(msg.sender == owner() || msg.sender == LAFStorageLib.getItemCreator(getItemStorageAddress(), itemId));
+        require(msg.sender == owner() || msg.sender == LAFStorageLib.getItemCreator(getItemStorageAddress(), itemId),
+            "Only allowed by owner or creator");
         _;
     }
     
     /// @dev ensures msg.sender is the creator of item with provided ID
     modifier onlyItemCreator(uint256 itemId)
     {
-        require(msg.sender == LAFStorageLib.getItemCreator(getItemStorageAddress(), itemId));
+        require(msg.sender == LAFStorageLib.getItemCreator(getItemStorageAddress(), itemId),
+            "Only allowed by creator");
         _;
     }
 
     /// @dev ensures msg.sender is the creator of item with provided ID
     modifier notItemCreator(uint256 itemId)
     {
-        require(msg.sender != LAFStorageLib.getItemCreator(getItemStorageAddress(), itemId));
+        require(msg.sender != LAFStorageLib.getItemCreator(getItemStorageAddress(), itemId),
+            "Needs to not be creator");
         _;
     }
 
     /// @dev ensures msg.sender is the 2nd party on item, a.k.a. item matcher
     modifier onlyItemMatcher(uint256 itemId)
     {
-        require(msg.sender == LAFStorageLib.getItemMatcher(getItemStorageAddress(), itemId));
+        require(msg.sender == LAFStorageLib.getItemMatcher(getItemStorageAddress(), itemId),
+            "Only item matcher");
         _;
     }
     
     /// @dev ensures item with provided ID has Posted status
     modifier onlyItemStatusPosted(uint256 itemId)
     {
-        require(ItemStatus(LAFStorageLib.getItemStatus(getItemStorageAddress(), itemId)) == ItemStatus.Posted);
+        require(ItemStatus(LAFStorageLib.getItemStatus(getItemStorageAddress(), itemId)) == ItemStatus.Posted,
+            "Item doesn't have Posted status");
         _;
     }
     
     /// @dev ensures item with provided ID has PotentialMatch status
     modifier onlyItemStatusPotentialMatch(uint256 itemId)
     {
-        require(ItemStatus(LAFStorageLib.getItemStatus(getItemStorageAddress(), itemId)) == ItemStatus.PotentialMatch);
+        require(ItemStatus(LAFStorageLib.getItemStatus(getItemStorageAddress(), itemId)) == ItemStatus.PotentialMatch,
+            "Item doesn't have PotentialMatch status");
         _;
     }
     
     /// @dev ensures item with provided ID has MatchConfirmed status
     modifier onlyItemStatusMatchConfirmed(uint256 itemId)
     {
-        require(ItemStatus(LAFStorageLib.getItemStatus(getItemStorageAddress(), itemId)) == ItemStatus.MatchConfirmed);
+        require(ItemStatus(LAFStorageLib.getItemStatus(getItemStorageAddress(), itemId)) == ItemStatus.MatchConfirmed,
+            "Item doesn't have MatchConfirmed status");
         _;
     }
 
@@ -111,7 +118,8 @@ contract LAFItemRegistry is LAFRegistryBase
     modifier onlyItemStatusPostedOrPotentialMatch(uint256 itemId)
     {
         ItemStatus status = ItemStatus(LAFStorageLib.getItemStatus(getItemStorageAddress(), itemId));
-        require(status == ItemStatus.Posted || status == ItemStatus.PotentialMatch);
+        require(status == ItemStatus.Posted || status == ItemStatus.PotentialMatch,
+            "Item doesn't have Posted or PotentialMatch status");
         _;
     }
 
@@ -119,7 +127,8 @@ contract LAFItemRegistry is LAFRegistryBase
     modifier onlyItemRecovered(uint256 itemId)
     {
         ItemStatus status = ItemStatus(LAFStorageLib.getItemStatus(getItemStorageAddress(), itemId));
-        require(status == ItemStatus.Recovered);
+        require(status == ItemStatus.Recovered,
+            "Item doesn't have Recovered status");
         _;
     }
 
@@ -127,7 +136,8 @@ contract LAFItemRegistry is LAFRegistryBase
     modifier onlyItemIntialTypeLost(uint256 itemId)
     {
         InitialItemType initialItemType = InitialItemType(LAFStorageLib.getItemInitialType(getItemStorageAddress(), itemId));
-        require(initialItemType == InitialItemType.Lost);
+        require(initialItemType == InitialItemType.Lost,
+            "Item's initial type must be Lost");
         _;
     }
     

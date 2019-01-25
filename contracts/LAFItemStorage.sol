@@ -39,7 +39,8 @@ contract LAFItemStorage is Ownable
     /// @dev ensures msg.sender is whitelisted
     modifier onlyAllowedSenderOrOwner()
     {
-        require(allowedSenders[msg.sender] || msg.sender == owner());
+        require(allowedSenders[msg.sender] || msg.sender == owner(),
+            "Caller not in allowedSenders whitelist ");
         _;
     }
 

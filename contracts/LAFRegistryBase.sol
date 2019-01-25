@@ -27,7 +27,8 @@ contract LAFRegistryBase is Ownable, Pausable
     /// @dev ensures storage contract address is set
     modifier storageSet()
     {
-        require(storageData.itemStorageAddress != address(0));
+        require(storageData.itemStorageAddress != address(0),
+            "Storage note set");
         _;
     }
 
