@@ -16,7 +16,9 @@ import {
 import classNames from 'classnames'
 import Dropzone from 'react-dropzone'
 
-// import getBytes32FromMultihash from '../../utils/multihash'
+import {
+  addItem
+} from '../../modules/items'
 
 var ipfsClient = require('ipfs-http-client')
 const ipfs = ipfsClient('ipfs.infura.io', '5001', { protocol: 'https' })
@@ -248,33 +250,44 @@ class AddItem extends Component {
   }
 
   handlePostItemClicked = async () => {
-    let titleHex = this.state.title
-    let countryHex = this.props.app.web3.utils.asciiToHex(this.state.selectedCountry)
-    let stateProvinceHex = this.props.app.web3.utils.asciiToHex(this.state.selectedStateProvince)
-    let cityHex = this.props.app.web3.utils.asciiToHex(this.state.city)
+    this.props.addItem(
+      this.state.title,
+      this.state.details,
+      this.state.selectedCountry,
+      this.state.selectedStateProvince,
+      this.state.city,
+      this.state.ipfsDigest,
+      this.state.ipfsHashFunction,
+      this.state.ipfsSize,
+      this.state.rewardAmount)
 
-    try {
-      await this.props.app.registryContract.methods.newLostAsset(
-        titleHex,
-        this.state.details,
-        countryHex,
-        stateProvinceHex,
-        cityHex,
-        this.state.ipfsDigest,
-        this.state.ipfsHashFunction,
-        this.state.ipfsSize
-      ).send({
-        from: this.props.app.accounts[0],
-        value: this.props.app.web3.utils.toWei(this.state.rewardAmount)
-      });
+    // let titleHex = this.state.title
+    // let countryHex = this.props.app.web3.utils.asciiToHex(this.state.selectedCountry)
+    // let stateProvinceHex = this.props.app.web3.utils.asciiToHex(this.state.selectedStateProvince)
+    // let cityHex = this.props.app.web3.utils.asciiToHex(this.state.city)
 
-      this.setState(clearState)
-      // TODO feedback that item has been added + clear UI
-    }
-    catch(e) {
-      console.log('newLostAsset Error', e)
-      // TODO feedback of error
-    }
+    // try {
+    //   await this.props.app.registryContract.methods.newLostAsset(
+    //     titleHex,
+    //     this.state.details,
+    //     countryHex,
+    //     stateProvinceHex,
+    //     cityHex,
+    //     this.state.ipfsDigest,
+    //     this.state.ipfsHashFunction,
+    //     this.state.ipfsSize
+    //   ).send({
+    //     from: this.props.app.accounts[0],
+    //     value: this.props.app.web3.utils.toWei(this.state.rewardAmount)
+    //   });
+
+    //   this.setState(clearState)
+    //   // TODO feedback that item has been added + clear UI
+    // }
+    // catch(e) {
+    //   console.log('newLostAsset Error', e)
+    //   // TODO feedback of error
+    // }
   }
 
   render () {
@@ -335,7 +348,7 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-
+  addItem
 }, dispatch)
 
 export default connect(
