@@ -143,7 +143,8 @@ class App extends Component {
               <Route exact path={'/newlost'}
                 render={ (props) => 
                   <AddItem
-                    {...props}/>    
+                    {...props}
+                    notifyAppOfNavChange={this.notifyAppOfNavChange}/>    
                 }
               />
               <Route exact path={'/mylaf'}

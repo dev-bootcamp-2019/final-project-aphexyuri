@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
+import PropTypes from 'prop-types';
 
 import {
   Segment,
@@ -286,13 +287,15 @@ class AddItem extends Component {
     this.props.getItem(itemId)
     this.props.getItemMetadata(itemId)
 
+    this.props.notifyAppOfNavChange('items')
     this.props.history.push('items/' + itemId)
   }
 
   renderTxModal = () => {
+
     if(this.props.items.addItemTxHash || this.props.items.addItemTxResult) {
       return (
-        <Modal open={ this.props.items.addItemTxHash != null } onClose={this.modalCloseClicked} closeIcon>
+        <Modal dimmer='blurring' open={ this.props.items.addItemTxHash != null } onClose={this.modalCloseClicked} closeIcon closeOnDimmerClick={false}>
           <Modal.Content>
             <Segment vertical textAlign='center' style={{ padding: '1em 1em' }} >
               {
@@ -396,6 +399,10 @@ class AddItem extends Component {
       </div>
     )
   }
+}
+
+AddItem.contextTypes = {
+  notifyAppOfNavChange: PropTypes.func
 }
 
 const mapStateToProps = state => ({
