@@ -65,7 +65,7 @@ class CreatorUI extends Component {
     let { asset, assetMetadata } = this.props.listings
     const { modalOpen, dimmer } = this.state
 
-    if(asset.assetStatus == AssetStatus.Posted) {
+    if(parseInt(asset.assetStatus) === AssetStatus.Posted) {
       return (
         <Container textAlign='right' style={{ paddingTop: '1em'}}>
           <Message attached warning
@@ -76,7 +76,7 @@ class CreatorUI extends Component {
         </Container>
       )
     }
-    else if(asset.assetStatus == AssetStatus.PotentialMatch) {
+    else if(parseInt(asset.assetStatus) === AssetStatus.PotentialMatch) {
       ipfsHash =  getMultihashFromBytes32({
         digest: assetMetadata.secondaryIpfsDigest,
         hashFunction: assetMetadata.secondaryIpfsHashFunction,
@@ -159,7 +159,7 @@ class CreatorUI extends Component {
         </div>
       )
     }
-    else if(asset.assetStatus == AssetStatus.MatchConfirmed) {
+    else if(parseInt(asset.assetStatus) === AssetStatus.MatchConfirmed) {
       return (
         <Container textAlign='right' style={{ paddingTop: '1em'}}>
           <Message attached warning
@@ -178,7 +178,7 @@ class CreatorUI extends Component {
       )
     }
 
-    else if(asset.assetStatus == AssetStatus.Recovered) {
+    else if(parseInt(asset.assetStatus) === AssetStatus.Recovered) {
       return (
         <Container textAlign='right' style={{ paddingTop: '1em'}}>
           <Message attached positive

@@ -74,7 +74,7 @@ class Asset extends Component {
     // console.log('asset', asset)
     // console.log('assetMetadata', assetMetadata)
 
-    if(asset.assetStatus == AssetStatus.Cancelled) {
+    if(parseInt(asset.assetStatus) === AssetStatus.Cancelled) {
       return (
         <Container textAlign='right' style={{ paddingTop: '1em'}}>
           <Message attached negative
@@ -95,7 +95,7 @@ class Asset extends Component {
         // non-creator is viewing
         // console.log('viewing as non-creator, assetId: ', this.state.assetId)
 
-        if(asset.assetStatus == AssetStatus.Cancelled) {
+        if(parseInt(asset.assetStatus) === AssetStatus.Cancelled) {
           return (
             <Container textAlign='right' style={{ paddingTop: '1em'}}>
               <Message attached warning
@@ -104,14 +104,14 @@ class Asset extends Component {
             </Container>
           )
         }
-        else if(asset.assetStatus == AssetStatus.Posted) {
+        else if(parseInt(asset.assetStatus) === AssetStatus.Posted) {
           return (
             <FoundAssetUI assetId={ this.state.assetId } />
           )
         }
         else {
           if(assetMetadata.matcher === this.props.app.accounts[0]) {
-            if(asset.assetStatus == AssetStatus.PotentialMatch) {
+            if(parseInt(asset.assetStatus) === AssetStatus.PotentialMatch) {
               return (
                 <Container textAlign='right' style={{ paddingTop: '1em'}}>
                   <Message attached warning
@@ -120,7 +120,7 @@ class Asset extends Component {
                 </Container>
               )
             }
-            else if(asset.assetStatus == AssetStatus.MatchConfirmed) {
+            else if(parseInt(asset.assetStatus) === AssetStatus.MatchConfirmed) {
               return (
                 <Container textAlign='right' style={{ paddingTop: '1em'}}>
                 <Message attached warning
@@ -130,7 +130,7 @@ class Asset extends Component {
                 </Container>
               )
             }
-            else if(asset.assetStatus == AssetStatus.Recovered) {
+            else if(parseInt(asset.assetStatus) === AssetStatus.Recovered) {
               return (
                 <Container textAlign='right' style={{ paddingTop: '1em'}}>
                   <Message attached positive
@@ -141,7 +141,7 @@ class Asset extends Component {
             }
           }
           else {
-            if(asset.assetStatus == AssetStatus.Recovered) {
+            if(parseInt(asset.assetStatus) === AssetStatus.Recovered) {
               return (
                 <Container textAlign='right' style={{ paddingTop: '1em'}}>
                   <Message attached positive
@@ -228,8 +228,8 @@ class Asset extends Component {
 
               <Grid.Row>
                 <Step.Group widths={4} size='mini'>
-                  <Step active={ asset.assetStatus == AssetStatus.Posted }
-                    disabled={ asset.assetStatus == AssetStatus.Cancelled }>
+                  <Step active={ parseInt(asset.assetStatus) === AssetStatus.Posted }
+                    disabled={ parseInt(asset.assetStatus) === AssetStatus.Cancelled }>
                     <Icon name='find'/>
                     <Step.Content>
                       <Step.Title>Lost</Step.Title>
@@ -237,8 +237,8 @@ class Asset extends Component {
                     </Step.Content>
                   </Step>
                   <Step
-                    active={ asset.assetStatus == AssetStatus.PotentialMatch }
-                    disabled={ asset.assetStatus < AssetStatus.PotentialMatch || asset.assetStatus == AssetStatus.Cancelled }>
+                    active={ parseInt(asset.assetStatus) === AssetStatus.PotentialMatch }
+                    disabled={ asset.assetStatus < AssetStatus.PotentialMatch || parseInt(asset.assetStatus) === AssetStatus.Cancelled }>
                     <Icon name='question'/>
                     <Step.Content>
                       <Step.Title>Potentially Found</Step.Title>
@@ -246,8 +246,8 @@ class Asset extends Component {
                     </Step.Content>
                   </Step>
                   <Step
-                    active={ asset.assetStatus == AssetStatus.MatchConfirmed }
-                    disabled={ asset.assetStatus < AssetStatus.MatchConfirmed || asset.assetStatus == AssetStatus.Cancelled }>
+                    active={ parseInt(asset.assetStatus) === AssetStatus.MatchConfirmed }
+                    disabled={ asset.assetStatus < AssetStatus.MatchConfirmed || parseInt(asset.assetStatus) === AssetStatus.Cancelled }>
                     <Icon name='smile outline'/>
                     <Step.Content>
                       <Step.Title>Confirmed Found</Step.Title>
@@ -255,8 +255,8 @@ class Asset extends Component {
                     </Step.Content>
                   </Step>
                   <Step
-                    active={ asset.assetStatus == AssetStatus.Recovered }
-                    disabled={ asset.assetStatus < AssetStatus.Recovered || asset.assetStatus == AssetStatus.Cancelled }>
+                    active={ parseInt(asset.assetStatus) === AssetStatus.Recovered }
+                    disabled={ asset.assetStatus < AssetStatus.Recovered || parseInt(asset.assetStatus) === AssetStatus.Cancelled }>
                     <Icon name='check'/>
                     <Step.Content>
                       <Step.Title>Recovered</Step.Title>
