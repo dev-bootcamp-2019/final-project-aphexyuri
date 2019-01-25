@@ -9,6 +9,8 @@ Storage layer access behind whitelist of callers. Whitelist can only be modified
 
 ### Withdrawl pattern
 Pull-based transfer - gas payed by msg.sender
+
+### Reentrancy guard
 Zero out msg.sender's claimable rewards before calling transfer
 
 ### Arithmetic Over Flows

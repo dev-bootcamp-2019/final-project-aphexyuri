@@ -12,7 +12,7 @@ Interactions between these layers occurs as follows:
 **Registry <-> Library <-> Storage**
 
 ### Circuit breaker
-Public facing contract extends OpenZeppelin's Pausable providing contract pause/unpause functionality.
+Public facing contract extends OpenZeppelin's Pausable, providing contract pause/unpause functionality.
 
 
 ### Upgradability
@@ -33,6 +33,6 @@ Item search functionality relies completely on events, filtering by indexed even
 Currently, images are uploaded to IPFS with hashes converted to multihashes in order to fit in bytes32 Solidity types (https://github.com/saurfang/ipfs-multihash-on-solidity). Future versions could see other item metadata off-chain in order to reduce gas costs associated with writing large string properties to the chain.
 
 ### Design Patterns not chosen
-- Inherited proxy pattern (ZeppelinOS
-- Deployment of contact per asset (likely still safer; own funds etc)
-- Escrow-based contracts with 2nd party pledges for increased actr integrity (re-evaluate for future versions)
+- Considered use of Inherited proxy pattern (as used with ZeppelinOS)
+- Deployment of contact per asset (likely still safer; each asset manages own funds etc)
+- Escrow-based contracts with 2nd party pledges for increased actor integrity (to be re-evaluated for future versions of LAF)
