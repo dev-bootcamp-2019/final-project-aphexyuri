@@ -55,8 +55,8 @@ class MyLAF extends Component {
   }
 
   handleItemSelect = (itemId) => {
-    this.props.notifyAppOfNavChange('listings')
-    this.props.history.push('listings/' + itemId)
+    this.props.notifyAppOfNavChange('items')
+    this.props.history.push('items/' + itemId)
   }
 
   renderEntry = item => {

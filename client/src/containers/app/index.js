@@ -153,7 +153,7 @@ class App extends Component {
                       notifyAppOfNavChange={this.notifyAppOfNavChange}/>    
                 }
               />
-              <Route exact path={'/listings/:id'} component={Item} />
+              <Route exact path={'/items/:id'} component={Item} />
             </Segment>
           </div>
         </Router>

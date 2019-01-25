@@ -2,6 +2,8 @@ export const IPFS_HOST = 'ipfs.infura.io'
 export const IPFS_PORT = '5001'
 export const IPFS_PROTOCOL = 'https'
 
+export const ETHERSCAN_TX_BASE_URL = 'http://ropsten.etherscan.io/tx/'
+
 export const countries = [
   // { key: 'AUS', text: 'Australia', value: 'AUS' },
   { key: 'CAN', text: 'Canada', value: 'CAN', stateprovince: [

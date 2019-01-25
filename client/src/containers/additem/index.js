@@ -10,15 +10,23 @@ import {
   Image,
   Header,
   Icon,
-  TextArea
+  TextArea,
+  Modal
 } from 'semantic-ui-react'
 
 import classNames from 'classnames'
 import Dropzone from 'react-dropzone'
 
 import {
-  addItem
+  clearAddItemTxtHash,
+  addItem,
+  getItem,
+  getItemMetadata
 } from '../../modules/items'
+
+import {
+  ETHERSCAN_TX_BASE_URL
+} from '../../LAFConstants'
 
 var ipfsClient = require('ipfs-http-client')
 const ipfs = ipfsClient('ipfs.infura.io', '5001', { protocol: 'https' })
@@ -250,6 +258,8 @@ class AddItem extends Component {
   }
 
   handlePostItemClicked = async () => {
+    //TODO valdiate form fields
+
     this.props.addItem(
       this.state.title,
       this.state.details,
@@ -260,34 +270,77 @@ class AddItem extends Component {
       this.state.ipfsHashFunction,
       this.state.ipfsSize,
       this.state.rewardAmount)
+  }
 
-    // let titleHex = this.state.title
-    // let countryHex = this.props.app.web3.utils.asciiToHex(this.state.selectedCountry)
-    // let stateProvinceHex = this.props.app.web3.utils.asciiToHex(this.state.selectedStateProvince)
-    // let cityHex = this.props.app.web3.utils.asciiToHex(this.state.city)
+  modalCloseClicked = () => {
+    this.props.clearAddItemTxtHash()
+    this.setState(clearState)
+  }
 
-    // try {
-    //   await this.props.app.registryContract.methods.newLostItem(
-    //     titleHex,
-    //     this.state.details,
-    //     countryHex,
-    //     stateProvinceHex,
-    //     cityHex,
-    //     this.state.ipfsDigest,
-    //     this.state.ipfsHashFunction,
-    //     this.state.ipfsSize
-    //   ).send({
-    //     from: this.props.app.accounts[0],
-    //     value: this.props.app.web3.utils.toWei(this.state.rewardAmount)
-    //   });
+  gotoItemListingClicked = () => {
+    this.props.clearAddItemTxtHash()
+    this.setState(clearState)
 
-    //   this.setState(clearState)
-    //   // TODO feedback that item has been added + clear UI
-    // }
-    // catch(e) {
-    //   console.log('newLostItem Error', e)
-    //   // TODO feedback of error
-    // }
+    let itemId = this.props.items.addItemTxResult.events.ItemStored.returnValues.itemId
+
+    this.props.getItem(itemId)
+    this.props.getItemMetadata(itemId)
+
+    this.props.history.push('items/' + itemId)
+  }
+
+  renderTxModal = () => {
+    if(this.props.items.addItemTxHash || this.props.items.addItemTxResult) {
+      return (
+        <Modal open={ this.props.items.addItemTxHash != null } onClose={this.modalCloseClicked} closeIcon>
+          <Modal.Content>
+            <Segment vertical textAlign='center' style={{ padding: '1em 1em' }} >
+              {
+                this.props.items.addItemTxResult ?
+                  <Container>
+                    <p style={{ fontSize: '1.75em', marginTop: '0em', marginBottom: '1em' }}>
+                      Transaction complete
+                    </p>
+
+                    <p style={{ fontSize: '1em', marginTop: '1em', marginBottom: '2em' }}>
+                      Would you like to view the item listing now?    
+                    </p>
+                  </Container>
+                :
+                  <div>
+                    <Container>
+                      <p style={{ fontSize: '1.75em', marginTop: '0em', marginBottom: '1em' }}>
+                          Item transaction pending...
+                      </p>
+
+                      <p style={{ fontSize: '1em', marginTop: '1em', marginBottom: '2em' }}>
+                        The transaction needs to be verified on the blockchain before your contribution will appear in the feed. This may take a number of minutes, depending on Ethereum network load &amp; congestion.
+                      </p>
+                    </Container>
+                    <Container>
+                        <Header as='h4' style={{ fontSize: '1em' }}>View transaction on Etherscan:</Header>
+                        <a style={{ fontSize: '0.9em' }} href={ETHERSCAN_TX_BASE_URL + this.props.items.addItemTxHash} target='_blank'>{ this.props.items.addItemTxHash }</a>
+                    </Container>
+                  </div>
+              }
+            </Segment>
+          </Modal.Content>
+          
+          {
+            this.props.items.addItemTxResult ?
+              <Modal.Actions>
+                <Button color='black' onClick={this.modalCloseClicked}>
+                  No
+                </Button>
+                <Button positive onClick={this.gotoItemListingClicked}>
+                  Yes
+                </Button>
+              </Modal.Actions>
+            : null
+          }
+        </Modal>
+      )
+    }
   }
 
   render () {
@@ -338,17 +391,23 @@ class AddItem extends Component {
           {/* https://gateway.ipfs.io/ipfs/QmaSwvR434nGXrTtQShkypBHYkEn5xp9VHB6ycURYwpm8A */}
 
         </Container>
+
+        { this.renderTxModal() }
       </div>
     )
   }
 }
 
 const mapStateToProps = state => ({
-  app: state.app
+  app: state.app,
+  items: state.items
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  addItem
+  clearAddItemTxtHash,
+  addItem,
+  getItem,
+  getItemMetadata
 }, dispatch)
 
 export default connect(

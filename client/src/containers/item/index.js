@@ -23,7 +23,7 @@ import {
   getItem,
   getItemMetadata,
   clearItem
-} from '../../modules/listings'
+} from '../../modules/items'
 
 import { ItemStatus, longLocationString } from '../../utils/app.js'
 import { getMultihashFromBytes32 } from '../../utils/multihash'
@@ -48,7 +48,7 @@ class Item extends Component {
   constructor(props) {
     super(props)
 
-    this.state = { itemId: this.props.history.location.pathname.replace('/listings/', '') }
+    this.state = { itemId: this.props.history.location.pathname.replace('/items/', '') }
 
     if(!this.props.app.web3) {
       loadFromUrl = true
@@ -69,7 +69,7 @@ class Item extends Component {
   }
 
   renderInteractionsUI = () => {
-    let { item, itemMetadata } = this.props.listings
+    let { item, itemMetadata } = this.props.items
 
     // console.log('item', item)
     // console.log('itemMetadata', itemMetadata)
@@ -168,7 +168,7 @@ class Item extends Component {
   render () {
     let ipfsHash = null
 
-    if(!this.props.listings.item || !this.props.listings.itemMetadata) {
+    if(!this.props.items.item || !this.props.items.itemMetadata) {
       return (
         <Container style={{ paddingTop: '2em', paddingBottom: '1em'}}>
           Waiting for item data...
@@ -176,7 +176,7 @@ class Item extends Component {
       )
     }
     else {
-      let { item, itemMetadata } = this.props.listings
+      let { item, itemMetadata } = this.props.items
 
       // console.log('item', item)
       // console.log('itemMetadata', itemMetadata)
@@ -298,7 +298,7 @@ Item.contextTypes = {
 
 const mapStateToProps = state => ({
   app: state.app,
-  listings: state.listings
+  items: state.items
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({

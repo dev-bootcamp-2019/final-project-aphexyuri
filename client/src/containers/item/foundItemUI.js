@@ -20,7 +20,7 @@ import Dropzone from 'react-dropzone'
 
 import {
   foundLostItem
-} from '../../modules/listings'
+} from '../../modules/items'
 
 var ipfsClient = require('ipfs-http-client')
 const ipfs = ipfsClient('ipfs.infura.io', '5001', { protocol: 'https' })

@@ -20,7 +20,7 @@ import {
   matchInvalid,
   itemRecovered,
   itemRecoveryFailed
-} from '../../modules/listings'
+} from '../../modules/items'
 
 import { ItemStatus } from '../../utils/app.js'
 import { getMultihashFromBytes32 } from '../../utils/multihash'
@@ -62,7 +62,7 @@ class CreatorUI extends Component {
 
   render () {
     let ipfsHash = null
-    let { item, itemMetadata } = this.props.listings
+    let { item, itemMetadata } = this.props.items
     const { modalOpen, dimmer } = this.state
 
     if(parseInt(item.itemStatus) === ItemStatus.Posted) {
@@ -196,7 +196,7 @@ CreatorUI.contextTypes = {
 
 const mapStateToProps = state => ({
   app: state.app,
-  listings: state.listings
+  items: state.items
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({

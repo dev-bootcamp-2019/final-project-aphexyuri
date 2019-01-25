@@ -17,9 +17,12 @@ import Loadable from 'react-loadable';
 
 import {
   getItemStoredEvents,
+} from '../../modules/listings'
+
+import {
   getItem,
   getItemMetadata
-} from '../../modules/listings'
+} from '../../modules/items'
 
 const Loading = () => <Segment style={{ padding: '4em 0em' }} vertical loading/>;
 
@@ -92,7 +95,7 @@ class Listings extends Component {
   handleItemSelect = (itemId) => {
     this.props.getItem(itemId)
     this.props.getItemMetadata(itemId)
-    this.props.history.push('listings/' + itemId)
+    this.props.history.push('items/' + itemId)
   }
 
   render () {
