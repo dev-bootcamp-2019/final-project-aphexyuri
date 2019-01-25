@@ -16,7 +16,7 @@ Public facing contract extends OpenZeppelin's Pausable, providing contract pause
 
 
 ### Upgradability
-Various approaches to upgradability were considered, but ultimately decided on separation of storage and logic layers. Storage is maintained in a generic yet flexible key-value storage contract (`LAFAssetStorage`), based on mappings of base data types. Write operations to the storage is restricted to a whitelist of `allowedSenders`.
+Various approaches to upgradability were considered, but ultimately decided on separation of storage and logic layers. Storage is maintained in a generic yet flexible key-value storage contract (`LAFItemStorage`), based on mappings of base data types. Write operations to the storage is restricted to a whitelist of `allowedSenders`.
 Due to the generic nature of the storage mechanism, a large amount of accessor/mutator methods were required. This boilerplate code was mover to a library to be used by the main contract.
 
 **Registry <-> Library <-> Storage**
@@ -34,5 +34,5 @@ Currently, images are uploaded to IPFS with hashes converted to multihashes in o
 
 ### Design Patterns not chosen
 - Considered use of Inherited proxy pattern (as used with ZeppelinOS)
-- Deployment of contact per asset (likely still safer; each asset manages own funds etc)
+- Deployment of contact per item (likely still safer; each item manages own funds etc)
 - Escrow-based contracts with 2nd party pledges for increased actor integrity (to be re-evaluated for future versions of LAF)

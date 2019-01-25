@@ -54,16 +54,16 @@ class MyLAF extends Component {
     }
   }
 
-  handleItemSelect = (assetId) => {
+  handleItemSelect = (itemId) => {
     this.props.notifyAppOfNavChange('listings')
-    this.props.history.push('listings/' + assetId)
+    this.props.history.push('listings/' + itemId)
   }
 
   renderEntry = item => {
     return (
       // <div>foop!</div>
       <ListingItem
-        key={item.assetId}
+        key={item.itemId}
         item={item}
         itemSelectHandler={this.handleItemSelect}/>
     )
@@ -105,10 +105,10 @@ class MyLAF extends Component {
           }
 
           {
-            this.props.listings.myLafAssets ?
+            this.props.listings.myLafItems ?
               <Container textAlign='left' style={{ paddingTop: '3em', paddingBottom: '1em'}}>
                 <Grid>
-                  { this.props.listings.myLafAssets.map(this.renderEntry) }
+                  { this.props.listings.myLafItems.map(this.renderEntry) }
                 </Grid>
               </Container>
             : null

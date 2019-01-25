@@ -15,14 +15,14 @@ import {
 } from 'semantic-ui-react'
 
 import {
-  cancelAsset,
+  cancelItem,
   matchConfirmed,
   matchInvalid,
-  assetRecovered,
-  assetRecoveryFailed
+  itemRecovered,
+  itemRecoveryFailed
 } from '../../modules/listings'
 
-import { AssetStatus } from '../../utils/app.js'
+import { ItemStatus } from '../../utils/app.js'
 import { getMultihashFromBytes32 } from '../../utils/multihash'
 
 class CreatorUI extends Component {
@@ -32,16 +32,16 @@ class CreatorUI extends Component {
   }
 
   onCancelBtnClick = () => {
-    this.props.cancelAsset(this.props.assetId)
+    this.props.cancelItem(this.props.itemId)
   }
 
   onMatchConfirmedSubmitBtnClick = () => {
-    this.props.matchConfirmed(this.props.assetId, this.state.exchangeDetails)
+    this.props.matchConfirmed(this.props.itemId, this.state.exchangeDetails)
     this.setState({ modalOpen: false })
   }
 
   onMatchInvalidBtnClick = () => {
-    this.props.matchInvalid(this.props.assetId)
+    this.props.matchInvalid(this.props.itemId)
   }
 
   closeModalBtnClick = () => {
@@ -53,19 +53,19 @@ class CreatorUI extends Component {
   }
 
   onRecoveredBtnClick = () => {
-    this.props.assetRecovered(this.props.assetId)
+    this.props.itemRecovered(this.props.itemId)
   }
 
   onRecoveryFailedBtnClick = () => {
-    this.props.assetRecoveryFailed(this.props.assetId)
+    this.props.itemRecoveryFailed(this.props.itemId)
   }
 
   render () {
     let ipfsHash = null
-    let { asset, assetMetadata } = this.props.listings
+    let { item, itemMetadata } = this.props.listings
     const { modalOpen, dimmer } = this.state
 
-    if(parseInt(asset.assetStatus) === AssetStatus.Posted) {
+    if(parseInt(item.itemStatus) === ItemStatus.Posted) {
       return (
         <Container textAlign='right' style={{ paddingTop: '1em'}}>
           <Message attached warning
@@ -76,11 +76,11 @@ class CreatorUI extends Component {
         </Container>
       )
     }
-    else if(parseInt(asset.assetStatus) === AssetStatus.PotentialMatch) {
+    else if(parseInt(item.itemStatus) === ItemStatus.PotentialMatch) {
       ipfsHash =  getMultihashFromBytes32({
-        digest: assetMetadata.secondaryIpfsDigest,
-        hashFunction: assetMetadata.secondaryIpfsHashFunction,
-        size: assetMetadata.secondaryIpfsSize
+        digest: itemMetadata.secondaryIpfsDigest,
+        hashFunction: itemMetadata.secondaryIpfsHashFunction,
+        size: itemMetadata.secondaryIpfsSize
       })
 
       return (
@@ -95,7 +95,7 @@ class CreatorUI extends Component {
               <Grid.Row>
                 <Grid.Column width={12}>
                   <Grid.Row>
-                    { assetMetadata.foundDetails }
+                    { itemMetadata.foundDetails }
                   </Grid.Row>
                 </Grid.Column>
 
@@ -159,7 +159,7 @@ class CreatorUI extends Component {
         </div>
       )
     }
-    else if(parseInt(asset.assetStatus) === AssetStatus.MatchConfirmed) {
+    else if(parseInt(item.itemStatus) === ItemStatus.MatchConfirmed) {
       return (
         <Container textAlign='right' style={{ paddingTop: '1em'}}>
           <Message attached warning
@@ -178,7 +178,7 @@ class CreatorUI extends Component {
       )
     }
 
-    else if(parseInt(asset.assetStatus) === AssetStatus.Recovered) {
+    else if(parseInt(item.itemStatus) === ItemStatus.Recovered) {
       return (
         <Container textAlign='right' style={{ paddingTop: '1em'}}>
           <Message attached positive
@@ -191,7 +191,7 @@ class CreatorUI extends Component {
 }
 
 CreatorUI.contextTypes = {
-  assetId: PropTypes.number
+  itemId: PropTypes.number
 }
 
 const mapStateToProps = state => ({
@@ -200,11 +200,11 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  cancelAsset,
+  cancelItem,
   matchConfirmed,
   matchInvalid,
-  assetRecovered,
-  assetRecoveryFailed
+  itemRecovered,
+  itemRecoveryFailed
 }, dispatch)
 
 export default connect(

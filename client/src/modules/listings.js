@@ -19,18 +19,18 @@ export const RETRIEVED_MY_CLAIMABLE_REWARDS = 'listings/RETRIEVED_MY_CLAIMABLE_R
 export const REWARDS_WITHDRAWN = 'listings/REWARDS_WITHDRAWN'
 
 const initialState = {
-  assetsStoredEvents: null,
-  assetsStoredEventsRetrieved: false,
-  asset: null,
-  assetMetadata: null,
-  myLafAssets: null,
+  itemsStoredEvents: null,
+  itemsStoredEventsRetrieved: false,
+  item: null,
+  itemMetadata: null,
+  myLafItems: null,
   myClaimableRewards: null
 }
 
-export const getAssetStoredEvents = (country, stateProvince, initialAssetType) => {
+export const getItemStoredEvents = (country, stateProvince, initialItemType) => {
   return function action(dispatch, getState) {
     const state = getState()
-    // console.log('getAssetStoredEvents.actoion - state', state)
+    // console.log('getItemStoredEvents.actoion - state', state)
 
     var getEventsOptions = {
       fromBlock: 0, //TODO should this be narrowed down?
@@ -55,142 +55,142 @@ export const getAssetStoredEvents = (country, stateProvince, initialAssetType) =
       getEventsOptions.filter = filter
     }
 
-    // TODO retrieve cancelled and retrieved event & remove from AssetStored
-    state.app.registryContract.getPastEvents('AssetStored', getEventsOptions)
-    .then(function(assetStoredEvents){
-      // console.log('retrieved past events', assetsStoredEvents)
+    // TODO retrieve cancelled and retrieved event & remove from ItemStored
+    state.app.registryContract.getPastEvents('ItemStored', getEventsOptions)
+    .then(function(itemStoredEvents){
+      // console.log('retrieved past events', itemsStoredEvents)
       dispatch({
         type: ASSETS_STORED_EVENTS_RETRIEVED,
-        assetStoredEvents: assetStoredEvents
+        itemStoredEvents: itemStoredEvents
       })
     })
   }
 }
 
-export const getAsset = (assetId) => {
+export const getItem = (itemId) => {
   return function action(dispatch, getState) {
     const state = getState()
 
-    state.app.registryContract.methods.getAsset(assetId).call()
-    .then(function(asset) {
+    state.app.registryContract.methods.getItem(itemId).call()
+    .then(function(item) {
       dispatch({
         type: ASSET_RETRIEVED,
-        asset: asset
+        item: item
       })
     })
   }
 }
 
-export const getAssetMetadata = (assetId) => {
+export const getItemMetadata = (itemId) => {
   return function action(dispatch, getState) {
     const state = getState()
 
-    state.app.registryContract.methods.getAssetMetadata(assetId).call()
-    .then(function(assetMetadata) {
+    state.app.registryContract.methods.getItemMetadata(itemId).call()
+    .then(function(itemMetadata) {
       dispatch({
         type: ASSET_METADATA_RETRIEVED,
-        assetMetadata: assetMetadata
+        itemMetadata: itemMetadata
       })
     })
   }
 }
 
-export const clearAsset = (assetId) => {
+export const clearItem = (itemId) => {
   return function action(dispatch, getState) {
     dispatch({ type: CLEAR_ASSET })
   }
 }
 
-export const cancelAsset = (assetId) => {
+export const cancelItem = (itemId) => {
   return function action(dispatch, getState) {
     const state = getState()
 
-    state.app.registryContract.methods.cancelAsset(assetId).send({ from: state.app.accounts[0] })
+    state.app.registryContract.methods.cancelItem(itemId).send({ from: state.app.accounts[0] })
     .then(function(result) {
-      console.log('cancelAsset', result)
+      console.log('cancelItem', result)
       dispatch({
         type: CANCEL_ASSET_REQUESTED,
-        assetId: assetId
+        itemId: itemId
       })
     })
   }
 }
 
-export const foundLostAsset = (assetId, details, ipfsDigest, ipfsHashFunction, ipfsSize) => {
+export const foundLostItem = (itemId, details, ipfsDigest, ipfsHashFunction, ipfsSize) => {
   return function action(dispatch, getState) {
     const state = getState()
 
-    state.app.registryContract.methods.foundLostAsset(
-      assetId,
+    state.app.registryContract.methods.foundLostItem(
+      itemId,
       details,
       ipfsDigest,
       ipfsHashFunction,
       ipfsSize).send({ from: state.app.accounts[0], value: 0 })
     .then(function(result) {
-      // console.log('foundLostAsset', result)
+      // console.log('foundLostItem', result)
       dispatch({
         type: FOUND_LOST_ASSET_REQUESTED,
-        assetId: assetId
+        itemId: itemId
       })
     })
   }
 }
 
-export const matchConfirmed = (assetId, excahngeDetails) => {
+export const matchConfirmed = (itemId, excahngeDetails) => {
   return function action(dispatch, getState) {
     const state = getState()
 
-    state.app.registryContract.methods.matchConfirmed(assetId, excahngeDetails).send({ from: state.app.accounts[0] })
+    state.app.registryContract.methods.matchConfirmed(itemId, excahngeDetails).send({ from: state.app.accounts[0] })
     .then(function(result) {
       console.log('matchConfirmed', result)
       dispatch({
         type: MATCH_CONFIRMED_REQUESTED,
-        assetId: assetId
+        itemId: itemId
       })
     })
   }
 }
 
-export const matchInvalid = (assetId) => {
+export const matchInvalid = (itemId) => {
   return function action(dispatch, getState) {
     const state = getState()
 
-    state.app.registryContract.methods.matchInvalid(assetId).send({ from: state.app.accounts[0] })
+    state.app.registryContract.methods.matchInvalid(itemId).send({ from: state.app.accounts[0] })
     .then(function(result) {
       console.log('matchInvalid', result)
       dispatch({
         type: MATCH_INVALID_REQUESTED,
-        assetId: assetId
+        itemId: itemId
       })
     })
   }
 }
 
-export const assetRecovered = (assetId) => {
+export const itemRecovered = (itemId) => {
   return function action(dispatch, getState) {
     const state = getState()
 
-    state.app.registryContract.methods.assetRecovered(assetId).send({ from: state.app.accounts[0] })
+    state.app.registryContract.methods.itemRecovered(itemId).send({ from: state.app.accounts[0] })
     .then(function(result) {
-      console.log('assetRecovered', result)
+      console.log('itemRecovered', result)
       dispatch({
         type: ASSET_RECOVERED_REQUESTED,
-        assetId: assetId
+        itemId: itemId
       })
     })
   }
 }
 
-export const assetRecoveryFailed = (assetId) => {
+export const itemRecoveryFailed = (itemId) => {
   return function action(dispatch, getState) {
     const state = getState()
 
-    state.app.registryContract.methods.assetRecoveryFailed(assetId).send({ from: state.app.accounts[0] })
+    state.app.registryContract.methods.itemRecoveryFailed(itemId).send({ from: state.app.accounts[0] })
     .then(function(result) {
-      console.log('assetRecoveryFailed', result)
+      console.log('itemRecoveryFailed', result)
       dispatch({
         type: ASSET_RECOVERY_FAILED_REQUESTED,
-        assetId: assetId
+        itemId: itemId
       })
     })
   }
@@ -239,28 +239,28 @@ export default (state = initialState, action) => {
     case ASSETS_STORED_EVENTS_RETRIEVED:
       return {
         ...state,
-        assetStoredEvents: action.assetStoredEvents,
-        assetStoredEventsRetrieved: true
+        itemStoredEvents: action.itemStoredEvents,
+        itemStoredEventsRetrieved: true
       }
     
     case ASSET_RETRIEVED:
       return {
         ...state,
-        asset: action.asset
+        item: action.item
       }
 
     case ASSET_METADATA_RETRIEVED:
       return {
         ...state,
-        assetMetadata: action.assetMetadata
+        itemMetadata: action.itemMetadata
       }
 
     case CLEAR_ASSET:
       // console.log('CLEAR_ASSET')
       return {
         ...state,
-        asset: null,
-        assetMetadata: null
+        item: null,
+        itemMetadata: null
       }
     
     case CANCEL_ASSET_REQUESTED:
@@ -300,10 +300,10 @@ export default (state = initialState, action) => {
       }
 
     case MY_LAFS_RETRIEVED:
-      // console.log(action.myLafAssets)
+      // console.log(action.myLafItems)
       return {
         ...state,
-        myLafAssets: action.myLafAssets
+        myLafItems: action.myLafItems
       }
 
     case RETRIEVED_MY_CLAIMABLE_REWARDS:

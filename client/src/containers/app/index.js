@@ -38,8 +38,8 @@ const AddItem = Loadable({
   loading: Loading
 })
 
-const Asset = Loadable({
-  loader: () => import('../asset'),
+const Item = Loadable({
+  loader: () => import('../item'),
   loading: Loading
 })
 
@@ -153,7 +153,7 @@ class App extends Component {
                       notifyAppOfNavChange={this.notifyAppOfNavChange}/>    
                 }
               />
-              <Route exact path={'/listings/:id'} component={Asset} />
+              <Route exact path={'/listings/:id'} component={Item} />
             </Segment>
           </div>
         </Router>

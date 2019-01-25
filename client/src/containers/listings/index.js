@@ -16,9 +16,9 @@ import {
 import Loadable from 'react-loadable';
 
 import {
-  getAssetStoredEvents,
-  getAsset,
-  getAssetMetadata
+  getItemStoredEvents,
+  getItem,
+  getItemMetadata
 } from '../../modules/listings'
 
 const Loading = () => <Segment style={{ padding: '4em 0em' }} vertical loading/>;
@@ -35,7 +35,7 @@ class Listings extends Component {
     selectedCountry: null,
     selectedStateProvince: null,
     stateProvinceOptions: null,
-    initialAssetType: null }
+    initialItemType: null }
 
   // constructor(props) {
   //     super(props)
@@ -73,10 +73,10 @@ class Listings extends Component {
   }
 
   handleFindItemsClicked = () => {
-    this.props.getAssetStoredEvents(
+    this.props.getItemStoredEvents(
       this.state.selectedCountry,
       this.state.selectedStateProvince,
-      this.state.initialAssetType)
+      this.state.initialItemType)
   }
 
   handleFindAllItemsClicked = () => {
@@ -86,13 +86,13 @@ class Listings extends Component {
       stateProvinceOptions: null
     })
 
-    this.props.getAssetStoredEvents()
+    this.props.getItemStoredEvents()
   }
 
-  handleItemSelect = (assetId) => {
-    this.props.getAsset(assetId)
-    this.props.getAssetMetadata(assetId)
-    this.props.history.push('listings/' + assetId)
+  handleItemSelect = (itemId) => {
+    this.props.getItem(itemId)
+    this.props.getItemMetadata(itemId)
+    this.props.history.push('listings/' + itemId)
   }
 
   render () {
@@ -138,9 +138,9 @@ class Listings extends Component {
 
           <Container textAlign='left' style={{ paddingTop: '2em', paddingBottom: '1em'}}>
             {
-              this.props.assetStoredEvents ?
+              this.props.itemStoredEvents ?
                 <Grid>
-                  { this.props.assetStoredEvents.map(this.renderEntry) }
+                  { this.props.itemStoredEvents.map(this.renderEntry) }
                 </Grid>
               : null
             }
@@ -157,14 +157,14 @@ Listings.contextTypes = {
 
 const mapStateToProps = state => ({
   app: state.app,
-  assetStoredEvents: state.listings.assetStoredEvents,
-  assetStoredEventsRetrieved: state.listings.assetStoredEventsRetrieved
+  itemStoredEvents: state.listings.itemStoredEvents,
+  itemStoredEventsRetrieved: state.listings.itemStoredEventsRetrieved
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  getAssetStoredEvents,
-  getAsset,
-  getAssetMetadata
+  getItemStoredEvents,
+  getItem,
+  getItemMetadata
 }, dispatch)
 
 export default connect(

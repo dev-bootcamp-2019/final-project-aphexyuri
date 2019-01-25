@@ -1,4 +1,4 @@
-import LAFRegistryContract from "../contracts/LAFAssetRegistry.json";
+import LAFRegistryContract from "../contracts/LAFItemRegistry.json";
 
 import getWeb3 from "../utils/getWeb3";
 

@@ -17,9 +17,9 @@ export function getIndicies(app) {
   });
 }
 
-export function getAsset(app, assetId) {
+export function getItem(app, itemId) {
   return new Promise((resolve) => {
-    app.registryContract.methods.getAsset(assetId).call({ from: app.accounts[0] })
+    app.registryContract.methods.getItem(itemId).call({ from: app.accounts[0] })
     .then((result) => {
       resolve(
         result
@@ -34,17 +34,17 @@ function* getMyLAFIndicies(action) {
   const indicies = yield call(getIndicies, action.app);
   // console.log('indicies', indicies)
 
-  let assets = []
+  let items = []
 
   for(let i = 0; i < indicies.length; i++) {
     // console.log('indicies[' + i + ']', indicies[i])
-    let asset = yield call (getAsset, action.app, indicies[i])
-    asset.assetId = indicies[i]
-    // console.log(asset)
-    assets.push(asset)
+    let item = yield call (getItem, action.app, indicies[i])
+    item.itemId = indicies[i]
+    // console.log(item)
+    items.push(item)
   }
 
-  yield put({type: MY_LAFS_RETRIEVED, myLafAssets: assets});
+  yield put({type: MY_LAFS_RETRIEVED, myLafItems: items});
 }
 
 function* myEntriesSaga() {

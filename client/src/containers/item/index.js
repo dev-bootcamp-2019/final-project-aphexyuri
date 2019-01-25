@@ -20,12 +20,12 @@ import {
 import Loadable from 'react-loadable';
 
 import {
-  getAsset,
-  getAssetMetadata,
-  clearAsset
+  getItem,
+  getItemMetadata,
+  clearItem
 } from '../../modules/listings'
 
-import { AssetStatus, longLocationString } from '../../utils/app.js'
+import { ItemStatus, longLocationString } from '../../utils/app.js'
 import { getMultihashFromBytes32 } from '../../utils/multihash'
 
 const Loading = () => <Segment style={{ padding: '4em 0em' }} vertical loading/>;
@@ -35,20 +35,20 @@ const CreatorUI = Loadable({
   loading: Loading
 })
 
-const FoundAssetUI = Loadable({
-  loader: () => import('./foundAssetUI'),
+const FoundItemUI = Loadable({
+  loader: () => import('./foundItemUI'),
   loading: Loading
 })
 
 var loadFromUrl
 
-class Asset extends Component {
+class Item extends Component {
   state = { ipfsHash: null }
 
   constructor(props) {
     super(props)
 
-    this.state = { assetId: this.props.history.location.pathname.replace('/listings/', '') }
+    this.state = { itemId: this.props.history.location.pathname.replace('/listings/', '') }
 
     if(!this.props.app.web3) {
       loadFromUrl = true
@@ -57,24 +57,24 @@ class Asset extends Component {
 
   componentDidUpdate = async () => {
     if(loadFromUrl) {
-      this.props.getAsset(this.state.assetId)
-      this.props.getAssetMetadata(this.state.assetId)
+      this.props.getItem(this.state.itemId)
+      this.props.getItemMetadata(this.state.itemId)
       loadFromUrl = false
     }
   }
 
   onBreakCrumbBackClick = () => {
     this.props.history.push('/')
-    this.props.clearAsset()
+    this.props.clearItem()
   }
 
   renderInteractionsUI = () => {
-    let { asset, assetMetadata } = this.props.listings
+    let { item, itemMetadata } = this.props.listings
 
-    // console.log('asset', asset)
-    // console.log('assetMetadata', assetMetadata)
+    // console.log('item', item)
+    // console.log('itemMetadata', itemMetadata)
 
-    if(parseInt(asset.assetStatus) === AssetStatus.Cancelled) {
+    if(parseInt(item.itemStatus) === ItemStatus.Cancelled) {
       return (
         <Container textAlign='right' style={{ paddingTop: '1em'}}>
           <Message attached negative
@@ -84,18 +84,18 @@ class Asset extends Component {
       )
     }
     else {
-      if(asset.creator === this.props.app.accounts[0]) {
+      if(item.creator === this.props.app.accounts[0]) {
         // creator is viewing
-        // console.log('viewing as creator, assetId: ', this.state.assetId)
+        // console.log('viewing as creator, itemId: ', this.state.itemId)
         return (
-          <CreatorUI assetId={ this.state.assetId } />
+          <CreatorUI itemId={ this.state.itemId } />
         )
       }
       else {
         // non-creator is viewing
-        // console.log('viewing as non-creator, assetId: ', this.state.assetId)
+        // console.log('viewing as non-creator, itemId: ', this.state.itemId)
 
-        if(parseInt(asset.assetStatus) === AssetStatus.Cancelled) {
+        if(parseInt(item.itemStatus) === ItemStatus.Cancelled) {
           return (
             <Container textAlign='right' style={{ paddingTop: '1em'}}>
               <Message attached warning
@@ -104,14 +104,14 @@ class Asset extends Component {
             </Container>
           )
         }
-        else if(parseInt(asset.assetStatus) === AssetStatus.Posted) {
+        else if(parseInt(item.itemStatus) === ItemStatus.Posted) {
           return (
-            <FoundAssetUI assetId={ this.state.assetId } />
+            <FoundItemUI itemId={ this.state.itemId } />
           )
         }
         else {
-          if(assetMetadata.matcher === this.props.app.accounts[0]) {
-            if(parseInt(asset.assetStatus) === AssetStatus.PotentialMatch) {
+          if(itemMetadata.matcher === this.props.app.accounts[0]) {
+            if(parseInt(item.itemStatus) === ItemStatus.PotentialMatch) {
               return (
                 <Container textAlign='right' style={{ paddingTop: '1em'}}>
                   <Message attached warning
@@ -120,17 +120,17 @@ class Asset extends Component {
                 </Container>
               )
             }
-            else if(parseInt(asset.assetStatus) === AssetStatus.MatchConfirmed) {
+            else if(parseInt(item.itemStatus) === ItemStatus.MatchConfirmed) {
               return (
                 <Container textAlign='right' style={{ paddingTop: '1em'}}>
                 <Message attached warning
                     header='Fantastic - the item you found has been verified found!'
                     content='Follow the instructions below to return it to the owner' />
-                <p>{ assetMetadata.exchangeDetails }</p>
+                <p>{ itemMetadata.exchangeDetails }</p>
                 </Container>
               )
             }
-            else if(parseInt(asset.assetStatus) === AssetStatus.Recovered) {
+            else if(parseInt(item.itemStatus) === ItemStatus.Recovered) {
               return (
                 <Container textAlign='right' style={{ paddingTop: '1em'}}>
                   <Message attached positive
@@ -141,7 +141,7 @@ class Asset extends Component {
             }
           }
           else {
-            if(parseInt(asset.assetStatus) === AssetStatus.Recovered) {
+            if(parseInt(item.itemStatus) === ItemStatus.Recovered) {
               return (
                 <Container textAlign='right' style={{ paddingTop: '1em'}}>
                   <Message attached positive
@@ -168,28 +168,28 @@ class Asset extends Component {
   render () {
     let ipfsHash = null
 
-    if(!this.props.listings.asset || !this.props.listings.assetMetadata) {
+    if(!this.props.listings.item || !this.props.listings.itemMetadata) {
       return (
         <Container style={{ paddingTop: '2em', paddingBottom: '1em'}}>
-          Waiting for asset data...
+          Waiting for item data...
         </Container>
       )
     }
     else {
-      let { asset, assetMetadata } = this.props.listings
+      let { item, itemMetadata } = this.props.listings
 
-      // console.log('asset', asset)
-      // console.log('assetMetadata', assetMetadata)
+      // console.log('item', item)
+      // console.log('itemMetadata', itemMetadata)
 
       ipfsHash =  getMultihashFromBytes32({
-        digest: asset.primaryIpfsDigest,
-        hashFunction: asset.primaryIpfsHashFunction,
-        size: asset.primaryIpfsSize
+        digest: item.primaryIpfsDigest,
+        hashFunction: item.primaryIpfsHashFunction,
+        size: item.primaryIpfsSize
       })
 
-      let isoCountryCode = this.props.app.web3.utils.hexToUtf8(asset.isoCountryCode)
-      let stateProvince = this.props.app.web3.utils.hexToUtf8(asset.stateProvince)
-      let city = this.props.app.web3.utils.hexToUtf8(assetMetadata.city)
+      let isoCountryCode = this.props.app.web3.utils.hexToUtf8(item.isoCountryCode)
+      let stateProvince = this.props.app.web3.utils.hexToUtf8(item.stateProvince)
+      let city = this.props.app.web3.utils.hexToUtf8(itemMetadata.city)
       let longLocation = longLocationString(isoCountryCode, stateProvince)
       let location = longLocation[0] + ', ' + longLocation[1] + ', ' + city
 
@@ -205,7 +205,7 @@ class Asset extends Component {
             <Grid>
               <Grid.Row style={{ paddingBottom: '0em'}}>
                 <Grid.Column width={16}>
-                  <Header as='h2' content={asset.title}/>
+                  <Header as='h2' content={item.title}/>
                 </Grid.Column>
               </Grid.Row>
 
@@ -221,15 +221,15 @@ class Asset extends Component {
                 </Grid.Column>
                 <Grid.Column width={4} textAlign='right'>
                   <Icon name='ethereum' />
-                  <b>{ this.props.app.web3.utils.fromWei(asset.reward, 'ether') } </b>
+                  <b>{ this.props.app.web3.utils.fromWei(item.reward, 'ether') } </b>
                   Reward
                 </Grid.Column>
               </Grid.Row>
 
               <Grid.Row>
                 <Step.Group widths={4} size='mini'>
-                  <Step active={ parseInt(asset.assetStatus) === AssetStatus.Posted }
-                    disabled={ parseInt(asset.assetStatus) === AssetStatus.Cancelled }>
+                  <Step active={ parseInt(item.itemStatus) === ItemStatus.Posted }
+                    disabled={ parseInt(item.itemStatus) === ItemStatus.Cancelled }>
                     <Icon name='find'/>
                     <Step.Content>
                       <Step.Title>Lost</Step.Title>
@@ -237,8 +237,8 @@ class Asset extends Component {
                     </Step.Content>
                   </Step>
                   <Step
-                    active={ parseInt(asset.assetStatus) === AssetStatus.PotentialMatch }
-                    disabled={ asset.assetStatus < AssetStatus.PotentialMatch || parseInt(asset.assetStatus) === AssetStatus.Cancelled }>
+                    active={ parseInt(item.itemStatus) === ItemStatus.PotentialMatch }
+                    disabled={ item.itemStatus < ItemStatus.PotentialMatch || parseInt(item.itemStatus) === ItemStatus.Cancelled }>
                     <Icon name='question'/>
                     <Step.Content>
                       <Step.Title>Potentially Found</Step.Title>
@@ -246,8 +246,8 @@ class Asset extends Component {
                     </Step.Content>
                   </Step>
                   <Step
-                    active={ parseInt(asset.assetStatus) === AssetStatus.MatchConfirmed }
-                    disabled={ asset.assetStatus < AssetStatus.MatchConfirmed || parseInt(asset.assetStatus) === AssetStatus.Cancelled }>
+                    active={ parseInt(item.itemStatus) === ItemStatus.MatchConfirmed }
+                    disabled={ item.itemStatus < ItemStatus.MatchConfirmed || parseInt(item.itemStatus) === ItemStatus.Cancelled }>
                     <Icon name='smile outline'/>
                     <Step.Content>
                       <Step.Title>Confirmed Found</Step.Title>
@@ -255,8 +255,8 @@ class Asset extends Component {
                     </Step.Content>
                   </Step>
                   <Step
-                    active={ parseInt(asset.assetStatus) === AssetStatus.Recovered }
-                    disabled={ asset.assetStatus < AssetStatus.Recovered || parseInt(asset.assetStatus) === AssetStatus.Cancelled }>
+                    active={ parseInt(item.itemStatus) === ItemStatus.Recovered }
+                    disabled={ item.itemStatus < ItemStatus.Recovered || parseInt(item.itemStatus) === ItemStatus.Cancelled }>
                     <Icon name='check'/>
                     <Step.Content>
                       <Step.Title>Recovered</Step.Title>
@@ -278,7 +278,7 @@ class Asset extends Component {
 
                 <Grid.Column width={12}>
                   <Grid.Row>
-                    { assetMetadata.description }
+                    { itemMetadata.description }
                   </Grid.Row>
                 </Grid.Column>
               </Grid.Row>
@@ -292,7 +292,7 @@ class Asset extends Component {
   }
 }
 
-Asset.contextTypes = {
+Item.contextTypes = {
   store: PropTypes.object.isRequired
 }
 
@@ -302,12 +302,12 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  getAsset,
-  getAssetMetadata,
-  clearAsset
+  getItem,
+  getItemMetadata,
+  clearItem
 }, dispatch)
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-) (Asset)
+) (Item)

@@ -19,7 +19,7 @@ import classNames from 'classnames'
 import Dropzone from 'react-dropzone'
 
 import {
-  foundLostAsset
+  foundLostItem
 } from '../../modules/listings'
 
 var ipfsClient = require('ipfs-http-client')
@@ -102,8 +102,8 @@ class MatcherUI extends Component {
   }
 
   handlePostItemClicked = async () => {
-    this.props.foundLostAsset(
-      this.props.assetId,
+    this.props.foundLostItem(
+      this.props.itemId,
       this.state.details,
       this.state.ipfsDigest,
       this.state.ipfsHashFunction,
@@ -200,7 +200,7 @@ class MatcherUI extends Component {
 }
 
 MatcherUI.contextTypes = {
-  assetId: PropTypes.number
+  itemId: PropTypes.number
 }
 
 const mapStateToProps = state => ({
@@ -209,7 +209,7 @@ const mapStateToProps = state => ({
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  foundLostAsset
+  foundLostItem
 }, dispatch)
 
 export default connect(

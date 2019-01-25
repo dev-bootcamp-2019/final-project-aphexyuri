@@ -1,6 +1,6 @@
 var lafConstants = require('../LAFConstants.js')
 
-export const AssetStatus = {
+export const ItemStatus = {
     None: 0,
     Posted: 1,
     PotentialMatch: 2,
@@ -9,7 +9,7 @@ export const AssetStatus = {
     Cancelled: 5
 }
 
-const assetStatusEnumMapping = [
+const itemStatusEnumMapping = [
     'Not found',
     'Potential Match',
     'Match Confirmed',
@@ -17,8 +17,8 @@ const assetStatusEnumMapping = [
     'Cancelled'
 ]
 
-export function assetStatusToString(status) {
-    return assetStatusEnumMapping[status]
+export function itemStatusToString(status) {
+    return itemStatusEnumMapping[status]
 }
 
 export function longLocationString(country, stateProvince) {

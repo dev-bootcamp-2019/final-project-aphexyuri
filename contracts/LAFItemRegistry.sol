@@ -211,7 +211,7 @@ contract LAFItemRegistry is LAFRegistryBase
     /// @return primaryIpfsDigest IPFS Mutihash-digest (original posting)
     /// @return primaryIpfsHashFunction IPFS Mutihash-hash function (original posting)
     /// @return primaryIpfsSize IPFS Mutihash-size (original posting)
-    function getItemm(uint256 itemId)
+    function getItem(uint256 itemId)
         public
         view
         returns(

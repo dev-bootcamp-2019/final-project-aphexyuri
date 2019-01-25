@@ -267,7 +267,7 @@ class AddItem extends Component {
     // let cityHex = this.props.app.web3.utils.asciiToHex(this.state.city)
 
     // try {
-    //   await this.props.app.registryContract.methods.newLostAsset(
+    //   await this.props.app.registryContract.methods.newLostItem(
     //     titleHex,
     //     this.state.details,
     //     countryHex,
@@ -285,7 +285,7 @@ class AddItem extends Component {
     //   // TODO feedback that item has been added + clear UI
     // }
     // catch(e) {
-    //   console.log('newLostAsset Error', e)
+    //   console.log('newLostItem Error', e)
     //   // TODO feedback of error
     // }
   }

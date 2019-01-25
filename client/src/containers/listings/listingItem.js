@@ -21,7 +21,7 @@ class ListingItem extends Component {
   }
 
   handleItemSelect = (evt) => {
-    this.props.itemSelectHandler(this.props.item.assetId)
+    this.props.itemSelectHandler(this.props.item.itemId)
   }
 
   render () { 
