@@ -225,7 +225,7 @@ contract LAFItemRegistry is LAFRegistryBase
         public
         view
         returns(
-            string memory itemTitle,
+            string memory title,
             InitialItemType initialItemType,
             ItemStatus itemStatus,
             bytes8 isoCountryCode,
@@ -237,7 +237,7 @@ contract LAFItemRegistry is LAFRegistryBase
             uint8 primaryIpfsSize
         )
     {
-        itemTitle = LAFStorageLib.getItemTitle(getItemStorageAddress(), itemId);
+        title = LAFStorageLib.getItemTitle(getItemStorageAddress(), itemId);
         isoCountryCode = LAFStorageLib.getItemIsoCountryCode(getItemStorageAddress(), itemId);
         stateProvince = LAFStorageLib.getItemStateProvince(getItemStorageAddress(), itemId);
         reward = LAFStorageLib.getItemReward(getItemStorageAddress(), itemId);
@@ -307,7 +307,7 @@ contract LAFItemRegistry is LAFRegistryBase
     }
     
     /// @dev Creates a new lost item
-    /// @param itemTitle Title of item
+    /// @param title Title of item
     /// @param description Details & description
     /// @param isoCountryCode Title of item
     /// @param stateProvince State/Province of item
@@ -316,7 +316,7 @@ contract LAFItemRegistry is LAFRegistryBase
     /// @param primaryIpfsHashFunction IPFS Mutihash-hash function (original posting)
     /// @param primaryIpfsSize IPFS Mutihash-size (original posting)
     function newLostItem(
-        string memory itemTitle,
+        string memory title,
         string memory description,
         bytes8 isoCountryCode,
         bytes8 stateProvince,
@@ -331,7 +331,7 @@ contract LAFItemRegistry is LAFRegistryBase
         storageSet
     {
         newItem(InitialItemType.Lost,
-            itemTitle,
+            title,
             description,
             isoCountryCode,
             stateProvince,
