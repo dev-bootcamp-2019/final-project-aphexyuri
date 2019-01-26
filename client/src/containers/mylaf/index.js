@@ -23,6 +23,11 @@ import {
   withdrawRewards
 } from '../../modules/listings'
 
+import {
+  getItem,
+  getItemMetadata
+} from '../../modules/items'
+
 const Loading = () => <Segment style={{ padding: '4em 0em' }} vertical loading/>;
 
 const ListingItem = Loadable({
@@ -56,6 +61,10 @@ class MyLAF extends Component {
 
   handleItemSelect = (itemId) => {
     this.props.notifyAppOfNavChange('items')
+    
+    this.props.getItem(itemId)
+    this.props.getItemMetadata(itemId)
+
     this.props.history.push('items/' + itemId)
   }
 
@@ -134,7 +143,9 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => bindActionCreators({
   getMyLAFs,
   getClaimableRewards,
-  withdrawRewards
+  withdrawRewards,
+  getItem,
+  getItemMetadata
 }, dispatch)
 
 export default connect(
