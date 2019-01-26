@@ -19,7 +19,7 @@ A Solidity and React dApp that is a registry for lost items. This initial versio
 5. Account A confirms or denies the item has been recovered. Setting it to recovered will make reward ETH available to Account B for withdrawl
 
 ### Additional documents
-- [User Stories] (https://github.com/aphexyuri/lost-and-found/blob/master/docs/avoiding_common_attacks.md)
+- [User Stories](https://github.com/aphexyuri/lost-and-found/blob/master/docs/avoiding_common_attacks.md)
 - [Avoiding Common Attacks] (docs/avoiding_common_attacks.md)
 - [Design Pattern Desicions] (docs/design_pattern_desicions.md)
 - [Deployed Addresses] (docs/deployed_addresses.txt)
