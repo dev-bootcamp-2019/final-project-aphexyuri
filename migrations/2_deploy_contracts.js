@@ -4,7 +4,7 @@ var LAFStorageLib = artifacts.require("LAFStorageLib");
 
 module.exports = async(deployer, network, accounts) => {
   // deploy and link LAFStorageLib
-  await deployer.deploy(LAFStorageLib)
+  let lib = await deployer.deploy(LAFStorageLib)
   await deployer.link(LAFStorageLib, LAFItemRegistry)
 
   // deploy LAFItemRegistry
@@ -22,4 +22,11 @@ module.exports = async(deployer, network, accounts) => {
     // unpause registry
     await registry.unpause({ from: accounts[0] })
   }
+
+  console.log('==============================================')
+  console.log('Contract addresses (' + network + '):')
+  console.log('LAFStorageLib:', lib.address)
+  console.log('LAFItemStorage:', storage.address)
+  console.log('LAFItemRegistry:', lib.registry)
+  console.log('==============================================')
 }
