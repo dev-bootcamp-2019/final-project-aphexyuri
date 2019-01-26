@@ -47,13 +47,12 @@ A Solidity and React dApp that is a registry for lost items. This initial versio
 
 ### Project notes
 
+- Due to time constraints, limited work was done on the UI accurately reflecting contract interactions. The closest example of how it is intended to work can be seen in the [I Lost Something](http://localhost:3000/newlost) page; when you add a new item
 - To test this flow you will need to use two separate accounts with a sufficient ETH balance for rewards and gas fees. To obtain test ether for Ropsten visit:
  - https://faucet.metamask.io/
  - https://faucet.ropsten.be/
 
 - At time of writing, LAF only supports a **lost -> found -> return to owner** workflow. Most of the contract was written to *also* support a **found -> return to owner** workflow, but due to time constraints this has not been included/tested in the project
-
-- 
 
 - Use of OpenZeppelin's contracts (Ownable, Pausable, SafeMath) - tried, tested & secure
 
