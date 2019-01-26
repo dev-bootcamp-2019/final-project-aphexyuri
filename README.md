@@ -18,18 +18,11 @@ A Solidity and React dApp that is a registry for lost items. This initial versio
 4. The exchange is made based on details submitted in #3. Possible off-chain integration, or chat functionality such as using Whisper would likely have to be implemented here to avoid storing sensitive info on-chain
 5. Account A confirms or denies the item has been recovered. Setting it to recovered will make reward ETH available to Account B for withdrawl
 
-### Additional documents
+### Additional assignment documents
 - [User Stories](docs/LAF_User_Stories.docx)
 - [Avoiding Common Attacks](docs/avoiding_common_attacks.md)
 - [Design Pattern Desicions](docs/design_pattern_desicions.md)
 - [Deployed Addresses](docs/deployed_addresses.txt)
-
-
-**IMPORTANT:** To test this flow you will need to use two separate accounts with a sufficient ETH balance for rewards and gas fees. To obtain test ether for Ropsten visit:
-- https://faucet.metamask.io/
-- https://faucet.ropsten.be/
-
-At time of writing, LAF only supports a **lost -> found -> return to owner** workflow. Most of the contract was written to *also* support a **found -> return to owner** workflow, but due to time constraints this has not been included/tested in the project.
 
 ---
 
@@ -52,7 +45,15 @@ At time of writing, LAF only supports a **lost -> found -> return to owner** wor
 
 ---
 
-### Key project notes
+### Project notes
+
+- To test this flow you will need to use two separate accounts with a sufficient ETH balance for rewards and gas fees. To obtain test ether for Ropsten visit:
+ - https://faucet.metamask.io/
+ - https://faucet.ropsten.be/
+
+- At time of writing, LAF only supports a **lost -> found -> return to owner** workflow. Most of the contract was written to *also* support a **found -> return to owner** workflow, but due to time constraints this has not been included/tested in the project
+
+- 
 
 - Use of OpenZeppelin's contracts (Ownable, Pausable, SafeMath) - tried, tested & secure
 
@@ -60,6 +61,11 @@ At time of writing, LAF only supports a **lost -> found -> return to owner** wor
 ### Tools & Resources
 - IPFS multihash - https://github.com/saurfang/ipfs-multihash-on-solidity
 - OpenZeppelin -https://github.com/OpenZeppelin/openzeppelin-solidity
+
+### Built on
+- Infura: IPFS interaction
+- AWS: hosting
+- UI: react, web3, react-redux, react-router, react-saga, react-thunk, , react-blockies, ipfs-http-client, semantic-ui-react
 
 ---
 
