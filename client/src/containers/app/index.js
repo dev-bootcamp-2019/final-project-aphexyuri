@@ -48,6 +48,11 @@ const MyLAF = Loadable({
   loading: Loading
 })
 
+const Admin = Loadable({
+  loader: () => import('../admin'),
+  loading: Loading
+})
+
 class App extends Component {
   state = { activeItem: 'home' }
 
@@ -152,6 +157,12 @@ class App extends Component {
                   <MyLAF
                     {...props }
                       notifyAppOfNavChange={this.notifyAppOfNavChange}/>    
+                }
+              />
+              <Route exact path={'/admin'}
+                render={ (props) => 
+                  <Admin
+                    {...props }/>    
                 }
               />
               <Route exact path={'/items/:id'} component={Item} />

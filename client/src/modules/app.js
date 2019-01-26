@@ -1,4 +1,5 @@
 import LAFRegistryContract from "../contracts/LAFItemRegistry.json";
+import LAFItemStorageContract from "../contracts/LAFItemStorage.json";
 
 import getWeb3 from "../utils/getWeb3";
 
@@ -6,7 +7,8 @@ export const INIT_COMPLETE = 'app/INIT_COMPLETE'
 
 const initialState = {
   web3: null,
-  registryContract: null
+  registryContract: null,
+  storageContract: null
 }
 
 export const initWeb3 = () => {
@@ -18,17 +20,26 @@ export const initWeb3 = () => {
       .then(function(accounts) {
         web3.eth.net.getId()
         .then(function(networkId){
-          const deployedNetwork = LAFRegistryContract.networks[networkId]
+          const registryDeployedNetwork = LAFRegistryContract.networks[networkId]
+          
           const registryContract = new web3.eth.Contract(
             LAFRegistryContract.abi,
-            deployedNetwork && deployedNetwork.address,
+            registryDeployedNetwork && registryDeployedNetwork.address,
+          )
+
+          const storageDeployedNetwork = LAFItemStorageContract.networks[networkId]
+
+          const storageContract = new web3.eth.Contract(
+            LAFItemStorageContract.abi,
+            storageDeployedNetwork && storageDeployedNetwork.address,
           )
 
           dispatch({  
             type: INIT_COMPLETE,
             web3: web3,
             accounts: accounts,
-            registryContract: registryContract
+            registryContract: registryContract,
+            storageContract: storageContract
           })
         })
       })
@@ -44,7 +55,8 @@ export default (state = initialState, action) => {
         ...state,
         web3: action.web3,
         accounts: action.accounts,
-        registryContract: action.registryContract
+        registryContract: action.registryContract,
+        storageContract: action.storageContract
       }
 
     default:
