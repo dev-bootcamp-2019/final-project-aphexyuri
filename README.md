@@ -2,7 +2,7 @@
 For consideration for **ConsenSys Academy’s 2018 - 2019 Developer Program Final Project**
 
 ### What is LAF?
-A Solidity and React dApp to...
+A Solidity and React dApp that is a registry for lost items. This initial version is aimed at users that have lost personal items, and that wants to offer a reward for its retrieval. In short:
 - Post lost items & offer ETH rewards
 - Find lost items near you & claim your ETH rewards
 
@@ -17,10 +17,10 @@ A Solidity and React dApp to...
 5. Account A confirms or denies the item has been recovered. Setting it to recovered will make reward ETH available to Account B for withdrawl
 
 ### Additional documents
-- [User Stories] (User Stories)
-- [avoiding_common_attacks.md] (avoiding_common_attacks.md)
-- [design_pattern_desicions.md] (design_pattern_desicions.md)
-- [deployed_addresses.txt] (deployed_addresses.txt)
+- [User Stories] (docs/LAF_User_Stories.docx)
+- [Avoiding Common Attacks] (docs/avoiding_common_attacks.md)
+- [Design Pattern Desicions] (docs/design_pattern_desicions.md)
+- [Deployed Addresses] (docs/deployed_addresses.txt)
 
 
 **IMPORTANT:** To test this flow you will need to use two separate accounts with a sufficient ETH balance for rewards and gas fees. To obtain test ether for Ropsten visit:
@@ -32,33 +32,32 @@ At time of writing, LAF only supports a **lost -> found -> return to owner** wor
 ---
 
 ### Dev environment
-1. canache-cli v?
-2. Node 8 ?
-3. Truffle v?
-4. solc & Solidity
+1. canache-cli v6.1.8
+2. Node 8.11.0
+3. Truffle v5.0.1
+4. Solidity v0.5.0
 
 
 ### Running LAF
 (Assume a local Ganache chain available on port 8545)
 
 1. Clone this repo
-2. In the root directory, run `ganache-cli` to start your local ganache chain
-3. Still in the root directory, run `npm install` to install npm dependencies
-4. Next, in the same directory, run `truffle migrate` to deploy contracts
-4. From the `client` directory, ensure that all required npm packages are installed by running `npm install` 
+2. In the root directory, run `npm install` to install npm dependencies
+3. Still in the root directory, run `ganache-cli` to start your local ganache chain. Ideally, a block time of 30 seconds should be used (`ganache-cli --blockTime 30`)
+4. In the same directory, run `truffle migrate --reset` to deploy contracts
+4. `cd` to the `client` directory, ensure that all required npm packages are installed by running `npm install` 
 5. Still in the `client` directory, run `npm run start` to start the local webserver. UI can then be accessed at [http://localhost:3000](http://localhost:3000)
 
 ---
 
 ### Key project notes
 
-- Solidity 0.5.0 chose for up to date platform & language familiarity
 - Use of OpenZeppelin's contracts (Ownable, Pausable, SafeMath) - tried, tested & secure
 
 
 ### Tools & Resources
 - IPFS multihash - https://github.com/saurfang/ipfs-multihash-on-solidity
-- OpenZeppelin
+- OpenZeppelin -https://github.com/OpenZeppelin/openzeppelin-solidity
 
 ---
 

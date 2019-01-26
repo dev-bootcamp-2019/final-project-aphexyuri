@@ -1,7 +1,6 @@
 pragma solidity ^0.5.0;
 
 import "./LAFRegistryBase.sol";
-import "./LAFItemStorage.sol";
 
 /// @title Registry contract
 contract LAFItemRegistry is LAFRegistryBase

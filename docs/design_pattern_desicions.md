@@ -17,7 +17,10 @@ Interactions between these layers occurs as follows:
 Various approaches to upgradability were considered, but ultimately decided on separation of storage and logic layers. Storage is maintained in a generic yet flexible key-value storage contract (`LAFItemStorage`), based on mappings of base data types. Write operations to the storage is restricted to a whitelist of `allowedSenders`.
 Due to the generic nature of the storage mechanism, a large amount of accessor/mutator methods were required. This boilerplate code was mover to a library to be used by the main contract.
 
-Using this approach, the view/presentation layer will never have to interact with the Storage layer. When an upgrade to logic (Registry) is required, the view layer can be swapped out (optionally the Library) and still interact with the same data stored in the Storage layer. 
+Using this approach, the view/presentation layer will never have to interact with the Storage layer. When an upgrade to logic (Registry) is required, the view layer can be swapped out (optionally the Library) and still interact with the same data stored in the Storage layer
+
+### Withdrawl pattern
+Pull-based transfer - gas payed by msg.sender
 
 ### Circuit breaker
 Public facing contract extends OpenZeppelin's Pausable, providing contract pause/unpause functionality.
