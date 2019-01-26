@@ -19,11 +19,10 @@ A Solidity and React dApp that is a registry for lost items. This initial versio
 5. Account A confirms or denies the item has been recovered. Setting it to recovered will make reward ETH available to Account B for withdrawl
 
 ### Additional documents
-- [User Stories](docs/avoiding_common_attacks.md)
-- [Avoiding Common Attacks] (https://github.com/aphexyuri/lost-and-found/blob/master/docs/avoiding_common_attacks.md)
-- [Design Pattern Desicions] (https://github.com/aphexyuri/lost-and-found/blob/master/docs/design_pattern_desicions.md)
-- [Deployed Addresses] (https://github.com/aphexyuri/lost-and-found/blob/master/docs/deployed_addresses.txt)
-- <a href="http://example.com/" target="_blank">Hello, world!</a>
+- [User Stories](docs/LAF_User_Stories.docx)
+- [Avoiding Common Attacks](docs/avoiding_common_attacks.md)
+- [Design Pattern Desicions] (docs/design_pattern_desicions.md)
+- [Deployed Addresses](docs/deployed_addresses.txt)
 
 
 **IMPORTANT:** To test this flow you will need to use two separate accounts with a sufficient ETH balance for rewards and gas fees. To obtain test ether for Ropsten visit:
