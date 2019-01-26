@@ -5,7 +5,7 @@ getAddressEtherBalanceFloat = async (address) => {
     return parseFloat(web3.utils.fromWei(await web3.eth.getBalance(address), 'ether'))
 }
 
-// Tests are mainly of a functional nature, testing corefunctionality of creating an item and taking it through its various statuses
+// Tests are mainly of a functional nature, testing core functionality of creating an item and taking it through its various statuses
 
 contract("LAFItemRegistry (Item Flows)", accounts => {
     var contractsOwner = accounts[0]
@@ -61,7 +61,7 @@ contract("LAFItemRegistry (Item Flows)", accounts => {
     })
 
     // ideal item flow round-trip
-    // assert withdrawl amounts
+    // also assert withdrawl amounts
     it('...newLostItem -> potentialMatch -> matchConfirmed -> itemRecovered -> withdrawl', async () => {
         let itemStatus = (await itemRegistryInstance.getItem(itemId)).itemStatus
         assert.equal(itemStatus, 1)
@@ -118,7 +118,7 @@ contract("LAFItemRegistry (Item Flows)", accounts => {
     })
 
     // item recovery failure flow
-    // assert item status reset
+    // assert that item status gets reset if marked a recovery failure
     it('...newLostItem -> potentialMatch -> matchConfirmed -> itemRecoveryFailed', async () => {
         // call foundLostItem
         await itemRegistryInstance.foundLostItem(
@@ -140,7 +140,7 @@ contract("LAFItemRegistry (Item Flows)", accounts => {
     })
 
     // match invalid flow
-    // assert item status reset
+    // assert item status is reset after a mathc is invalid
     it('...newLostItem -> potentialMatch -> matchInvalid', async () => {
         // call foundLostItem
         await itemRegistryInstance.foundLostItem(

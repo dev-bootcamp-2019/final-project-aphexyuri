@@ -19,7 +19,7 @@ addItemHelperNoAwait = async (itemRegistryInstance, title, description, countryI
     )
 }
 
-// tests for core gegistry functionality such as state & ownership emodifiers across item statuses
+// tests for core registry functionality such as state & ownership modifiers across item statuses
 
 contract("LAFItemRegistry", accounts => {
     var itemRegistryInstance

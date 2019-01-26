@@ -4,6 +4,8 @@ const LAFItemStorage = artifacts.require("./LAFItemStorage.sol")
 // delay helper
 const delay = ms => new Promise(res => setTimeout(res, ms));
 
+// test is based on calling multiple withdrawls ensuring no reentrancy attack is possible
+
 contract("LAFItemRegistry (Withdrawl reentrancy)", accounts => {
   var contractsOwner = accounts[0]
   var creator = accounts[1]
@@ -69,13 +71,14 @@ contract("LAFItemRegistry (Withdrawl reentrancy)", accounts => {
     await itemRegistryInstance.itemRecovered(itemId, { from: creator })
   })
 
+  // test that the the account's claimable rewards is equal to the rewards initially made available for the item
   it('...matcher claimableRewards = initial reward', async () => {
     let claimableRewards = await itemRegistryInstance.getClaimableRewards({ from: matcher })
     // console.log('claimableRewards', claimableRewards)
     assert.equal(claimableRewards, reward)
   })
 
-
+  // run consecutive withdrwal attemps. ideally, the caimable rewards should be set to zero, and thus sonsecutive attempts have no effect
   it('...attempt 3x withdrawls', async () => {
     let contractBalanceBefore = await web3.eth.getBalance(itemRegistryInstance.address)
     // console.log('contractBalanceBefore', contractBalanceBefore)
