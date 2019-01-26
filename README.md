@@ -21,7 +21,7 @@ A Solidity and React dApp that is a registry for lost items. This initial versio
 ### Additional documents
 - [User Stories](docs/LAF_User_Stories.docx)
 - [Avoiding Common Attacks](docs/avoiding_common_attacks.md)
-- [Design Pattern Desicions] (docs/design_pattern_desicions.md)
+- [Design Pattern Desicions](docs/design_pattern_desicions.md)
 - [Deployed Addresses](docs/deployed_addresses.txt)
 
 
