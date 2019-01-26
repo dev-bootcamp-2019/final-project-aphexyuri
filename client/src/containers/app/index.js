@@ -91,7 +91,7 @@ class App extends Component {
     let shortAccount = ''
     if(this.props.app.accounts && this.props.app.accounts[0]) {
       accountPopupText = this.props.app.accounts[0]
-      shortAccount = accountPopupText.substr(0, 5) + '...' + accountPopupText.substr(accountPopupText.length - 3, accountPopupText.length - 1)
+      shortAccount = accountPopupText.substr(0, 6) + '...' + accountPopupText.substr(accountPopupText.length - 4, accountPopupText.length - 1)
     }
     return (
       <div>

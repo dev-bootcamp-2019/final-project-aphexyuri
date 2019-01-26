@@ -66,16 +66,17 @@ class ListingItem extends Component {
 
   renderOwnerShipLabel = () => {
     let account = this.props.app.accounts[0]
-    if(this.props.item.creator) {
-      if(this.props.item.creator === account) {
+    let creator = this.props.item.creator
+    if(creator) {
+      if(creator === account) {
         return (
           <Label circular color='pink' attached='bottom'>Your item</Label>
         )
       }
       else {
-        let accountShort = account.substr(0, 5) + '...' + account.substr(account.length - 4, account.length - 1)
+        let creatorShort = creator.substr(0, 6) + '...' + creator.substr(account.length - 4, creator.length - 1)
         return (
-          <Label circular color='grey' attached='bottom'>Added by {accountShort}</Label>
+          <Label circular color='grey' attached='bottom'>Added by {creatorShort}</Label>
         )
       }
     }
