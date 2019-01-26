@@ -1,6 +1,8 @@
 # Lost and Found (LAF)
 For consideration for **ConsenSys Academy’s 2018 - 2019 Developer Program Final Project**
 
+__See the `docs` folder for supplementary docs__
+
 ### What is LAF?
 A Solidity and React dApp that is a registry for lost items. This initial version is aimed at users that have lost personal items, and that wants to offer a reward for its retrieval. In short:
 - Post lost items & offer ETH rewards
@@ -17,7 +19,7 @@ A Solidity and React dApp that is a registry for lost items. This initial versio
 5. Account A confirms or denies the item has been recovered. Setting it to recovered will make reward ETH available to Account B for withdrawl
 
 ### Additional documents
-- [User Stories] (docs/LAF_User_Stories.docx)
+- [User Stories] (https://github.com/aphexyuri/lost-and-found/blob/master/docs/avoiding_common_attacks.md)
 - [Avoiding Common Attacks] (docs/avoiding_common_attacks.md)
 - [Design Pattern Desicions] (docs/design_pattern_desicions.md)
 - [Deployed Addresses] (docs/deployed_addresses.txt)
