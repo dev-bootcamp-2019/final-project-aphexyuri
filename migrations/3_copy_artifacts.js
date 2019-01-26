@@ -8,4 +8,8 @@ module.exports = async(deployer, network, accounts) => {
   fs.copyFile('build/contracts/LAFItemRegistry.json', 'client/src/contracts/LAFItemRegistry.json', (err) => {
     if (err) throw err;
   })
+
+  fs.copyFile('build/contracts/LAFItemStorage.json', 'client/src/contracts/LAFItemStorage.json', (err) => {
+    if (err) throw err;
+  })
 }
