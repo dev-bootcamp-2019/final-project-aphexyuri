@@ -26,7 +26,7 @@ module.exports = {
         return new HDWalletProvider(process.env.MNEMONIC, "https://ropsten.infura.io/" + process.env.INFURA_ROPSTEN_ACCESS_TOKEN)
       },
 			network_id: 3,
-			gas: 5000000
+			gas: 6000000
 		},
 		rinkeby: {
       // host: "localhost",
@@ -35,7 +35,7 @@ module.exports = {
         return new HDWalletProvider(process.env.MNEMONIC, "https://rinkeby.infura.io/" + process.env.INFURA_ROPSTEN_ACCESS_TOKEN)
       },
       network_id: 4,
-			gas: 5000000
+			gas: 6000000
 		}
 	}
 };
