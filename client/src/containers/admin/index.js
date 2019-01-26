@@ -20,7 +20,14 @@ class Admin extends Component {
   }
 
   setItemStorageAddressClicked = () => {
-    this.props.app.storageContract.methods.setItemStorageAddress(this.props.app.storageContract.options.address).send({ from: this.props.app.accounts[0] })
+    this.props.app.registryContract.methods.setItemStorageAddress(this.props.app.storageContract.options.address).send({ from: this.props.app.accounts[0] })
+    .then((result) => {
+      console.log(result)
+    })
+  }
+
+  unpauseClicked = () => {
+    this.props.app.registryContract.methods.unpause().send({ from: this.props.app.accounts[0] })
     .then((result) => {
       console.log(result)
     })
@@ -37,10 +44,20 @@ class Admin extends Component {
               <Button fluid positive type='submit' onClick={this.addAllowedSenderClicked}>1. storage.addAllowedSender</Button>
             : null
           }
+
           <br/>
+          
           {
             this.props.app.registryContract ?
               <Button fluid positive type='submit' onClick={this.addAllowedSenderClicked}>2. registry.setItemStorageAddress</Button>
+            : null
+          }
+
+          <br/>
+
+          {
+            this.props.app.registryContract ?
+              <Button fluid positive type='submit' onClick={this.unpauseClicked}>3. registry.unpause</Button>
             : null
           }
         </div>

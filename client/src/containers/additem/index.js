@@ -305,7 +305,7 @@ class AddItem extends Component {
                       Transaction complete
                     </p>
 
-                    <p style={{ fontSize: '1em', marginTop: '1em', marginBottom: '2em' }}>
+                    <p style={{ fontSize: '1em', marginTop: '1em', marginBottom: '0em' }}>
                       Would you like to view the item listing now?    
                     </p>
                   </Container>
@@ -317,7 +317,7 @@ class AddItem extends Component {
                       </p>
 
                       <p style={{ fontSize: '1em', marginTop: '1em', marginBottom: '2em' }}>
-                        The transaction needs to be verified on the blockchain before your contribution will appear in the feed. This may take a number of minutes, depending on Ethereum network load &amp; congestion.
+                        The transaction needs to be verified on the blockchain before your item will be available in the registry. This may take a number of minutes, depending on Ethereum network load &amp; congestion.
                       </p>
                     </Container>
                     <Container>

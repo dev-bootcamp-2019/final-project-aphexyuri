@@ -21,6 +21,7 @@ export function getItem(app, itemId) {
   return new Promise((resolve) => {
     app.registryContract.methods.getItem(itemId).call({ from: app.accounts[0] })
     .then((result) => {
+      // console.log('myLafsSaga.getItem result: ', result)
       resolve(
         result
       )
@@ -29,10 +30,10 @@ export function getItem(app, itemId) {
 }
 
 function* getMyLAFIndicies(action) {
-  // console.log('getMyLAFIndicies', action.app)
+  // console.log('myLafsSaga.getMyLAFIndicies', action.app)
 
   const indicies = yield call(getIndicies, action.app);
-  // console.log('indicies', indicies)
+  // console.log('myLafsSaga.getMyLAFIndicies - indicies:', indicies)
 
   let items = []
 
