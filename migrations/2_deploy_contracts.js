@@ -4,7 +4,7 @@ var LAFStorageLib = artifacts.require("LAFStorageLib");
 
 module.exports = async(deployer, network, accounts) => {
   // deploy and link LAFStorageLib
-  let lib = await deployer.deploy(LAFStorageLib)
+  await deployer.deploy(LAFStorageLib)
   await deployer.link(LAFStorageLib, LAFItemRegistry)
 
   // deploy LAFItemRegistry
