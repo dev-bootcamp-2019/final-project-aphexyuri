@@ -35,7 +35,7 @@ A Solidity and React dApp that is a registry for lost items. This initial versio
 4. Solidity v0.5.0
 
 
-### Running LAF
+### Running LAF locally
 (Assume a local Ganache chain available on port 8545)
 
 1. Clone this repo
