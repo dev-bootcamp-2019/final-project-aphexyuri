@@ -43,13 +43,13 @@ A Solidity and React dApp that is a registry for lost items. This initial versio
 3. Still in the root directory, run `ganache-cli` to start your local ganache chain. Ideally, a block time of 30 seconds should be used (`ganache-cli --blockTime 30`)
 4. In the same directory, run `truffle migrate --reset` to deploy contracts
 4. `cd` to the `client` directory, ensure that all required npm packages are installed by running `npm install` 
-5. Still in the `client` directory, run `npm run start` to start the local webserver. UI can then be accessed at [http://localhost:3000](http://localhost:3000)
+5. Still in the `client` directory, run `npm run start` to start the local webserver. UI can then be accessed at [http://laf.signalphire.com](http://laf.signalphire.com)
 
 ---
 
 ### Project notes
 
-- Due to time constraints, limited work was done on the UI accurately reflecting contract interactions. The closest example of how it is intended to work can be seen in the [I Lost Something](http://localhost:3000/newlost) page; when you add a new item
+- Due to time constraints, limited work was done on the UI accurately reflecting contract interactions. The closest example of how it is intended to work can be seen in the [I Lost Something](http://laf.signalphire.com/newlost) page; when you add a new item
 - To test this flow you will need to use two separate accounts with a sufficient ETH balance for rewards and gas fees. To obtain test ether for Ropsten visit:
  - https://faucet.metamask.io/
  - https://faucet.ropsten.be/
