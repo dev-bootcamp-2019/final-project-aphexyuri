@@ -1,7 +1,9 @@
 # Lost and Found (LAF)
 For consideration for **ConsenSys Academy’s 2018 - 2019 Developer Program Final Project**
 
-__See the `docs` folder for supplementary docs__
+- Supplementary documents can be found in the `docs` folder or see the __Additional assignment documents__ section below for links
+- ROPSTEN network Deployed dApp can be accessed at __http://laf.signalphire.com/__
+- Contracts viewable at https://ropsten.etherscan.io/address/0x8f3b4dd1df14d5aec8c7a04350b49d3f61d821ca & https://ropsten.etherscan.io/address/0xFe62a3bbE9121BABEc021C09A27AD3F3ea871E02
 
 ### What is LAF?
 A Solidity and React dApp that is a registry for lost items. This initial version is aimed at users that have lost personal items, and that wants to offer a reward for its retrieval. In short:
