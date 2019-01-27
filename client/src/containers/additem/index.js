@@ -106,25 +106,21 @@ class AddItem extends Component {
   }
 
   renderNearestCityField = e => {
-    if(this.state.selectedCountry && this.state.selectedStateProvince) {
-      return (
-        <Form.Field required>
-          <label>Nearest City/Landmark</label>
-          <input placeholder='City or Landmark' onChange={this.handleCityFieldChange}/>
-        </Form.Field>
-      )
-    }
+    return (
+      <Form.Field required>
+        <label>Nearest City/Landmark</label>
+        <input placeholder='City or Landmark' onChange={this.handleCityFieldChange}/>
+      </Form.Field>
+    )
   }
 
   renderRewardAmountField = e => {
-    if(this.state.selectedCountry && this.state.selectedStateProvince) {
-      return (
-        <Form.Field required>
-          <label>Reward amount</label>
-          <input placeholder='Amount of ETH' onChange={this.handleRewardAmountFieldChange}/>
-        </Form.Field>
-      )
-    }
+    return (
+      <Form.Field required>
+        <label>Reward amount</label>
+        <input placeholder='Amount of ETH' onChange={this.handleRewardAmountFieldChange}/>
+      </Form.Field>
+    )
   }
 
   renderDropZoneStatusSegment = (isDragActive) => {
@@ -171,29 +167,29 @@ class AddItem extends Component {
   }
 
   renderDropZone = e => {
-    if(this.state.selectedCountry && this.state.selectedStateProvince) {
-      return (
-        <Dropzone
-          accept="image/jpeg, image/png"
-          onDrop={this.onDrop}>
-          {
-            ({ getRootProps, getInputProps, isDragActive }) => {
-              return (
-                <div { ...getRootProps() } className={ classNames('dropzone', { 'dropzone--isActive': isDragActive }) }>
-                  <input { ...getInputProps() } />
-                  { this.renderDropZoneStatusSegment(isDragActive) }
-                </div>
-              )
-            }
+    return (
+      <Dropzone
+        accept="image/jpeg, image/png"
+        onDrop={this.onDrop}>
+        {
+          ({ getRootProps, getInputProps, isDragActive }) => {
+            return (
+              <div { ...getRootProps() } className={ classNames('dropzone', { 'dropzone--isActive': isDragActive }) }>
+                <input { ...getInputProps() } />
+                { this.renderDropZoneStatusSegment(isDragActive) }
+              </div>
+            )
           }
-        </Dropzone>
-      )
-    }
+        }
+      </Dropzone>
+    )
   }
 
   renderSubmitBtn = e => {
     if(this.state.selectedCountry &&
       this.state.selectedStateProvince &&
+      this.state.city &&
+      this.state.rewardAmount &&
       this.state.ipfsDigest &&
       this.state.ipfsHashFunction &&
       this.state.ipfsSize) {
