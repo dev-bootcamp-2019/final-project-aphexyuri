@@ -108,7 +108,7 @@ class AddItem extends Component {
   renderNearestCityField = e => {
     if(this.state.selectedCountry && this.state.selectedStateProvince) {
       return (
-        <Form.Field>
+        <Form.Field required>
           <label>Nearest City/Landmark</label>
           <input placeholder='City or Landmark' onChange={this.handleCityFieldChange}/>
         </Form.Field>
@@ -119,7 +119,7 @@ class AddItem extends Component {
   renderRewardAmountField = e => {
     if(this.state.selectedCountry && this.state.selectedStateProvince) {
       return (
-        <Form.Field>
+        <Form.Field required>
           <label>Reward amount</label>
           <input placeholder='Amount of ETH' onChange={this.handleRewardAmountFieldChange}/>
         </Form.Field>
@@ -352,17 +352,17 @@ class AddItem extends Component {
         <Container>
           <Header as='h2'>Submit details about your lost item</Header>
           <Form>
-            <Form.Field>
+            <Form.Field required>
               <label>Title</label>
               <input placeholder='Title of item' value={this.state.title} onChange={this.handleTitleFieldChange}/>
             </Form.Field>
-            <Form.Field>
+            <Form.Field required>
               <label>Details</label>
               <TextArea autoHeight rows={2}
                 placeholder='Details about item and where, how when it got lost' value={this.state.details} onChange={this.handleDetailsFieldChange} />
             </Form.Field>
-            <Form.Group widths='equal'>
-              <Form.Select fluid
+            <Form.Group widths='equal' required>
+              <Form.Select fluid required
                 value= {this.state.selectedCountry}
                 label='Country'
                 options={lafConstants.countries}
@@ -371,7 +371,7 @@ class AddItem extends Component {
               
               {
                 this.state.stateProvinceOptions ?
-                  <Form.Select fluid
+                  <Form.Select fluid required
                     label='State/Province'
                     options={this.state.stateProvinceOptions}
                     placeholder='State/Province'
