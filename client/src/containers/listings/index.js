@@ -37,8 +37,8 @@ class Listings extends Component {
   state = {
     selectedCountry: null,
     selectedStateProvince: null,
-    stateProvinceOptions: null,
-    initialItemType: null }
+    stateProvinceOptions: null
+  }
 
   // constructor(props) {
   //     super(props)
@@ -78,8 +78,7 @@ class Listings extends Component {
   handleFindItemsClicked = () => {
     this.props.getItemStoredEvents(
       this.state.selectedCountry,
-      this.state.selectedStateProvince,
-      this.state.initialItemType)
+      this.state.selectedStateProvince)
   }
 
   handleFindAllItemsClicked = () => {
@@ -103,7 +102,7 @@ class Listings extends Component {
       <div>
         <Container>
           <Header as='h2'>Find Lost Stuff near you</Header>
-          <Segment basic textAlign='center'>
+          <Segment basic textAlign='center' loading={this.props.listings.eventRetrievalInProgress}>
             <Form style={{ paddingBottom: '0.5em' }}>
               <Form.Group widths='equal'>
                 <Form.Select fluid
@@ -160,6 +159,7 @@ Listings.contextTypes = {
 
 const mapStateToProps = state => ({
   app: state.app,
+  listings: state.listings,
   itemStoredEvents: state.listings.itemStoredEvents,
   itemStoredEventsRetrieved: state.listings.itemStoredEventsRetrieved
 })

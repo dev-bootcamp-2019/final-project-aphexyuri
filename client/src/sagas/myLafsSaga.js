@@ -10,9 +10,7 @@ export function getIndicies(app) {
   return new Promise((resolve) => {
     app.registryContract.methods.getMyLAFIndicies().call({ from: app.accounts[0] })
     .then((result) => {
-      resolve(
-        result
-      )
+      resolve(result)
     })
   });
 }
@@ -22,9 +20,7 @@ export function getItem(app, itemId) {
     app.registryContract.methods.getItem(itemId).call({ from: app.accounts[0] })
     .then((result) => {
       // console.log('myLafsSaga.getItem result: ', result)
-      resolve(
-        result
-      )
+      resolve(result)
     })
   })
 }

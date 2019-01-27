@@ -7,6 +7,7 @@ import rootReducer from './modules'
 import createSagaMiddleware from 'redux-saga'
 
 import myEntriesSaga from './sagas/myLafsSaga'
+import listingsSaga from './sagas/listingsSaga'
 
 export const history = createHistory()
 
@@ -40,3 +41,4 @@ export default createStore(
 )
 
 sagaMiddleware.run(myEntriesSaga)
+sagaMiddleware.run(listingsSaga)
