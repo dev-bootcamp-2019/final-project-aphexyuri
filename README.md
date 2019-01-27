@@ -41,9 +41,10 @@ A Solidity and React dApp that is a registry for lost items. This initial versio
 1. Clone this repo
 2. In the root directory, run `npm install` to install npm dependencies
 3. Still in the root directory, run `ganache-cli` to start your local ganache chain. Ideally, a block time of 30 seconds should be used (`ganache-cli --blockTime 30`)
-4. In the same directory, run `truffle migrate --reset` to deploy contracts
-4. `cd` to the `client` directory, ensure that all required npm packages are installed by running `npm install` 
-5. Still in the `client` directory, run `npm run start` to start the local webserver. UI can then be accessed at [http://laf.signalphire.com](http://laf.signalphire.com)
+4. Be sure to import the new local account into metamask using ganache seed words
+5. In the same directory, run `truffle migrate --reset` to deploy contracts
+6. `cd` to the `client` directory, ensure that all required npm packages are installed by running `npm install` 
+7. Still in the `client` directory, run `npm run start` to start the local webserver. UI can then be accessed at [http://laf.signalphire.com](http://laf.signalphire.com)
 
 ---
 
