@@ -21,10 +21,10 @@ A Solidity and React dApp that is a registry for lost items. This initial versio
 5. Account A confirms or denies the item has been recovered. Setting it to recovered will make reward ETH available to Account B for withdrawl
 
 ### Additional assignment documents
-- [User Stories](docs/LAF_User_Stories.docx)
-- [Avoiding Common Attacks](docs/avoiding_common_attacks.md)
-- [Design Pattern Desicions](docs/design_pattern_desicions.md)
-- [Deployed Addresses](docs/deployed_addresses.txt)
+- [User Stories](docs/LAF_User_Stories.docx){:target="_blank"}
+- [Avoiding Common Attacks](docs/avoiding_common_attacks.md){:target="_blank"}
+- [Design Pattern Desicions](docs/design_pattern_desicions.md){:target="_blank"}
+- [Deployed Addresses](docs/deployed_addresses.txt){:target="_blank"}
 
 ---
 
