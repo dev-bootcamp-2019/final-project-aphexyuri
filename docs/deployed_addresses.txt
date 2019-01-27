@@ -1,0 +1,7 @@
+==============================================
+Contract addresses (ropsten-fork):
+LAFItemRegistry: 0x8F3b4dD1df14D5AeC8c7a04350b49d3F61D821cA - https://ropsten.etherscan.io/address/0x8f3b4dd1df14d5aec8c7a04350b49d3f61d821ca
+LAFItemStorage: 0xFe62a3bbE9121BABEc021C09A27AD3F3ea871E02 - https://ropsten.etherscan.io/address/0xFe62a3bbE9121BABEc021C09A27AD3F3ea871E02
+==============================================
+LAFStorageLib: 0xE9dE5B26Be6A45023A0bc1b996DF79cDe9312955
+==============================================
