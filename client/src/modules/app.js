@@ -42,7 +42,16 @@ export const initWeb3 = () => {
             storageContract: storageContract
           })
         })
+        .catch((error) => {
+          console.log('networkId error:', error)
+        })
       })
+      .catch((error) => {
+        console.log('get accounts error:', error)
+      })
+    })
+    .catch((error) => {
+      console.log('web3 error:', error)
     })
   }
 }

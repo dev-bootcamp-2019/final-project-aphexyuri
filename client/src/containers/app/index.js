@@ -57,8 +57,11 @@ class App extends Component {
   state = { activeItem: 'home' }
 
   // componentDidUpdate() {
-  //   var routerPath = this.context.router.route.location.pathname
-  //   console.log('app componentDidUpdate, routerPath', routerPath)
+  //   if(this.props.app.web3) {
+  //     console.log(this.props.app.web3.currentProvider) //.publicConfigStore.on('update', callback);
+
+  //     web3.currentProvider.publicConfigStore.on('update', callback);
+  //   }
   // }
 
   componentDidMount = async () => {
