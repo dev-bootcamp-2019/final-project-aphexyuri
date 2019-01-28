@@ -27,7 +27,7 @@ module.exports = async(deployer, network, accounts) => {
   console.log('Contract addresses (' + network + '):')
   console.log('LAFItemRegistry:', LAFItemRegistry.address)
   console.log('LAFItemStorage:', LAFItemStorage.address)
-  console.log('==============================================')
+  console.log('----------------------------------------------')
   console.log('LAFStorageLib:', LAFStorageLib.address)
   console.log('==============================================')
 }
