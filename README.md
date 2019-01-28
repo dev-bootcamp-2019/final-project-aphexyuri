@@ -2,7 +2,7 @@
 For consideration for **ConsenSys Academy’s 2018 - 2019 Developer Program Final Project**
 
 - Supplementary documents can be found in the `docs` folder or see the __Additional assignment documents__ section below for links
-- ROPSTEN network Deployed dApp can be accessed at __http://laf.signalphire.com/__
+- ROPSTEN network deployed dApp can be accessed at __http://laf.signalphire.com/__
 - Contracts viewable at https://ropsten.etherscan.io/address/0x8f3b4dd1df14d5aec8c7a04350b49d3f61d821ca & https://ropsten.etherscan.io/address/0xFe62a3bbE9121BABEc021C09A27AD3F3ea871E02
 
 ### What is LAF?
@@ -43,8 +43,11 @@ A Solidity and React dApp that is a registry for lost items. This initial versio
 3. Still in the root directory, run `ganache-cli` to start your local ganache chain. Ideally, a block time of 30 seconds should be used (`ganache-cli --blockTime 30`)
 4. Be sure to import the new local account into metamask using ganache seed words
 5. In the same directory, run `truffle migrate` to deploy contracts
-6. `cd` to the `client` directory, ensure that all required npm packages are installed by running `npm install` 
+6. `cd` to the `client` directory, ensure that all required npm packages are installed by running `npm install`.
 7. Still in the `client` directory, run `npm start` to start the local webserver. UI can then be accessed at [http://laf.signalphire.com](http://laf.signalphire.com)
+
+
+UPDATE: An issue was encountered in the final hours before submission, where a clean install of node modules (npm install) resulted in the web-ui not working. As a temporary workaround, download `client_node_modules.zip` from the (Github releases page)[https://github.com/dev-bootcamp-2019/final-project-aphexyuri/releases] and copy the contents to the `clients/node_modules` directory.
 
 ---
 
